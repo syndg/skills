@@ -1,0 +1,10 @@
+[    2046ms] [WARNING] Failed to decode downloaded font: https://www.invyte.ai/landing/fonts/fonnts.com-DegularDemo-Regular.otf @ https://www.invyte.ai/blog:0
+[    2046ms] [WARNING] OTS parsing error: invalid sfntVersion: 1008813135 @ https://www.invyte.ai/blog:0
+[    2138ms] [WARNING] Failed to decode downloaded font: https://www.invyte.ai/landing/fonts/fonnts.com-DegularDemo-Bold.otf @ https://www.invyte.ai/blog:0
+[    2138ms] [WARNING] OTS parsing error: invalid sfntVersion: 1008813135 @ https://www.invyte.ai/blog:0
+[    2237ms] [WARNING] Failed to decode downloaded font: https://www.invyte.ai/landing/fonts/fonnts.com-DegularDemo-Medium.otf @ https://www.invyte.ai/blog:0
+[    2237ms] [WARNING] OTS parsing error: invalid sfntVersion: 1008813135 @ https://www.invyte.ai/blog:0
+[    2545ms] [ERROR] Access to fetch at 'https://calendly.com/tech-resumatch/30min?_rsc=3h8go' (redirected from 'https://www.invyte.ai/book-demo?_rsc=3h8go') from origin 'https://www.invyte.ai' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ https://www.invyte.ai/blog:0
+[    2546ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://calendly.com/tech-resumatch/30min?_rsc=3h8go:0
+[    2707ms] [WARNING] Failed to decode downloaded font: https://www.invyte.ai/landing/fonts/fonnts.com-DegularDemo-Italic.otf @ https://www.invyte.ai/blog:0
+[    2707ms] [WARNING] OTS parsing error: invalid sfntVersion: 1008813135 @ https://www.invyte.ai/blog:0

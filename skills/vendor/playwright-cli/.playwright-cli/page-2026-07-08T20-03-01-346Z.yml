@@ -1,0 +1,105 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Invyte home" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e6]
+        - navigation "Main" [ref=e16]:
+          - list [ref=e18]:
+            - listitem [ref=e19]:
+              - button "Platform" [ref=e20]:
+                - text: Platform
+                - generic [ref=e21]: ▾
+            - listitem [ref=e22]:
+              - button "Built For" [ref=e23]:
+                - text: Built For
+                - generic [ref=e24]: ▾
+            - listitem [ref=e25]:
+              - button "Industries" [ref=e26]:
+                - text: Industries
+                - generic [ref=e27]: ▾
+            - listitem [ref=e28]:
+              - button "Insights" [ref=e29]:
+                - text: Insights
+                - generic [ref=e30]: ▾
+        - generic [ref=e31]:
+          - generic [ref=e32]:
+            - link "For Employers" [ref=e33] [cursor=pointer]:
+              - /url: /?side=employer
+              - text: For Employers
+            - link "For Candidates" [ref=e35] [cursor=pointer]:
+              - /url: /?side=candidate
+          - link "Get Invyte" [ref=e36] [cursor=pointer]:
+            - /url: /book-demo
+            - img [ref=e37]
+            - text: Get Invyte
+    - main [ref=e40]:
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - navigation "Breadcrumb" [ref=e44]:
+            - link "Home" [ref=e46] [cursor=pointer]:
+              - /url: /
+            - generic [ref=e47]:
+              - generic [ref=e48]: /
+              - generic [ref=e49]: Blog
+          - heading "Ideas for hiring AI-native teams" [level=1] [ref=e50]:
+            - text: Ideas for hiring
+            - emphasis [ref=e51]: AI-native
+            - text: teams
+          - paragraph [ref=e52]: Published Brain content for Invyte — educational articles, role intelligence, capabilities, and reports, in one canonical library.
+        - button "All" [ref=e54]
+      - generic [ref=e58]:
+        - paragraph [ref=e59]: No published content
+        - heading "The Brain-backed library is empty right now." [level=2] [ref=e60]
+        - paragraph [ref=e61]: Brain returned no published assets for Invyte. Draft and archived assets are intentionally excluded from this public renderer.
+      - generic [ref=e63]:
+        - heading "Hire AI-native talent, confidently" [level=2] [ref=e64]:
+          - text: Hire AI-native talent,
+          - emphasis [ref=e65]: confidently
+        - paragraph [ref=e66]: Book a meeting and see the verified pool for your roles — ranked by fit, in 24–48 hours.
+        - generic [ref=e67]:
+          - link "Book a meeting" [ref=e68] [cursor=pointer]:
+            - /url: /book-demo
+            - text: Book a meeting
+            - generic [ref=e69]: →
+          - link "See the platform" [ref=e70] [cursor=pointer]:
+            - /url: /platform
+    - contentinfo [ref=e71]:
+      - generic [ref=e72]:
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - link "Invyte home" [ref=e75] [cursor=pointer]:
+              - /url: /
+              - img [ref=e76]
+            - paragraph [ref=e86]: Hire AI-native talent pods, confidently. Proven by challenge, vetted persona by persona.
+          - generic [ref=e87]:
+            - generic [ref=e88]:
+              - heading "Platform" [level=5] [ref=e89]
+              - link "AI Personas" [ref=e90] [cursor=pointer]:
+                - /url: /platform/ai-personas
+              - link "AI-Native Talent Hub" [ref=e91] [cursor=pointer]:
+                - /url: /platform/talent-pool
+              - link "UMatch" [ref=e92] [cursor=pointer]:
+                - /url: /platform/umatch
+            - generic [ref=e93]:
+              - heading "Built For" [level=5] [ref=e94]
+              - link "Enterprises" [ref=e95] [cursor=pointer]:
+                - /url: /solutions/enterprises
+              - link "Staffing Firms" [ref=e96] [cursor=pointer]:
+                - /url: /solutions/staffing
+              - link "Startups" [ref=e97] [cursor=pointer]:
+                - /url: /solutions/startups-us
+            - generic [ref=e98]:
+              - heading "Insights" [level=5] [ref=e99]
+              - link "Personas Guide" [ref=e100] [cursor=pointer]:
+                - /url: /insights/personas-guide
+              - link "AI vs. Human" [ref=e101] [cursor=pointer]:
+                - /url: /insights/ai-vs-human
+              - link "Blog" [ref=e102] [cursor=pointer]:
+                - /url: /blog
+        - generic [ref=e103]:
+          - generic [ref=e104]: © 2026 Invyte.ai. All rights reserved.
+          - generic [ref=e105]: Proven by challenge. Vetted by persona.
+  - region "Notifications alt+T"
+  - alert [ref=e106]

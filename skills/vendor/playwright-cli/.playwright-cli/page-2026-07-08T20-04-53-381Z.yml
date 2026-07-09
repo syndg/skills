@@ -1,0 +1,188 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Invyte home" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img [ref=e6]
+        - navigation "Main" [ref=e16]:
+          - list [ref=e18]:
+            - listitem [ref=e19]:
+              - button "Platform" [ref=e20]:
+                - text: Platform
+                - generic [ref=e21]: ▾
+            - listitem [ref=e22]:
+              - button "Built For" [ref=e23]:
+                - text: Built For
+                - generic [ref=e24]: ▾
+            - listitem [ref=e25]:
+              - button "Industries" [ref=e26]:
+                - text: Industries
+                - generic [ref=e27]: ▾
+            - listitem [ref=e28]:
+              - button "Insights" [ref=e29]:
+                - text: Insights
+                - generic [ref=e30]: ▾
+        - generic [ref=e31]:
+          - generic [ref=e32]:
+            - link "For Employers" [ref=e33] [cursor=pointer]:
+              - /url: /?side=employer
+              - text: For Employers
+            - link "For Candidates" [ref=e35] [cursor=pointer]:
+              - /url: /?side=candidate
+          - link "Get Invyte" [ref=e36] [cursor=pointer]:
+            - /url: /book-demo
+            - img [ref=e37]
+            - text: Get Invyte
+    - main [ref=e40]:
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - navigation "Breadcrumb" [ref=e44]:
+            - link "Home" [ref=e46] [cursor=pointer]:
+              - /url: /
+            - generic [ref=e47]:
+              - generic [ref=e48]: /
+              - generic [ref=e49]: Blog
+          - heading "Ideas for hiring AI-native teams" [level=1] [ref=e50]:
+            - text: Ideas for hiring
+            - emphasis [ref=e51]: AI-native
+            - text: teams
+          - paragraph [ref=e52]: Published Brain content for Invyte — educational articles, role intelligence, capabilities, and reports, in one canonical library.
+        - generic [ref=e53]:
+          - button "All (7)" [ref=e54]
+          - button "Role Transition (3)" [ref=e55]
+          - button "AI Role (1)" [ref=e56]
+          - button "Capability (1)" [ref=e57]
+          - button "Educational (1)" [ref=e58]
+          - button "Report (1)" [ref=e59]
+      - generic [ref=e63]:
+        - link "Capability · Featured AI Credit Risk Analysis Understand how credit risk analysis is shifting into AI-assisted operator workflows, with tasks, tools, assessments, and evidence-backed role guidance. Read the essay" [ref=e64] [cursor=pointer]:
+          - /url: /blog/credit-risk-analysis
+          - generic [ref=e65]:
+            - generic [ref=e66]: Capability · Featured
+            - heading "AI Credit Risk Analysis" [level=2] [ref=e67]
+            - paragraph [ref=e68]: Understand how credit risk analysis is shifting into AI-assisted operator workflows, with tasks, tools, assessments, and evidence-backed role guidance.
+            - generic [ref=e69]:
+              - text: Read the essay
+              - generic [ref=e70]: →
+        - generic [ref=e71]:
+          - generic [ref=e72]:
+            - heading "Role Transition" [level=3] [ref=e73]
+            - button "Browse all →" [ref=e74]
+          - generic [ref=e75]:
+            - link "Role Transition From Credit Risk Analyst to AI Credit Risk Operator See how the Credit Risk Analyst role evolves into an AI Credit Risk Operator across tasks, tools, and human-in-the-loop expectations. Read" [ref=e76] [cursor=pointer]:
+              - /url: /blog/credit-risk-analyst-to-ai-credit-risk-operator
+              - generic [ref=e78]: Role Transition
+              - generic [ref=e79]:
+                - heading "From Credit Risk Analyst to AI Credit Risk Operator" [level=3] [ref=e80]
+                - paragraph [ref=e81]: See how the Credit Risk Analyst role evolves into an AI Credit Risk Operator across tasks, tools, and human-in-the-loop expectations.
+                - generic [ref=e82]:
+                  - text: Read
+                  - generic [ref=e83]: →
+            - link "Role Transition From Commercial Credit Analyst to AI Credit Risk Operator Map the Commercial Credit Analyst role into AI-assisted credit-risk operations with benchmark-aware transition guidance. Read" [ref=e84] [cursor=pointer]:
+              - /url: /blog/commercial-credit-analyst-to-ai-credit-risk-operator
+              - generic [ref=e86]: Role Transition
+              - generic [ref=e87]:
+                - heading "From Commercial Credit Analyst to AI Credit Risk Operator" [level=3] [ref=e88]
+                - paragraph [ref=e89]: Map the Commercial Credit Analyst role into AI-assisted credit-risk operations with benchmark-aware transition guidance.
+                - generic [ref=e90]:
+                  - text: Read
+                  - generic [ref=e91]: →
+            - link "Role Transition From Loan Underwriter to AI Credit Risk Operator Understand the adjacent path from traditional underwriting into AI-assisted credit-risk operating roles. Read" [ref=e92] [cursor=pointer]:
+              - /url: /blog/loan-underwriter-to-ai-credit-risk-operator
+              - generic [ref=e94]: Role Transition
+              - generic [ref=e95]:
+                - heading "From Loan Underwriter to AI Credit Risk Operator" [level=3] [ref=e96]
+                - paragraph [ref=e97]: Understand the adjacent path from traditional underwriting into AI-assisted credit-risk operating roles.
+                - generic [ref=e98]:
+                  - text: Read
+                  - generic [ref=e99]: →
+        - generic [ref=e100]:
+          - generic [ref=e101]:
+            - heading "AI Role" [level=3] [ref=e102]
+            - button "Browse all →" [ref=e103]
+          - link "AI Role AI Credit Risk Operator Explore the AI Credit Risk Operator role, including mappings from legacy titles, workflow expectations, evidence coverage, and assessment paths. Read" [ref=e105] [cursor=pointer]:
+            - /url: /blog/ai-credit-risk-operator
+            - generic [ref=e107]: AI Role
+            - generic [ref=e108]:
+              - heading "AI Credit Risk Operator" [level=3] [ref=e109]
+              - paragraph [ref=e110]: Explore the AI Credit Risk Operator role, including mappings from legacy titles, workflow expectations, evidence coverage, and assessment paths.
+              - generic [ref=e111]:
+                - text: Read
+                - generic [ref=e112]: →
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - heading "Educational" [level=3] [ref=e115]
+            - button "Browse all →" [ref=e116]
+          - link "Educational AI Credit Risk Operator vs Credit Risk Analyst Compare the legacy Credit Risk Analyst role with its AI-assisted successor and understand the shift in workflows and required skills. Read" [ref=e118] [cursor=pointer]:
+            - /url: /blog/ai-credit-risk-operator-vs-credit-risk-analyst
+            - generic [ref=e120]: Educational
+            - generic [ref=e121]:
+              - heading "AI Credit Risk Operator vs Credit Risk Analyst" [level=3] [ref=e122]
+              - paragraph [ref=e123]: Compare the legacy Credit Risk Analyst role with its AI-assisted successor and understand the shift in workflows and required skills.
+              - generic [ref=e124]:
+                - text: Read
+                - generic [ref=e125]: →
+        - generic [ref=e126]:
+          - generic [ref=e127]:
+            - heading "Report" [level=3] [ref=e128]
+            - button "Browse all →" [ref=e129]
+          - link "Report AI Credit Risk Operator Brief A compact briefing page on the AI Credit Risk Operator role for hiring, team design, and AI-readiness assessment planning. Read" [ref=e131] [cursor=pointer]:
+            - /url: /blog/ai-credit-risk-operator-brief
+            - generic [ref=e133]: Report
+            - generic [ref=e134]:
+              - heading "AI Credit Risk Operator Brief" [level=3] [ref=e135]
+              - paragraph [ref=e136]: A compact briefing page on the AI Credit Risk Operator role for hiring, team design, and AI-readiness assessment planning.
+              - generic [ref=e137]:
+                - text: Read
+                - generic [ref=e138]: →
+      - generic [ref=e140]:
+        - heading "Hire AI-native talent, confidently" [level=2] [ref=e141]:
+          - text: Hire AI-native talent,
+          - emphasis [ref=e142]: confidently
+        - paragraph [ref=e143]: Book a meeting and see the verified pool for your roles — ranked by fit, in 24–48 hours.
+        - generic [ref=e144]:
+          - link "Book a meeting" [ref=e145] [cursor=pointer]:
+            - /url: /book-demo
+            - text: Book a meeting
+            - generic [ref=e146]: →
+          - link "See the platform" [ref=e147] [cursor=pointer]:
+            - /url: /platform
+    - contentinfo [ref=e148]:
+      - generic [ref=e149]:
+        - generic [ref=e150]:
+          - generic [ref=e151]:
+            - link "Invyte home" [ref=e152] [cursor=pointer]:
+              - /url: /
+              - img [ref=e153]
+            - paragraph [ref=e163]: Hire AI-native talent pods, confidently. Proven by challenge, vetted persona by persona.
+          - generic [ref=e164]:
+            - generic [ref=e165]:
+              - heading "Platform" [level=5] [ref=e166]
+              - link "AI Personas" [ref=e167] [cursor=pointer]:
+                - /url: /platform/ai-personas
+              - link "AI-Native Talent Hub" [ref=e168] [cursor=pointer]:
+                - /url: /platform/talent-pool
+              - link "UMatch" [ref=e169] [cursor=pointer]:
+                - /url: /platform/umatch
+            - generic [ref=e170]:
+              - heading "Built For" [level=5] [ref=e171]
+              - link "Enterprises" [ref=e172] [cursor=pointer]:
+                - /url: /solutions/enterprises
+              - link "Staffing Firms" [ref=e173] [cursor=pointer]:
+                - /url: /solutions/staffing
+              - link "Startups" [ref=e174] [cursor=pointer]:
+                - /url: /solutions/startups-us
+            - generic [ref=e175]:
+              - heading "Insights" [level=5] [ref=e176]
+              - link "Personas Guide" [ref=e177] [cursor=pointer]:
+                - /url: /insights/personas-guide
+              - link "AI vs. Human" [ref=e178] [cursor=pointer]:
+                - /url: /insights/ai-vs-human
+              - link "Blog" [ref=e179] [cursor=pointer]:
+                - /url: /blog
+        - generic [ref=e180]:
+          - generic [ref=e181]: © 2026 Invyte.ai. All rights reserved.
+          - generic [ref=e182]: Proven by challenge. Vetted by persona.
+  - region "Notifications alt+T"
+  - alert [ref=e183]

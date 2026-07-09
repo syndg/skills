@@ -1,0 +1,14 @@
+[     448ms] [WARNING] Failed to decode downloaded font: https://www.invyte.ai/landing/fonts/fonnts.com-DegularDemo-Regular.otf @ https://www.invyte.ai/blog:0
+[     448ms] [WARNING] OTS parsing error: invalid sfntVersion: 1008813135 @ https://www.invyte.ai/blog:0
+[     448ms] [WARNING] Failed to decode downloaded font: https://www.invyte.ai/landing/fonts/fonnts.com-DegularDemo-Italic.otf @ https://www.invyte.ai/blog:0
+[     448ms] [WARNING] OTS parsing error: invalid sfntVersion: 1008813135 @ https://www.invyte.ai/blog:0
+[     448ms] [WARNING] Failed to decode downloaded font: https://www.invyte.ai/landing/fonts/fonnts.com-DegularDemo-Medium.otf @ https://www.invyte.ai/blog:0
+[     448ms] [WARNING] OTS parsing error: invalid sfntVersion: 1008813135 @ https://www.invyte.ai/blog:0
+[     448ms] [WARNING] Failed to decode downloaded font: https://www.invyte.ai/landing/fonts/fonnts.com-DegularDemo-Bold.otf @ https://www.invyte.ai/blog:0
+[     448ms] [WARNING] OTS parsing error: invalid sfntVersion: 1008813135 @ https://www.invyte.ai/blog:0
+[     758ms] [WARNING] Failed to decode downloaded font: https://www.invyte.ai/landing/fonts/fonnts.com-DegularDemo-Semibold.otf @ https://www.invyte.ai/blog:0
+[     758ms] [WARNING] OTS parsing error: invalid sfntVersion: 1008813135 @ https://www.invyte.ai/blog:0
+[    1476ms] [ERROR] Access to fetch at 'https://calendly.com/tech-resumatch/30min?_rsc=3h8go' (redirected from 'https://www.invyte.ai/book-demo?_rsc=3h8go') from origin 'https://www.invyte.ai' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ https://www.invyte.ai/blog:0
+[    1476ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://calendly.com/tech-resumatch/30min?_rsc=3h8go:0
+[36810094ms] [ERROR] Failed to load resource: net::ERR_NETWORK_CHANGED @ https://us.i.posthog.com/flags/?v=2&_=1783577901965&ver=1.396.2&compression=base64:0
+[62980176ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://us.i.posthog.com/flags/?v=2&_=1783604072482&ver=1.396.2&compression=base64:0

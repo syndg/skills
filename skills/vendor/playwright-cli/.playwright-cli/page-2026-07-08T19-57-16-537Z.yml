@@ -1,0 +1,77 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - generic [ref=e4]:
+        - link "Invyte AI-native workforce graph" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e6]: Invyte
+          - generic [ref=e7]: AI-native workforce graph
+        - navigation [ref=e8]:
+          - link "AI Credit Risk Analysis" [ref=e9] [cursor=pointer]:
+            - /url: /blog/credit-risk-analysis
+          - link "AI Credit Risk Operator" [ref=e10] [cursor=pointer]:
+            - /url: /blog/ai-credit-risk-operator
+          - link "AI Credit Risk Operator Brief" [ref=e11] [cursor=pointer]:
+            - /url: /blog/ai-credit-risk-operator-brief
+          - link "AI Credit Risk Operator vs Credit Risk Analyst" [ref=e12] [cursor=pointer]:
+            - /url: /blog/ai-credit-risk-operator-vs-credit-risk-analyst
+          - link "From Credit Risk Analyst to AI Credit Risk Operator" [ref=e13] [cursor=pointer]:
+            - /url: /blog/credit-risk-analyst-to-ai-credit-risk-operator
+    - main [ref=e14]:
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: Content library
+          - heading "Invyte Brain content library" [level=1] [ref=e20]
+          - paragraph [ref=e21]: Browse the canonical Brain-owned content assets. Categories and asset types are metadata; every detail page resolves by a globally unique brand slug.
+        - generic [ref=e22]:
+          - generic [ref=e23]:
+            - generic [ref=e24]: Public content assets
+            - generic [ref=e25]: "7"
+          - generic [ref=e26]:
+            - generic [ref=e27]: Canonical detail route
+            - generic [ref=e28]: /blog/[slug]
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - generic [ref=e32]: Library
+          - heading "All content assets" [level=2] [ref=e33]
+        - generic [ref=e35]:
+          - link "Capability Page AI Credit Risk Analysis Published" [ref=e36] [cursor=pointer]:
+            - /url: /blog/credit-risk-analysis
+            - generic [ref=e37]: Capability Page
+            - generic [ref=e38]: AI Credit Risk Analysis
+            - generic [ref=e39]: Published
+          - link "AI Role Page AI Credit Risk Operator Published" [ref=e40] [cursor=pointer]:
+            - /url: /blog/ai-credit-risk-operator
+            - generic [ref=e41]: AI Role Page
+            - generic [ref=e42]: AI Credit Risk Operator
+            - generic [ref=e43]: Published
+          - link "Report Page AI Credit Risk Operator Brief Published" [ref=e44] [cursor=pointer]:
+            - /url: /blog/ai-credit-risk-operator-brief
+            - generic [ref=e45]: Report Page
+            - generic [ref=e46]: AI Credit Risk Operator Brief
+            - generic [ref=e47]: Published
+          - link "Legacy to AI Role Page From Credit Risk Analyst to AI Credit Risk Operator Published" [ref=e48] [cursor=pointer]:
+            - /url: /blog/credit-risk-analyst-to-ai-credit-risk-operator
+            - generic [ref=e49]: Legacy to AI Role Page
+            - generic [ref=e50]: From Credit Risk Analyst to AI Credit Risk Operator
+            - generic [ref=e51]: Published
+          - link "Legacy to AI Role Page From Commercial Credit Analyst to AI Credit Risk Operator Published" [ref=e52] [cursor=pointer]:
+            - /url: /blog/commercial-credit-analyst-to-ai-credit-risk-operator
+            - generic [ref=e53]: Legacy to AI Role Page
+            - generic [ref=e54]: From Commercial Credit Analyst to AI Credit Risk Operator
+            - generic [ref=e55]: Published
+          - link "Legacy to AI Role Page From Loan Underwriter to AI Credit Risk Operator Published" [ref=e56] [cursor=pointer]:
+            - /url: /blog/loan-underwriter-to-ai-credit-risk-operator
+            - generic [ref=e57]: Legacy to AI Role Page
+            - generic [ref=e58]: From Loan Underwriter to AI Credit Risk Operator
+            - generic [ref=e59]: Published
+          - link "Educational AI Credit Risk Operator vs Credit Risk Analyst Published" [ref=e60] [cursor=pointer]:
+            - /url: /blog/ai-credit-risk-operator-vs-credit-risk-analyst
+            - generic [ref=e61]: Educational
+            - generic [ref=e62]: AI Credit Risk Operator vs Credit Risk Analyst
+            - generic [ref=e63]: Published
+    - contentinfo [ref=e64]:
+      - generic [ref=e65]:
+        - paragraph [ref=e66]: Canonical ontology, evidence, and projection data live in Postgres. Sanity is editorial overlay only.
+        - paragraph [ref=e67]: "Phase 1 public slice: AI Credit Risk / Commercial Loan Underwriting."
+  - alert [ref=e68]
