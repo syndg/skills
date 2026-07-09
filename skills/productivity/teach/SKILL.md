@@ -13,11 +13,15 @@ Treat the current directory as a teaching workspace. The state of their learning
 
 - `MISSION.md`: A document capturing the _reason_ the user is interested in the topic. This should be used to ground all teaching. Use the format in [MISSION-FORMAT.md](./MISSION-FORMAT.md).
 - `./reference/*.html`: A directory of reference materials. These are the compressed learnings from the lessons - cheat sheets, reference algorithms, syntax, yoga poses, glossaries. They are the raw units of learning. They should be beautiful documents which print out well, and are designed for quick reference.
+- `GLOSSARY.md`: The canonical terminology the learner has demonstrated they understand. Use the format in [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md).
 - `RESOURCES.md`: A list of resources which can be explored to ground your teaching in contextual knowledge, or to acquire knowledge and wisdom. Use the format in [RESOURCES-FORMAT.md](./RESOURCES-FORMAT.md).
 - `./learning-records/*.md`: A directory of learning records, which capture what the user has learned. These are loosely equivalent to architectural decision records in software development - they capture non-obvious lessons and key insights that may need to be revised later, or drive future sessions. These should be used to calculate the zone of proximal development. They are titled `0001-<dash-case-name>.md`, where the number increments each time. Use the format in [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md).
 - `./lessons/*.html`: A directory of lessons. A **lesson** is a single, self-contained HTML output that teaches one tightly-scoped thing tied to the mission. This is the primary unit of teaching in this workspace.
-- `./assets/*`: Reusable **components** shared across lessons. See [Assets](#assets).
+- `./assets/*`: Reusable components shared across lessons: stylesheets, quiz widgets, simulators, diagram helpers, and other pieces a second lesson could reuse. See [Assets](#assets).
 - `NOTES.md`: A scratchpad for you to jot down user preferences, or working notes.
+- `DESIGN.md` and/or `lessons/_TEMPLATE.html` (optional): a workspace's **locked visual system** for lessons. If either exists, treat it as binding — build every new or updated lesson from the template / per the spec, rather than restyling ad hoc. A consistent house style is part of why the user returns to these pages.
+
+A workspace may also be organized into **sub-missions** — nested subdirectories, each a self-contained track of the same subject (its own `MISSION.md`, `lessons/`, `learning-records/`). See [Sub-missions](#sub-missions) for when and how to use them. If any sub-mission folders exist, resolve which track is active _before_ reading mission/records or numbering a new lesson.
 
 ## Philosophy
 
@@ -31,42 +35,51 @@ Before the `RESOURCES.md` is well-populated, your focus should be to find high-q
 
 Some topics may require more skills than knowledge. Learning more about theoretical physics might be more knowledge-based. For yoga, more skills-based.
 
-### Fluency vs Storage Strength
+### Fluency vs storage strength
 
-You should be careful to split between two types of learning:
+Distinguish the ease of using something right now from the likelihood of retaining it:
 
-- **Fluency strength**: in-the-moment retrieval of knowledge
-- **Storage strength**: long-term retention of knowledge
+- **Fluency strength** is in-the-moment access to knowledge. It can create an illusory sense of mastery while examples and explanations are still visible.
+- **Storage strength** is durable, long-term retention. It is the real learning goal.
 
-Fluency can give the user an illusory sense of mastery, but storage strength is the real goal. Try to design lessons which build long-term retention by desirable difficulty:
+Build storage strength with desirable difficulty:
 
-- Using retrieval practice (recall from memory)
-- Spacing (distributing practice over time)
-- Interleaving (mixing up different but related topics in practice - for skills practice only)
-
-## Lessons
-
-A lesson is the main thing you produce — the unit in which knowledge and skills reach the user. Each lesson is one self-contained HTML file, saved to `./lessons/` and titled `0001-<dash-case-name>.html` where the number increments each time.
-
-A lesson should be **beautiful** — clean, readable typography and layout — since the user will return to these later to review. Think Tufte.
-
-The lesson should be short, and completable very quickly. Learners' working memory is very small, and we need to stay within it. But each lesson should give the user a single tangible win that they can build on. It should be directly tied to the mission, and should be in the user's zone of proximal development.
-
-If possible, open the lesson file for the user by running a CLI command.
-
-Each lesson should link via HTML anchors to other lessons and reference documents.
-
-Each lesson should recommend a primary source for the user to read or watch. This should be the most high-quality, high-trust resource you found on the topic.
-
-Each lesson should contain a reminder to ask followup questions to the agent. The agent is their teacher, and can assist with anything that's unclear.
+- **Retrieval practice** — ask the learner to recall or apply something from memory before revealing the answer.
+- **Spacing** — revisit important material after time has passed instead of massing all practice into one session.
+- **Interleaving** — during skills practice, mix related problem types so the learner must choose the right approach rather than repeat one pattern mechanically.
 
 ## Assets
 
-Lessons are built from reusable **components**, stored in `./assets/`: stylesheets, quiz widgets, simulators, diagram helpers — anything a second lesson could reuse.
+`./assets/` is the generic reusable-component contract for every teaching workspace. Reuse is the default: before authoring a lesson, inspect the active track's assets and build from what is already there. When a lesson needs something a later lesson could reuse, extract it into `./assets/` and link to it instead of duplicating it inline. A shared stylesheet is usually the first component a multi-lesson workspace earns.
 
-Reuse is the default, not the exception. Before authoring a lesson, read `./assets/` and build from the components already there. When a lesson needs something new and reusable, write it as a component in `./assets/` and link to it — never inline code a future lesson would duplicate.
+The included [lesson-kit/](./lesson-kit/) is **one ready-made implementation** of that contract, not a replacement for it. It supplies `base.css`, navigation, quizzes, visualizations, Shiki, templates, and a manifest-driven lesson site. Use it when a workspace needs that docs-app shape and has no locked visual system; copy it per [lesson-kit/README.md](./lesson-kit/README.md), run `bun install`, and include its `assets/shiki.js` module on lesson/reference pages. Once adopted, reuse the kit rather than hand-writing parallel CSS, navigation, or syntax-highlighting layers. [DESIGN_REFERENCE.md](./DESIGN_REFERENCE.md) explains when to use each delivery mode and the broader visual principles.
 
-A shared stylesheet is the first component every workspace earns: every lesson links it, so the lessons look like one consistent course rather than a pile of one-offs. As the workspace grows, so should the component library.
+When a teaching artifact requires a **genuinely new UI** rather than an extension or modification, and the workspace has no locked design system, load [references/opencode-frontend-ui-delegation.md](./references/opencode-frontend-ui-delegation.md). A workspace's existing `DESIGN.md`, `lessons/_TEMPLATE.html`, or established asset/component system always overrides that delegation workflow; inspect and reuse the locked system instead.
+
+## Lessons
+
+A lesson is the main thing you produce — the unit in which knowledge and skills reach the user. Each lesson is an HTML page in `./lessons/`, titled `0001-<dash-case-name>.html` where the number increments each time.
+
+**Frontend pattern.** Two delivery modes, both plain HTML/CSS/JS with no framework and no build step:
+
+- **Single self-contained file** — inline `<style>` + `<script>`. The default for the first lesson or two, and for one-off references. Maximally portable.
+- **Shared-asset lesson site** — once a track has several lessons, move reusable pieces into `./assets/` so pages become content-focused and the set feels like a navigable product instead of loose pages. The lesson kit is one implementation; an existing workspace may have another.
+
+A lesson should be **beautiful** — clean, readable typography and layout — since the user will return to these later to review.
+
+**Mobile-first is mandatory.** These pages are re-read on a phone as much as a laptop. Design and verify at ~375–500px first, then enhance up: no page-level horizontal scroll at any width, every diagram has a small-screen form (stack or shrink+wrap, never bleed off the edge), and padding tightens on phones. When using the lesson kit, keep its off-canvas drawer behavior. A lesson that only looks right at desktop width is not finished. See [lesson-kit/DESIGN.md](./lesson-kit/DESIGN.md) › Responsive.
+
+The lesson should teach ONE THING only. Working memory is sharply limited, so introduce only the few new elements needed for that one idea, remove extraneous complexity, and keep the lesson completable very quickly. It must still give the user a tangible win they can build on, tie directly to the mission, and fit the user's zone of proximal development.
+
+Each lesson should link to relevant earlier lessons and reference documents with HTML anchors, recommend the best high-trust **primary source** found for the topic, and remind the learner to ask follow-up questions when something is unclear.
+
+When the user asks to move to the next lesson, says "let's go", or otherwise advances the curriculum, do not stop at a conversational explanation. Follow the durable workspace workflow: create/update the lesson HTML in `./lessons/`, update `./learning-records/`, publish/verify when requested or when the workspace convention calls for a URL, then report the artifact. Load [references/durable-lesson-workflow.md](./references/durable-lesson-workflow.md) for the exact checklist and pitfall.
+
+Make opening a lesson as easy as possible — ideally a single CLI command the user can run to open the HTML file in their browser.
+
+For SynDG, generated lessons should be published by default unless he explicitly says not to. After publishing, verify the public URL returns successfully and browser-renders before reporting it. If publishing is intentionally skipped, say so clearly and keep the local file path easy to open.
+
+For SynDG, prefer surfacing visitable `syndg.dev` URLs when a lesson or demo is meant to be revisited in a browser. Use the publishing conventions in [references/syndg-learning-lab-publishing.md](./references/syndg-learning-lab-publishing.md): static lesson archives belong under `learn.syndg.dev`, while live interactive demos/apps belong under `*.lab.syndg.dev`. Do not report `localhost` as the final deliverable when a public URL was requested. To publish a static lesson, run `labctl publish-static <topic-slug> <path>` — available on SynDG's laptop via Dotfiles `bin/labctl` (pushes to the VPS over SSH/rsync; it uploads, verifies the public URL, and prints it).
 
 ## The Mission
 
@@ -76,11 +89,34 @@ If the user is unclear about the mission, or the `MISSION.md` is not populated, 
 
 Failing to understand the mission will mean knowledge acquisition is not grounded in real-world goals. Lessons will feel too abstract. You will have no way of judging what the user should do next.
 
-Missions may change as the user develops more skills and knowledge. This is normal - make sure to update the `MISSION.md` and add a learning record to capture the change. Confirm with the user before changing the mission.
+Missions may change as the learner gains knowledge and skill. Before changing the active `MISSION.md`, confirm the new direction with the user. After confirmation, update the mission and create a learning record that explains what changed and how it should steer future lessons.
+
+## Sub-missions
+
+A single subject can have **parallel tracks** that share context but advance independently — e.g. a library's _usage_ alongside its _internals_, or a topic's _theory_ alongside its _practice_. When tracks are too related to be separate workspaces (they cross-reference constantly) but too independent to be one mission (each has its own pace and ZPD), nest each as a **sub-mission**: a subdirectory that is itself a self-contained teaching workspace. The structure and rules are defined in [MISSION-FORMAT.md](./MISSION-FORMAT.md#sub-missions).
+
+The critical operational consequence: **each sub-mission has its own `MISSION.md`, its own `lessons/`, and its own `learning-records/` with independent numbering and ZPD.** Treat the active sub-mission as your workspace for that session — read _its_ mission and records, and write the new lesson into _its_ `lessons/` with _its_ next number.
+
+### Resolving the active track
+Before teaching, when sub-missions exist, decide which track this session belongs to:
+
+1. **Explicit** — the user names it (`/teach internals: how fibers schedule`, or "teach me the internals of X"). Honor it.
+2. **Inferred** — the topic clearly belongs to one track (a "why does this work" / source question → an internals track; a "how do I use this" question → a usage track). Pick it, and state which track you chose.
+3. **Ambiguous** — if you genuinely cannot tell, ask. Don't silently default and write into the wrong track's numbering.
+
+### Creating a new sub-mission
+
+When the user wants to start a parallel track (or you spot that a stream of questions has become its own track), create the subdirectory with its own `MISSION.md` (interview for its _why_ just like a root mission), and add/update a top-level `README.md` indexing the tracks. Don't retroactively reshuffle existing root-level lessons into it; new tracks grow forward.
+
+### When NOT to use a sub-mission
+
+- The two things are unrelated → two workspaces, not one workspace with sub-missions.
+- The "track" is really just advanced material in the same arc → keep it in the main mission; deepen the ZPD instead.
+- You'd be creating a sub-mission with one lesson and no plans to grow it → premature; keep it flat until the track earns its own spine.
 
 ## Zone Of Proximal Development
 
-Each lesson, the user should always feel as if they are being challenged 'just enough'.
+Each lesson, the learner should always feel as if they are being challenged 'just enough'.
 
 The user may specify an exact thing they want to learn. If they don't, figure out their zone of proximal development by:
 
@@ -88,26 +124,29 @@ The user may specify an exact thing they want to learn. If they don't, figure ou
 - Figuring out the right thing to teach them based on their mission
 - Teach the most relevant thing that fits in their zone of proximal development
 
-## Knowledge
+A user may tell you that they already know about that topic. If so, record it in their `learning-records`.
+
+## Acquiring Knowledge & Skills
 
 Lessons should be designed around a skill the user is going to learn. The knowledge in the lesson should be only what's required to acquire that skill. You teach the knowledge first, then get the user to practice the skills via an interactive feedback loop.
 
-Knowledge should first be gathered from trusted resources. Use `RESOURCES.md` to keep track of them. Lessons should be littered with citations - links to external resources to back up any claim made. This increases the trustworthiness of the lesson.
+### Knowledge
 
-For acquiring knowledge, difficulty is the enemy. It eats working memory you need for understanding.
+Knowledge should first be gathered from trusted resources. Use `RESOURCES.md` to keep track of them. Lessons should be littered with citations - links to external resources to back up any claim made. This increases the trustworthiness of the lesson, and gives the user a path to acquire more knowledge if they want to go deeper.
 
-## Skills
+For acquiring knowledge, difficulty is the enemy: unnecessary complexity consumes the limited working memory needed to understand the new idea. Make explanations, notation, navigation, and examples as clear as possible; save desirable difficulty for practice.
 
-If knowledge is all about acquisition, skills are about durability and flexibility. Make the knowledge stick.
+### Skills
 
-For skill acquisition, difficulty is the tool. Effortful retrieval is what builds storage strength. Skills should be taught through interactive lessons. There are several tools at your disposal:
+For skill acquisition, calibrated difficulty is a tool: effortful retrieval builds storage strength and helps knowledge remain usable in unfamiliar situations. Keep the challenge inside the learner's zone of proximal development, then teach skills through interactive lessons. There are several tools at your disposal:
 
 - Interactive lessons, using quizzes and light in-browser tasks
 - Lessons which guide the user through a list of real-world steps to take (for instance, yoga poses)
+- In-agent quizzes, where you ask the user scenario-based questions about what they've learned
 
 Each of these should be based on a **feedback loop**, where the user receives feedback on their performance. This feedback loop should be as tight as possible, giving feedback immediately - and ideally automatically.
 
-For quizzes, each answer should be exactly the same number of words (and characters, if possible). Don't give the user any clues about the answer through formatting.
+For multiple-choice quizzes, remove answer-length tells: every option should have exactly the same number of words and, when practical, the same number of characters. Keep grammar, formatting, and specificity parallel so the correct answer cannot be guessed from presentation.
 
 ## Acquiring Wisdom
 
@@ -137,4 +176,17 @@ Glossaries, in particular, are an essential reference. Once one is created, it s
 
 ## `NOTES.md`
 
-The user will sometimes express preferences of how they want to be taught, or things you should keep in mind. This is the place to record those preferences, so you can refer back to them when designing lessons or working with the user.
+The user will sometimes express preferences for how they want to be taught, their learning style, or what makes a lesson click. Record those preferences in `NOTES.md` so future lessons can personalize the curriculum instead of rediscovering the learner every session.
+
+Use `NOTES.md` for durable teaching personalization such as:
+
+- preferred level of depth and pacing
+- analogies that work or do not work
+- preferred lesson structure
+- recurring confusions or distinctions that unlock understanding
+- domain context to use sparingly as examples
+- whether lessons should be published by default
+
+For SynDG-style technical lessons, capture preferences like: concise but deep, explicit mental models, “what is this lesson actually about?” framing, concrete TypeScript examples, exact type contracts, wrong-vs-right comparisons, sharp pitfalls, and minimal vague FP jargon.
+
+Do not use `NOTES.md` as a task log. Progress belongs in `learning-records/`; reusable concept summaries belong in `reference/`.

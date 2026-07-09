@@ -10,7 +10,7 @@
 ## Knowledge
 
 - [Book: _The Science and Practice of Strength Training_ — Zatsiorsky & Kraemer](https://example.com)
-  Foundational text on programming and adaptation. Use for: anything to do with periodisation, recovery, intensity zones.
+  Primary recommendation for: programming and adaptation. Use for: periodisation, recovery, intensity zones.
 - [Article: "How Much Should I Train?" — Greg Nuckols (Stronger By Science)](https://example.com)
   Evidence-based review of volume landmarks. Use for: weekly set targets per muscle group.
 
@@ -24,7 +24,8 @@
 
 ## Rules
 
-- **High-trust only.** Prefer primary sources, recognised experts, peer-reviewed work, and communities with strong moderation. If a resource is marketing dressed as education, leave it out.
+- **Recommend primary sources explicitly.** For each area the mission or a lesson depends on, identify the best high-trust primary source and annotate it as `Primary recommendation for: ...`. If an accessible primary source is unavailable, say so and record the strongest secondary source instead.
+- **High-trust only.** Prefer original research, official specifications or documentation, first-party accounts, recognised experts, peer-reviewed work, and communities with strong moderation. If a resource is marketing dressed as education, leave it out.
 - **Annotate every entry.** A bare link is useless in three months. Add one line: what it covers and when to reach for it.
 - **Group by Knowledge / Wisdom.** Mirrors the philosophy in [SKILL.md](./SKILL.md). It is fine for a resource to appear in only one group.
 - **Surface gaps explicitly.** If no good resource exists for an area the mission needs, write a `## Gaps` section listing what is missing. This drives future search.
