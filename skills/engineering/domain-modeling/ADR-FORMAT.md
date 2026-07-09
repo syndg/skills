@@ -1,47 +1,68 @@
-# ADR Format
+# AGENTS.md Architectural Decision Format
 
-ADRs live in `docs/adr/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc.
+This is the architectural-decision storage reference for the `domain-modeling` skill. Decisions live inline in the **Architectural Decisions** section of the nearest owning `AGENTS.md`. Do not create a separate file for each decision.
 
-Create the `docs/adr/` directory lazily — only when the first ADR is needed.
+## Entry shape
 
-## Template
+Match the surrounding document's style. Most decisions should use a heading plus a tight Decision/Consequences pair:
 
 ```md
-# {Short title of the decision}
+### ADR-0019 — {Short title of the decision}
 
-{1-3 sentences: what's the context, what did we decide, and why.}
+- **Decision:** {What was decided and why, in one or two sentences.}
+- **Consequences:** {Only the non-obvious downstream effects worth preserving.}
 ```
 
-That's it. An ADR can be a single paragraph. The value is in recording *that* a decision was made and *why* — not in filling out sections.
+A thinner document may use a single bullet:
 
-## Optional sections
+```md
+- **ADR-0019 — {Short title}:** {What was decided and why, in one to three sentences.}
+```
 
-Only include these when they add genuine value. Most ADRs won't need them.
+The value is in recording that a decision was made and why, not in filling out a template. Add **Consequences** only when they are non-obvious. Add considered alternatives only when remembering their rejection will prevent the same trade-off from being reopened without new evidence.
 
-- **Status** frontmatter (`proposed | accepted | deprecated | superseded by ADR-NNNN`) — useful when decisions are revisited
-- **Considered Options** — only when the rejected alternatives are worth remembering
-- **Consequences** — only when non-obvious downstream effects need to be called out
+## Global, immutable numbering
 
-## Numbering
+`ADR-NNNN` numbers are global across the repository and immutable. They are stable cross-reference anchors, not a per-document sequence.
 
-Scan `docs/adr/` for the highest existing number and increment by one.
+Before adding a decision, scan `ADR-` labels across the entire `AGENTS.md` tree, find the highest number, and allocate the next one. For example:
 
-## When to offer an ADR
+```sh
+rg -o --glob 'AGENTS.md' 'ADR-[0-9]{4}' .
+```
 
-All three of these must be true:
+- Do not fill gaps or reuse numbers from removed decisions.
+- Expect numbers to be non-contiguous within any one `AGENTS.md`; each document contains only the decisions governing its subtree.
+- Never renumber or re-slug an existing ADR.
+- When a decision is superseded, retain its entry and note the replacement, such as `Superseded by ADR-0024`.
+- Cross-reference inherited decisions by number rather than copying their text into child documents.
 
-1. **Hard to reverse** — the cost of changing your mind later is meaningful
-2. **Surprising without context** — a future reader will look at the code and wonder "why on earth did they do it this way?"
-3. **The result of a real trade-off** — there were genuine alternatives and you picked one for specific reasons
+## Placement and change protocol
 
-If a decision is easy to reverse, skip it — you'll just reverse it. If it's not surprising, nobody will wonder why. If there was no real alternative, there's nothing to record beyond "we did the obvious thing."
+Put the decision in the narrowest `AGENTS.md` whose subtree it governs:
+
+- Repository-wide decisions go in the root document.
+- App- or package-wide decisions go in that app or package's document.
+- Subtree-specific decisions go in the relevant child document.
+
+Before writing, read every `AGENTS.md` from the repository root to the target scope and check for inherited decisions that already settle or constrain the choice. Follow the owning document's **Change Protocol**. If the correct scope requires a new child document, create it lazily and keep the parent's **Child DOX Index** current.
+
+## When to record an ADR
+
+All three conditions must be true:
+
+1. **Hard to reverse** — changing the decision later carries meaningful cost.
+2. **Surprising without context** — a future reader will wonder why the system works this way.
+3. **The result of a real trade-off** — genuine alternatives existed and one was chosen for specific reasons.
+
+If a decision is easy to reverse, skip it. If it is unsurprising, future readers will not need an explanation. If there was no real alternative, there is no trade-off to preserve.
 
 ### What qualifies
 
-- **Architectural shape.** "We're using a monorepo." "The write model is event-sourced, the read model is projected into Postgres."
-- **Integration patterns between contexts.** "Ordering and Billing communicate via domain events, not synchronous HTTP."
-- **Technology choices that carry lock-in.** Database, message bus, auth provider, deployment target. Not every library — just the ones that would take a quarter to swap out.
-- **Boundary and scope decisions.** "Customer data is owned by the Customer context; other contexts reference it by ID only." The explicit no-s are as valuable as the yes-s.
-- **Deliberate deviations from the obvious path.** "We're using manual SQL instead of an ORM because X." Anything where a reasonable reader would assume the opposite. These stop the next engineer from "fixing" something that was deliberate.
-- **Constraints not visible in the code.** "We can't use AWS because of compliance requirements." "Response times must be under 200ms because of the partner API contract."
-- **Rejected alternatives when the rejection is non-obvious.** If you considered GraphQL and picked REST for subtle reasons, record it — otherwise someone will suggest GraphQL again in six months.
+- **Architectural shape.** "The write model is event-sourced, while the read model is projected into Postgres."
+- **Ownership and boundary decisions.** "Customer data is owned by the Customer scope; other scopes reference it by ID only." Explicit exclusions are as valuable as inclusions.
+- **Integration patterns between scopes.** "Ordering and Billing communicate through domain events rather than synchronous HTTP."
+- **Technology choices that carry lock-in.** Record databases, message buses, auth providers, and deployment targets when replacement would be costly; do not record every library choice.
+- **Deliberate deviations from the obvious path.** "We use manual SQL instead of an ORM because X." These records stop a later engineer from undoing an intentional constraint.
+- **Constraints not visible in code.** "Response times must stay below 200 ms because of the partner API contract."
+- **Rejected alternatives with non-obvious reasoning.** Preserve why an attractive option was rejected when the same proposal is likely to recur.
