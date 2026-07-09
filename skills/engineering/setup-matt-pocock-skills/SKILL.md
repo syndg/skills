@@ -1,6 +1,6 @@
 ---
 name: setup-matt-pocock-skills
-description: Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills.
+description: Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and AGENTS/DOX domain documentation. Run once before first use of the other engineering skills.
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,7 @@ Scaffold the per-repo configuration that the engineering skills assume:
 
 - **Issue tracker** — where issues live (GitHub by default; local markdown is also supported out of the box)
 - **Triage labels** — the strings used for the five canonical triage roles
-- **Domain docs** — where `CONTEXT.md` and ADRs live, and the consumer rules for reading them
+- **Domain docs** — the AGENTS/DOX hierarchy where domain language and architectural decisions live, and the consumer rules for reading it
 
 This is a prompt-driven skill, not a deterministic script. Explore, present what you found, confirm with the user, then write.
 
@@ -22,16 +22,15 @@ Look at the current repo to understand its starting state. Read whatever exists;
 
 - `git remote -v` and `.git/config` — is this a GitHub repo? Which one?
 - `AGENTS.md` and `CLAUDE.md` at the repo root — does either exist? Is there already an `## Agent skills` section in either?
-- `CONTEXT.md` and `CONTEXT-MAP.md` at the repo root
-- `docs/adr/` and any `src/*/docs/adr/` directories
+- Every `AGENTS.md` from the repo root down — what DOX hierarchy already exists, and do the documents have `## Change Protocol`, `## Ubiquitous Language`, `## Architectural Decisions`, or `## Child DOX Index` sections?
 - `docs/agents/` — does this skill's prior output already exist?
 - `.scratch/` — sign that a local-markdown issue tracker convention is already in use
 
 ### 2. Present findings and ask
 
-Summarise what's present and what's missing. Then walk the user through the three decisions **one at a time** — present a section, get the user's answer, then move to the next. Don't dump all three at once.
+Summarise what's present and what's missing. Then walk the user through the two configurable decisions and the fixed domain-doc convention **one at a time** — present a section, get the user's answer or confirmation, then move to the next. Don't dump all three at once.
 
-Assume the user does not know what these terms mean. Each section starts with a short explainer (what it is, why these skills need it, what changes if they pick differently). Then show the choices and the default.
+Assume the user does not know what these terms mean. Each section starts with a short explainer (what it is, why these skills need it, what changes if they pick differently). For Sections A and B, show the choices and the default; for Section C, show the fixed convention and its root-only default.
 
 **Section A — Issue tracker.**
 
@@ -66,31 +65,33 @@ Default: each role's string equals its name. Ask the user if they want to overri
 
 **Section C — Domain docs.**
 
-> Explainer: Some skills (`improve-codebase-architecture`, `diagnosing-bugs`, `tdd`) read a `CONTEXT.md` file to learn the project's domain language, and `docs/adr/` for past architectural decisions. They need to know whether the repo has one global context or multiple (e.g. a monorepo with separate frontend/backend contexts) so they look in the right place.
+> Explainer: Some skills (`improve-codebase-architecture`, `diagnosing-bugs`, `tdd`) read the applicable `AGENTS.md` chain to learn the project's domain language and past architectural decisions. The chain runs from the repo root to the nearest document that owns the area being changed; parent language and decisions are inherited. Domain language lives inline under `## Ubiquitous Language`, globally numbered ADR entries live inline under `## Architectural Decisions`, and each parent keeps its `## Child DOX Index` current.
 
-Confirm the layout:
+This layout is not configurable. Present the hierarchy you found and confirm that its ownership boundaries match the repo:
 
-- **Single-context** — one `CONTEXT.md` + `docs/adr/` at the repo root. Most repos are this.
-- **Multi-context** — `CONTEXT-MAP.md` at the root pointing to per-context `CONTEXT.md` files (typically a monorepo).
+- **Root `AGENTS.md`** — repository-wide language, decisions, and inherited contracts.
+- **Child `AGENTS.md` files** — app-, package-, or subtree-specific additions, created only for durable local boundaries and linked from the parent's `## Child DOX Index`.
+
+Default: keep a root-only chain unless the repo already has, or clearly needs, a durable child boundary. Follow the nearest owning document's `## Change Protocol`; don't create empty domain-language or decision sections upfront.
 
 ### 3. Confirm and edit
 
 Show the user a draft of:
 
 - The `## Agent skills` block to add to whichever of `CLAUDE.md` / `AGENTS.md` is being edited (see step 4 for selection rules)
+- Any minimal changes needed to establish the root `AGENTS.md` and keep its DOX chain coherent
 - The contents of `docs/agents/issue-tracker.md`, `docs/agents/triage-labels.md`, `docs/agents/domain.md`
 
 Let them edit before writing.
 
 ### 4. Write
 
-**Pick the file to edit:**
+**Pick the file for the `## Agent skills` block:**
 
 - If `CLAUDE.md` exists, edit it.
-- Else if `AGENTS.md` exists, edit it.
-- If neither exists, ask the user which one to create — don't pick for them.
+- Otherwise, edit the root `AGENTS.md`, creating it if necessary.
 
-Never create `AGENTS.md` when `CLAUDE.md` already exists (or vice versa) — always edit the one that's already there.
+Always ensure a root `AGENTS.md` exists to anchor the DOX chain, even when the `## Agent skills` block lives in `CLAUDE.md`. Preserve existing instructions and follow its `## Change Protocol`. When creating or substantially structuring it, use the `/domain-modeling` skill's [AGENTS-FORMAT.md](../domain-modeling/AGENTS-FORMAT.md); use [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) for inline decisions. Create domain sections and child documents lazily, only when they have useful content.
 
 If an `## Agent skills` block already exists in the chosen file, update its contents in-place rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
 
@@ -109,7 +110,7 @@ The block:
 
 ### Domain docs
 
-[one-line summary of layout — "single-context" or "multi-context"]. See `docs/agents/domain.md`.
+[one-line summary of the root-to-nearest AGENTS/DOX hierarchy]. See `docs/agents/domain.md`.
 ```
 
 Then write the three docs files using the seed templates in this skill folder as a starting point:
@@ -118,10 +119,10 @@ Then write the three docs files using the seed templates in this skill folder as
 - [issue-tracker-gitlab.md](./issue-tracker-gitlab.md) — GitLab issue tracker
 - [issue-tracker-local.md](./issue-tracker-local.md) — local-markdown issue tracker
 - [triage-labels.md](./triage-labels.md) — label mapping
-- [domain.md](./domain.md) — domain doc consumer rules + layout
+- [domain.md](./domain.md) — consumer rules for the AGENTS/DOX hierarchy
 
 For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
 
 ### 5. Done
 
-Tell the user the setup is complete and which engineering skills will now read from these files. Mention they can edit `docs/agents/*.md` directly later — re-running this skill is only necessary if they want to switch issue trackers or restart from scratch.
+Tell the user the setup is complete and which engineering skills will now read from these files and the applicable `AGENTS.md` chain. Mention they can edit `docs/agents/*.md` and the owning `AGENTS.md` directly later — re-running this skill is only necessary if they want to switch issue trackers or restart from scratch.
