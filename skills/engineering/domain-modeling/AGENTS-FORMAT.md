@@ -34,7 +34,7 @@ When creating or substantially structuring an `AGENTS.md`, prefer this order whi
 3. **Change Protocol** — how readers should load and update the DOX chain.
 4. **Local Contracts** — binding rules for this subtree.
 5. **Ubiquitous Language** — canonical terms and aliases to avoid.
-6. **Architectural Decisions** — inline, globally numbered ADR entries.
+6. **Architectural Decisions** — inline, globally numbered ADR entries; once the section grows large, a cite-by-number index whose bodies live in a co-located `DECISIONS.md` (see [ADR-FORMAT.md](./ADR-FORMAT.md)).
 7. **Work Guidance** — patterns, conventions, stack, commands, and examples.
 8. **Verification** — checks and tests relevant to this subtree.
 9. **Child DOX Index** — direct child `AGENTS.md` documents.

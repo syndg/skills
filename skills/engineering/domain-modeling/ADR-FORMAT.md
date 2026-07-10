@@ -1,6 +1,6 @@
 # AGENTS.md Architectural Decision Format
 
-This is the architectural-decision storage reference for the `domain-modeling` skill. Decisions live inline in the **Architectural Decisions** section of the nearest owning `AGENTS.md`. Do not create a separate file for each decision.
+This is the architectural-decision storage reference for the `domain-modeling` skill. Decisions live inline in the **Architectural Decisions** section of the nearest owning `AGENTS.md` while that section is small; a section that has grown to dominate the file graduates to a co-located `DECISIONS.md` (see "When the section outgrows the hot path"). Never create a file per decision or a central `docs/adr/` directory.
 
 ## Entry shape
 
@@ -46,6 +46,17 @@ Put the decision in the narrowest `AGENTS.md` whose subtree it governs:
 - Subtree-specific decisions go in the relevant child document.
 
 Before writing, read every `AGENTS.md` from the repository root to the target scope and check for inherited decisions that already settle or constrain the choice. Follow the owning document's **Change Protocol**. If the correct scope requires a new child document, create it lazily and keep the parent's **Child DOX Index** current.
+
+## When the section outgrows the hot path
+
+The `AGENTS.md` chain is read on every edit; ADR bodies are cold content — immutable, append-only, needed only when touching or reversing that specific decision, or recording a new one. Keep bodies inline while the section is small. When they start dominating the always-read file (rule of thumb: around a quarter of the file, or roughly fifteen decisions at one node), split:
+
+1. **Promote constraints first.** Any rule inside a body that must be honored on *every* edit moves into the document's **Local Contracts** section with a `Rationale: ADR-NNNN` pointer. The binding surface must stay always-read; only rationale and history may go cold.
+2. **Move the bodies verbatim** into a `DECISIONS.md` co-located next to that `AGENTS.md`.
+3. **Leave a one-line index** in the **Architectural Decisions** section — one entry per decision, immutable number kept, linking to `DECISIONS.md`. The index is the discovery surface, not the binding contract.
+4. **Document the two-file procedure** in the index preamble: allocate the next global number, write the body in `DECISIONS.md`, add the index line.
+
+Every decision keeps its index line in `AGENTS.md`, so number scans over `AGENTS.md` remain complete after the split. `DECISIONS.md` is co-located cold storage — this is not a return to a central `docs/adr/` directory, and all numbering, immutability, and placement rules in this document apply to it unchanged.
 
 ## When to record an ADR
 
