@@ -2,7 +2,6 @@
 
 Third-party skills vendored from elsewhere (Anthropic, Vercel, etc.). Not promoted; upstream provenance noted per skill where known.
 
-- [brainstorming](./brainstorming/SKILL.md) — explore intent and requirements before creative work.
 - [docx](./docx/SKILL.md) — create, read, and edit Word documents (Anthropic).
 - [frontend-design](./frontend-design/SKILL.md) — distinctive production-grade frontend interfaces (Anthropic).
 - [impeccable](./impeccable/SKILL.md) — design, critique, and polish frontend interfaces.
