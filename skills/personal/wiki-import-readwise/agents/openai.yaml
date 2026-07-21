@@ -1,0 +1,3 @@
+interface:
+  display_name: "Wiki Import Readwise"
+  short_description: "Import Readwise sources into the wiki"

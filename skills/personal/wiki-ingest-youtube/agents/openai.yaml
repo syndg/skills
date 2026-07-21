@@ -1,0 +1,3 @@
+interface:
+  display_name: "Wiki Ingest YouTube"
+  short_description: "Transcribe and ingest YouTube videos"

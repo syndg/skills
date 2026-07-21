@@ -1,0 +1,3 @@
+interface:
+  display_name: "Wiki Lint"
+  short_description: "Audit and repair wiki health"

@@ -1,0 +1,3 @@
+interface:
+  display_name: "Wiki Ingest Song"
+  short_description: "Ingest and analyze songs in the wiki"

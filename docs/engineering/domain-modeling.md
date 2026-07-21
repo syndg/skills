@@ -14,7 +14,7 @@ npx skills update domain-modeling
 
 `domain-modeling` builds and sharpens a project's **ubiquitous language** as you design — challenging fuzzy terms, stress-testing relationships with concrete scenarios, and writing the glossary and decisions down the moment they crystallise.
 
-This is the **active** discipline, not the passive one. Merely reading `CONTEXT.md` to borrow its vocabulary is a one-line habit any skill can do; this skill is for when you are *changing* the model — coining a canonical term, catching a contradiction between the code and what you just said, recording a hard-to-reverse decision. And it keeps the glossary clean: `CONTEXT.md` is a glossary and nothing else — no implementation details, no spec, no scratch pad.
+This is the **active** discipline, not the passive one. Merely reading the applicable `AGENTS.md` chain to borrow its vocabulary is a one-line habit any skill can do; this skill is for when you are *changing* the model — coining a canonical term, catching a contradiction between the code and what you just said, or recording a hard-to-reverse decision. It keeps the owning document's `## Ubiquitous Language` section clean: vocabulary and relationships, not implementation detail, specs, or scratch notes.
 
 ## When to reach for it
 
@@ -24,14 +24,14 @@ Reach for it when the *words* are the problem: two people mean different things 
 
 ## Prerequisites
 
-The skill writes into two places, both created lazily — only once there is something to record. Resolved terms go into `CONTEXT.md` at the root (or, in a multi-context repo flagged by a `CONTEXT-MAP.md`, into the per-context `CONTEXT.md`). Decisions go into `docs/adr/`. Nothing needs to exist up front; the first resolved term creates the glossary, the first real trade-off creates the ADR.
+The skill writes into the applicable root-to-nearest `AGENTS.md` chain, created lazily. Resolved terms go under `## Ubiquitous Language` in the nearest document that owns their scope. Decisions start as globally numbered entries under that document's `## Architectural Decisions`; when the section grows too large for the hot path, it graduates to a co-located `DECISIONS.md` while retaining an index in `AGENTS.md`.
 
 ## Glossary vs. ADR
 
 Two artifacts, two different bars:
 
-- **The glossary** (`CONTEXT.md`) captures language. Every time a vague term is made canonical, it's written down inline — not batched — so the shared vocabulary stays current with the conversation. It stays ruthlessly free of implementation detail.
-- **An ADR** captures a decision, and the bar is high: offered only when the choice is **hard to reverse**, **surprising without context**, and **the result of a real trade-off**. Miss any one of the three and there is no ADR. This is what keeps `docs/adr/` a record of consequential forks rather than a diary.
+- **Ubiquitous Language** captures vocabulary. Every time a vague term becomes canonical, it is written inline — not batched — so the shared language stays current with the conversation and is inherited by child scopes.
+- **An architectural decision** captures a choice, and the bar is high: offered only when the choice is **hard to reverse**, **surprising without context**, and **the result of a real trade-off**. Miss any one of the three and there is no decision entry. This keeps the AGENTS/DOX chain a record of consequential forks rather than a diary.
 
 The move that makes it click: when you state how something works, the skill cross-references the code and surfaces the contradiction — "your code cancels entire Orders, but you just said partial cancellation is possible — which is right?" The language and the code are forced to agree.
 

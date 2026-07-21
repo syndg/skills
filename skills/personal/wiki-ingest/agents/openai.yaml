@@ -1,0 +1,3 @@
+interface:
+  display_name: "Wiki Ingest"
+  short_description: "Ingest and cross-link a wiki source"

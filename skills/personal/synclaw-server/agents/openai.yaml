@@ -1,0 +1,3 @@
+interface:
+  display_name: "Synclaw Server"
+  short_description: "Operate the Synclaw server over SSH"

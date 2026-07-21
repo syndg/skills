@@ -1,0 +1,3 @@
+interface:
+  display_name: "Wiki Fetch Readwise Document"
+  short_description: "Fetch Readwise documents for ingestion"

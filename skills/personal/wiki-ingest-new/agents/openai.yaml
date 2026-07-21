@@ -1,0 +1,3 @@
+interface:
+  display_name: "Wiki Ingest New"
+  short_description: "Ingest unprocessed wiki sources"
