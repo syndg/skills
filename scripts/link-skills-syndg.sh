@@ -17,7 +17,8 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 DESTS=("$HOME/.claude/skills" "$HOME/.agents/skills" "$HOME/.codex/skills")
 BUCKETS=(engineering productivity personal vendor)
-
+# Experimental skills are opt-in so the whole in-progress bucket stays hidden.
+ALLOWLIST=(in-progress/batch-grill-me)
 # Collect skills from the linked buckets.
 names=()
 srcs=()
@@ -30,7 +31,17 @@ for bucket in "${BUCKETS[@]}"; do
   done < <(find "$REPO/skills/$bucket" -mindepth 2 -maxdepth 2 -name SKILL.md -print0)
 done
 
-echo "Linking ${#names[@]} skills from ${BUCKETS[*]}"
+for relative_skill in "${ALLOWLIST[@]}"; do
+  src="$REPO/skills/$relative_skill"
+  if [ ! -f "$src/SKILL.md" ]; then
+    echo "allowlisted skill is missing SKILL.md: $relative_skill" >&2
+    exit 1
+  fi
+  names+=("$(basename "$src")")
+  srcs+=("$src")
+done
+
+echo "Linking ${#names[@]} skills from ${BUCKETS[*]} plus allowlisted ${ALLOWLIST[*]}"
 
 for DEST in "${DESTS[@]}"; do
   # Legacy setups pointed the whole directory at a skills repo. Replace any
