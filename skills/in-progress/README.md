@@ -1,6 +1,6 @@
 # In Progress
 
-Skills that are still being developed. They're not ready to ship — expect rough edges, breaking changes, and abandoned experiments. They're excluded from the plugin and the top-level README until they graduate to a stable bucket.
+Skills that are still being developed. They're not ready to ship — expect rough edges, breaking changes, and abandoned experiments. They're excluded from the top-level README until they graduate to a stable bucket.
 
 - **[loop-me](./loop-me/SKILL.md)** — Grill yourself into implementable workflow specs over multiple sessions, using the current directory as a stateful workspace. User-invoked.
 - **[wizard](./wizard/SKILL.md)** — Generate an interactive bash wizard that walks a human through a manual procedure (setup, a one-off migration, a state transition) — opening URLs, capturing values, writing `.env` and GitHub Actions secrets. User-invoked.
