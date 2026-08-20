@@ -1,5 +1,6 @@
+import { lstat, realpath } from "node:fs/promises";
 import { resolve } from "node:path";
-import { DoxError } from "./safe.ts";
+import { DoxError, isInside } from "./safe.ts";
 
 async function run(cwd: string, args: string[]): Promise<string> {
   const proc = Bun.spawn(["git", ...args], { cwd, stdout: "pipe", stderr: "pipe" });
@@ -25,5 +26,20 @@ export async function trackedFiles(root: string): Promise<string[]> {
     run(root, ["ls-files", "--deleted"]),
   ]);
   const removed = new Set(deleted.split("\n").filter(Boolean));
-  return output ? output.split("\n").filter((path) => path && !removed.has(path)).sort() : [];
+  const rootReal = await realpath(root);
+  const files: string[] = [];
+  for (const path of output.split("\n").filter((path) => path && !removed.has(path)).sort()) {
+    const full = resolve(root, path);
+    let fileStat: Awaited<ReturnType<typeof lstat>>;
+    try { fileStat = await lstat(full); } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") continue;
+      throw error;
+    }
+    if (fileStat.isSymbolicLink()) {
+      const target = await realpath(full);
+      if (!isInside(rootReal, target)) throw new DoxError(`symlink escape denied: ${path}`);
+      if ((await lstat(target)).isFile()) files.push(path);
+    } else if (fileStat.isFile()) files.push(path);
+  }
+  return files;
 }

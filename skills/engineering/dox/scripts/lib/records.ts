@@ -144,15 +144,23 @@ export async function loadRecords(root: string, config: Config, tolerateMalforme
   if (!tolerateMalformed) {
     const ids = new Set<string>();
     const adrs = new Set<string>();
+    const contracts = new Set<string>();
+    const byId = new Map<string, DoxRecord>();
     for (const record of records) {
       if (ids.has(record.id)) throw new DoxError(`duplicate id: ${record.id}`);
       ids.add(record.id);
+      byId.set(record.id, record);
+      record.contracts.forEach((contract) => contracts.add(contract));
+      record.terms.filter((term) => term.startsWith("contract:")).forEach((term) => contracts.add(term.slice("contract:".length)));
       if (record.adr) {
         if (adrs.has(record.adr)) throw new DoxError(`duplicate ADR record: ${record.adr}`);
         adrs.add(record.adr);
       }
     }
     for (const record of records) for (const ref of record.adr_refs) if (!adrs.has(ref)) throw new DoxError(`broken ADR reference: ${ref}`);
+    for (const record of records) for (const edge of record.depended_on_by) {
+      if (edge.contract && !contracts.has(edge.contract) && byId.get(edge.contract)?.kind !== "contract") throw new DoxError(`broken invariant dependency contract: ${edge.contract}`);
+    }
   }
   return { records: records.sort((a, b) => a.id.localeCompare(b.id)), diagnostics };
 }

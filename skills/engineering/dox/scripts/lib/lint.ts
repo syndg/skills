@@ -61,6 +61,9 @@ export async function lint(root: string, config: Config): Promise<Diagnostic[]> 
   for (const record of records) {
     for (const ref of record.adr_refs) if (!knownAdrs.has(ref)) add(diagnostics, "error", `broken ADR reference: ${ref}`, record.file);
     for (const ref of record.contract_refs) if (!contracts.has(ref) && !byId.has(ref)) add(diagnostics, "error", `broken contract reference: ${ref}`, record.file);
+    for (const edge of record.depended_on_by) if (edge.contract && !contracts.has(edge.contract) && byId.get(edge.contract)?.kind !== "contract") {
+      add(diagnostics, "error", `broken invariant dependency contract: ${edge.contract}`, record.file);
+    }
   }
 
   for (const record of records) {

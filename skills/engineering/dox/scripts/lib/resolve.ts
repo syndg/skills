@@ -26,6 +26,7 @@ function bindingMatch(binding: Binding, cues: Cues): { reason: string; score: nu
   }
   if (binding.symbol && includes(cues.symbols, binding.symbol)) return { reason: `symbol:${binding.symbol}`, score: 7000 };
   if (binding.intent && includes(cues.intents, binding.intent)) return { reason: `intent:${binding.intent}`, score: 6000 };
+  if (binding.contract && includes(cues.terms, binding.contract)) return { reason: `contract:${binding.contract}`, score: 6500 };
   return undefined;
 }
 
@@ -39,6 +40,7 @@ function normalMatch(record: DoxRecord, cues: Cues, includePaths = true): { reas
   for (const symbol of record.symbols) if (includes(cues.symbols, symbol)) add({ reason: `symbol:${symbol}`, edge: "record.symbol", score: 4000 });
   for (const term of record.terms) if (includes(cues.terms, term)) add({ reason: `term:${term}`, edge: "record.term", score: 3000 });
   for (const alias of record.aliases) if (includes(cues.terms, alias)) add({ reason: `alias:${alias}`, edge: "record.alias", score: 2900 });
+  for (const contract of record.contracts) if (includes(cues.terms, contract)) add({ reason: `contract:${contract}`, edge: "record.contract", score: 3100 });
   if (record.adr && includes(cues.adrs, record.adr)) add({ reason: `adr:${record.adr}`, edge: "record.adr", score: 3500 });
   return best;
 }
@@ -52,14 +54,14 @@ export function resolve(records: DoxRecord[], cues: Cues): Match[] {
       for (const binding of record.enforced_by) {
         const match = bindingMatch(binding, cues);
         if (match) {
-          found = { record, reason: match.reason, edge: `enforcement:${binding.path ?? binding.symbol ?? binding.intent}`, full: true, score: match.score };
+          found = { record, reason: match.reason, edge: `enforcement:${binding.path ?? binding.symbol ?? binding.intent ?? binding.contract}`, full: true, score: match.score };
           break;
         }
       }
       if (!found) for (const binding of record.depended_on_by) {
         const match = bindingMatch(binding, cues);
         if (match) {
-          found = { record, reason: match.reason, edge: `dependency:${binding.path ?? binding.symbol ?? binding.intent}`, full: false, score: match.score - 100 };
+          found = { record, reason: match.reason, edge: `dependency:${binding.path ?? binding.symbol ?? binding.intent ?? binding.contract}`, full: false, score: match.score - 100 };
           break;
         }
       }

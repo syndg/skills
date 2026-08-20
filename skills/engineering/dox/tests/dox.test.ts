@@ -105,6 +105,8 @@ describe("public DOX CLI", () => {
 
   test("uses changed paths and emits a deterministic receipt", async () => {
     const root = await project();
+    const clean = await run(root, "resolve", "--changed", "--json");
+    expect(clean.code).toBe(0); expect(JSON.parse(clean.stdout).records).toEqual([]);
     await writeFile(join(root, "src", "auth", "login.ts"), "export const authorize = () => false;\n");
     await writeFile(join(root, "src", "other.ts"), "export const other = 2;\n");
     const one = await run(root, "resolve", "--changed", "--json");
@@ -121,6 +123,45 @@ describe("public DOX CLI", () => {
     const invariant = dependent.records.find((item: { id: string }) => item.id === "authz-invariant");
     expect(invariant.match).toBe("dependent"); expect(invariant.summary).toContain("guarded writer");
     expect(dependent.receipt.some((item: { edge: string }) => item.edge.startsWith("dependency:"))).toBe(true);
+  });
+
+  test("validates and resolves contract dependency bindings", async () => {
+    const root = await project();
+    const invariantPath = join(root, "dox", "records", "contract-dependent.md");
+    const invariant = (contract: string) => `---
+id: contract-dependent
+kind: invariant
+owner: platform
+statement: A named contract has a guarded consumer.
+state: enforced
+enforcement: [test]
+impact: cross-module
+criticality: high
+enforced_by:
+  - path: src/auth/login.ts
+depended_on_by:
+  - contract: ${contract}
+verification: [bun test]
+failure_modes: [contract-bypass]
+---
+# Contract dependency
+`;
+    await writeFile(invariantPath, invariant("missing-contract"));
+    const missing = await run(root, "resolve", "--term", "missing-contract", "--json");
+    expect(missing.code).toBe(1); expect(missing.stderr).toContain("broken invariant dependency contract: missing-contract");
+    await writeFile(join(root, "dox", "records", "named-contract.md"), `---
+id: named-contract
+kind: contract
+owner: platform
+contracts: [known-contract]
+---
+# Named contract
+`);
+    await writeFile(invariantPath, invariant("known-contract"));
+    const result = await run(root, "resolve", "--term", "known-contract", "--json");
+    expect(result.code).toBe(0);
+    const dependent = JSON.parse(result.stdout).records.find((item: { id: string }) => item.id === "contract-dependent");
+    expect(dependent.match).toBe("dependent");
   });
 
   test("lint reports duplicate ADRs and stale Markdown references", async () => {
@@ -210,6 +251,24 @@ state: proposed
     const root = await project();
     await symlink(join(root, "src", "api.ts"), join(root, "dox", "records", "linked.md"));
     const result = await run(root, "resolve", "--path", "src/api.ts", "--json");
+    expect(result.code).toBe(1); expect(result.stderr).toContain("symlink escape denied");
+  });
+
+  test("fails closed on source symlinks outside the repository", async () => {
+    const root = await project();
+    const outside = await mkdtemp("/tmp/dox-outside-"); roots.push(outside);
+    await writeFile(join(outside, "secret.ts"), "export const sentinel = true;\n");
+    await symlink(join(outside, "secret.ts"), join(root, "src", "linked.ts"));
+    await writeFile(join(root, "dox", "records", "sentinel.md"), `---
+id: sentinel
+kind: contract
+owner: platform
+paths: [src/linked.ts]
+symbols: [sentinel]
+---
+# Sentinel
+`);
+    const result = await run(root, "lint", "--json");
     expect(result.code).toBe(1); expect(result.stderr).toContain("symlink escape denied");
   });
 

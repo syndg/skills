@@ -89,7 +89,7 @@ async function main() {
       paths.push(...await changedPaths(root, base));
     }
     const cues = { paths, intents: takeValues(args, "--intent"), symbols: takeValues(args, "--symbol"), terms: takeValues(args, "--term"), adrs: takeValues(args, "--adr") };
-    if (Object.values(cues).every((values) => values.length === 0)) throw new DoxError("resolve requires a cue or --changed");
+    if (Object.values(cues).every((values) => values.length === 0) && changedIndex < 0) throw new DoxError("resolve requires a cue or --changed");
     await query(root, cues, has(args, "--json")); return;
   }
   if (command === "lint") {
