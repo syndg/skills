@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test } from "bun:test";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const cli = join(import.meta.dir, "..", "scripts", "dox.ts");
@@ -204,6 +204,13 @@ state: proposed
     const root = await mkdtemp("/tmp/dox-no-config-"); roots.push(root); await git(root, "init", "-q");
     const result = await run(root, "resolve", "--path", "src/file.ts", "--json");
     expect(result.code).toBe(1); expect(result.stderr).toContain("dox.config.json not found");
+  });
+
+  test("fails closed on record symlinks", async () => {
+    const root = await project();
+    await symlink(join(root, "src", "api.ts"), join(root, "dox", "records", "linked.md"));
+    const result = await run(root, "resolve", "--path", "src/api.ts", "--json");
+    expect(result.code).toBe(1); expect(result.stderr).toContain("symlink escape denied");
   });
 
   test("fails closed on traversal", async () => {
