@@ -1,0 +1,3 @@
+interface:
+  display_name: "DOX"
+  short_description: "Resolve and validate structured repository context"

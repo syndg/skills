@@ -12,35 +12,26 @@ npx skills update domain-modeling
 
 ## What it does
 
-`domain-modeling` builds and sharpens a project's **ubiquitous language** as you design — challenging fuzzy terms, stress-testing relationships with concrete scenarios, and writing the glossary and decisions down the moment they crystallise.
+`domain-modeling` builds and sharpens a project's **ubiquitous language** as you design — challenging fuzzy terms, stress-testing relationships with concrete scenarios, and recording the terminology and decisions that crystallise.
 
-This is the **active** discipline, not the passive one. Merely reading the applicable `AGENTS.md` chain to borrow its vocabulary is a one-line habit any skill can do; this skill is for when you are *changing* the model — coining a canonical term, catching a contradiction between the code and what you just said, or recording a hard-to-reverse decision. It keeps the owning document's `## Ubiquitous Language` section clean: vocabulary and relationships, not implementation detail, specs, or scratch notes.
+This is the active discipline, not the passive one. Merely reading the applicable project contract to borrow its vocabulary is a normal codebase habit; this skill is for changing the model — coining a canonical term, catching a contradiction between the code and what you just said, or deciding whether a hard-to-reverse choice deserves a durable record. In a project with `dox.config.json`, settled terminology and decision semantics live as DOX records; this skill still adjudicates their meaning.
 
 ## When to reach for it
 
-Type `/domain-modeling`, or the agent reaches for it automatically when a task fits — when you are pinning down terminology, resolving an overloaded word, or recording an architectural decision.
+Type `/domain-modeling`, or the agent reaches for it automatically when a task fits.
 
-Reach for it when the *words* are the problem: two people mean different things by "cancellation", "account" is doing three jobs, or a design conversation keeps snagging on a concept that has never been named precisely. If instead the module's *shape* is the problem — where the seam goes, how deep the interface is — use [codebase-design](https://aihero.dev/skills-codebase-design). If you want the plan itself interrogated before you build, use [grilling](https://aihero.dev/skills-grilling).
+Reach for it when the *words* are the problem: two people mean different things by “cancellation”, “account” is doing three jobs, or a design conversation keeps snagging on a concept that has never been named precisely. If the module's *shape* is the problem — where the seam goes or how deep the interface is — use [codebase-design](https://aihero.dev/skills-codebase-design). If a project needs its DOX contract records retrieved or structurally validated, use [dox](https://aihero.dev/skills-dox).
 
 ## Prerequisites
 
-The skill writes into the applicable root-to-nearest `AGENTS.md` chain, created lazily. Resolved terms go under `## Ubiquitous Language` in the nearest document that owns their scope. Decisions start as globally numbered entries under that document's `## Architectural Decisions`; when the section grows too large for the hot path, it graduates to a co-located `DECISIONS.md` while retaining an index in `AGENTS.md`.
+In a DOX project, `dox.config.json` and its configured records must be present. The skill uses [dox](https://aihero.dev/skills-dox) to retrieve the applicable records and validate their structure.
 
-## Glossary vs. ADR
+## Semantic adjudication
 
-Two artifacts, two different bars:
+The leading work is **adjudication**: resolving what the project means, rather than merely storing text. The skill compares the conversation with inherited terminology, exposes conflicts, and makes relationships, ownership, boundaries, cardinality, lifecycle, and failure behavior precise. Code is evidence, not automatic truth.
 
-- **Ubiquitous Language** captures vocabulary. Every time a vague term becomes canonical, it is written inline — not batched — so the shared language stays current with the conversation and is inherited by child scopes.
-- **An architectural decision** captures a choice, and the bar is high: offered only when the choice is **hard to reverse**, **surprising without context**, and **the result of a real trade-off**. Miss any one of the three and there is no decision entry. This keeps the AGENTS/DOX chain a record of consequential forks rather than a diary.
-
-The move that makes it click: when you state how something works, the skill cross-references the code and surfaces the contradiction — "your code cancels entire Orders, but you just said partial cancellation is possible — which is right?" The language and the code are forced to agree.
-
-## Pulled out on purpose
-
-`domain-modeling` is the **single source of truth** for building the project's ubiquitous language, split out as its own model-invoked skill so any other skill can reach it. [grill-with-docs](https://aihero.dev/skills-grill-with-docs) leans on it to record terms and decisions as a grilling session runs, [triage](https://aihero.dev/skills-triage) uses it to keep tickets in the project's own words, and [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) reaches for it while it works.
-
-Keeping it standalone means you can also reach for it directly — as a **reference** for how to sharpen a model — without committing to the steps any of those skills mandate. The language lives in one place, and everything that needs it points there.
+A durable decision earns a record only when it is hard to reverse, surprising without context, and the result of a real trade-off. Miss any one of those bars and it remains conversation, not contract.
 
 ## Where it fits
 
-`domain-modeling` is a **reach-for-it-anytime standalone** that runs *underneath* other skills as often as at a fixed step. Its closest neighbour is [codebase-design](https://aihero.dev/skills-codebase-design), because a shared language is what lets you name a deep module and its seam precisely; downstream, a settled glossary is exactly what [to-spec](https://aihero.dev/skills-to-spec) synthesises into a spec written in the project's own words. When you're unsure which skill or flow fits, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.
+`domain-modeling` is a **reach-for-it-anytime standalone** that runs underneath other skills as often as at a fixed step. [dox](https://aihero.dev/skills-dox) is its contract-layer neighbor: it retrieves and structurally validates DOX records while `domain-modeling` determines their semantics. [grill-with-docs](https://aihero.dev/skills-grill-with-docs) uses the discipline while an idea is sharpened, and [ask-matt](https://aihero.dev/skills-ask-matt) maps both into the wider engineering flows.

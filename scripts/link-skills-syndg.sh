@@ -44,7 +44,7 @@ done
 echo "Linking ${#names[@]} skills from ${BUCKETS[*]} plus allowlisted ${ALLOWLIST[*]}"
 
 for DEST in "${DESTS[@]}"; do
-  # Legacy setups pointed the whole directory at a skills repo. Replace any
+  # Older setups pointed the whole directory at a skills repo. Replace any
   # such symlink with a real directory of per-skill links.
   if [ -L "$DEST" ]; then
     echo "replacing whole-dir symlink $DEST -> $(readlink "$DEST")"
@@ -75,3 +75,15 @@ for DEST in "${DESTS[@]}"; do
   done
   echo "linked ${#names[@]} skills into $DEST"
 done
+
+DOX_LAUNCHER_DIR="$HOME/.local/bin"
+DOX_LAUNCHER="$DOX_LAUNCHER_DIR/dox"
+mkdir -p "$DOX_LAUNCHER_DIR"
+cat > "$DOX_LAUNCHER" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec bun "$HOME/.agents/skills/dox/scripts/dox.ts" "$@"
+EOF
+chmod +x "$DOX_LAUNCHER"
+echo "installed DOX launcher at $DOX_LAUNCHER"

@@ -14,7 +14,7 @@ npx skills update ask-matt
 
 `ask-matt` is the router over the skills in this repo. You describe the situation you're in; it tells you which skill or flow fits and in what order to run them.
 
-It **does no work itself**. It doesn't grill, write a spec, or fix anything — it only orients. It exists for the **user-invoked** skills above all: nothing fires those for you, so *you* have to remember they exist, and `ask-matt` is the memory you offload that to. It also points at the model-invoked skills you'd reach for by name — `/tdd`, `/diagnosing-bugs`, `/prototype`, `/mp-code-review`, and the two vocabulary references, `/domain-modeling` and `/codebase-design`. This personalized fork additionally routes repository maintenance to `/pi-update` and `/skills-fork-update`. It answers "which one, and when", then hands you off to the skill that actually does the job.
+It does no work itself. It does not grill, write a spec, retrieve a contract, or fix anything — it only orients. It exists for the user-invoked skills above all: nothing fires those for you, so you have to remember they exist, and `ask-matt` is the memory you offload that to. It also points at model-invoked layers such as `/dox`, `/domain-modeling`, and `/codebase-design`, as well as reusable disciplines like `/tdd` and `/diagnosing-bugs`.
 
 ## When to reach for it
 
@@ -24,10 +24,12 @@ Reach for it whenever you're unsure which skill or flow a situation calls for: y
 
 ## Flows, not just skills
 
-The idea `ask-matt` gives you to think with is the **flow** — a path *through* the skills rather than a single one. Most work runs along one **main flow** (idea → ship: grill → spec → tickets → implement → review), two **on-ramps** merge onto it (a triage lane for incoming bugs and requests; a codebase-health lane that generates ideas), and everything else is a **standalone** you reach for on its own. Ask a question and you get placed on the right flow, at the right step — not just handed a tool.
+The idea `ask-matt` gives you to think with is the **flow** — a path through the skills rather than a single one. Most work runs along one main flow (idea → ship: grill → spec → tickets → implement → review), on-ramps merge into it for incoming work and hard diagnosis, and standalones serve a focused need. Ask a question and you get placed on the right flow, at the right step — not just handed a tool.
 
-The personalized fork has two maintenance routes outside the product-development flows: `/pi-update` safely merges official Pi updates into the personalized Syn Pi fork, while `/skills-fork-update` checks or integrates Matt Pocock's upstream skills repository while preserving this fork's AGENTS/DOX conventions and local skill inventory.
+Contract layers run underneath those flows: [dox](https://aihero.dev/skills-dox) retrieves applicable DOX records and validates their structure; [domain-modeling](https://aihero.dev/skills-domain-modeling) adjudicates the meaning of terminology and durable decisions; [codebase-design](https://aihero.dev/skills-codebase-design) supplies the vocabulary for deep modules and clean seams.
+
+The personalized fork also has maintenance routes outside product-development flows: `/pi-update` maintains the Syn Pi fork, while `/skills-fork-update` integrates upstream skills changes while preserving this fork's local conventions and inventory.
 
 ## Where it fits
 
-`ask-matt` is the **router** — the standalone map that sits over the whole set. It is the node every other docs page links back to as [ask-matt](https://aihero.dev/skills-ask-matt), so it never sits *in* a chain; it points *into* every chain. From here you'll most often land on [grill-with-docs](https://aihero.dev/skills-grill-with-docs), the head of the main flow, or [triage](https://aihero.dev/skills-triage), the on-ramp for work you didn't create. When even the router's own picture is stale, its [Source](https://github.com/mattpocock/skills/tree/main/skills/engineering/ask-matt) is the map of record.
+`ask-matt` is the **router** — the standalone map that sits over the whole set. It is the node every other docs page links back to as [ask-matt](https://aihero.dev/skills-ask-matt), so it never sits in a chain; it points into every chain. From here you'll most often land on [grill-with-docs](https://aihero.dev/skills-grill-with-docs), the head of the main flow, or [triage](https://aihero.dev/skills-triage), the on-ramp for work you did not create.

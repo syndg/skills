@@ -51,11 +51,12 @@ Not feature work — upkeep.
 
 - **`/improve-codebase-architecture`** — run whenever you have a spare moment to keep the codebase good for agents to operate in. It surfaces **deepening opportunities**; picking one _generates an idea_ you can take into the main flow at `/grill-with-docs`. It's the survey that finds the candidates; **`/codebase-design`** (below) is the bench you design the chosen one on.
 
-## Vocabulary underneath
+## Contract layers underneath
 
-Two model-invoked references that run *beneath* the other skills — each the single source of truth for its vocabulary. Reach for them directly when the **words**, not the process, are the problem; or let the skills above pull them in.
+Three model-invoked layers run *beneath* the other skills. They retrieve or maintain the contracts that make a flow coherent. Reach for them directly when the contract, words, or module shape is the problem; or let the skills above pull them in.
 
-- **`/domain-modeling`** — sharpen the project's *domain* language: challenge a fuzzy term, resolve an overloaded word ("account" doing three jobs), record a hard-to-reverse decision as an inline ADR. It's the active discipline `/grill-with-docs` drives to keep the applicable `AGENTS.md` chain's Ubiquitous Language clean.
+- **`/dox`** — the automatic **contract-retrieval and structural-validation** layer for a project with DOX records. It loads the relevant records before work proceeds and checks their structure as the flow changes them.
+- **`/domain-modeling`** — the semantic-adjudication layer for the project's *domain* language: challenge a fuzzy term, resolve an overloaded word ("account" doing three jobs), and decide whether a hard-to-reverse choice deserves a durable decision record. In a DOX project it records settled terminology and decisions as DOX records; it owns the meaning, while `/dox` owns retrieval and structural validation.
 - **`/codebase-design`** — the deep-module vocabulary (module, interface, depth, seam, adapter, leverage, locality) for designing a module's *shape*: a lot of behaviour behind a small interface at a clean seam. `/tdd` and `/improve-codebase-architecture` both speak it.
 
 ## Crossing sessions

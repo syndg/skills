@@ -1,0 +1,23 @@
+{
+  "skill_name": "dox",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Initialize DOX in this Git repository, show me exactly what will be created, and do not write anything until I approve it.",
+      "expected_output": "A deterministic dry-run proposal and an explicit --apply boundary.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I am changing src/auth/login.ts. Find the relevant decision and any invariant that enforces authorization there, including the verification command.",
+      "expected_output": "A path resolution with a receipt and a full invariant binding.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Lint our DOX records before the release and report broken ownership, ADR references, and documentation links.",
+      "expected_output": "Lint diagnostics with errors distinguished from warnings.",
+      "files": []
+    }
+  ]
+}

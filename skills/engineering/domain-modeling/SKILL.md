@@ -1,15 +1,19 @@
 ---
 name: domain-modeling
-description: Build and sharpen a project's domain model. Use when the user wants to pin down domain terminology or a ubiquitous language, resolve ambiguous or overloaded terms, record an architectural decision, or when another skill needs to maintain the domain model in the project's AGENTS.md hierarchy.
+description: Build and sharpen a project's domain model. Use when the user wants to pin down domain terminology or a ubiquitous language, resolve ambiguous or overloaded terms, record an architectural decision, or when another skill needs semantic adjudication for the project's domain contract.
 ---
 
 # Domain Modeling
 
 Actively build and sharpen the project's domain model as you design. This is the active discipline: challenge terms, invent edge-case scenarios, resolve ambiguity, and write the resulting language and decisions down as soon as they crystallise. Merely reading the existing domain model is a normal codebase habit; use this skill when the model itself may change.
 
-## Storage contract: AGENTS/DOX
+## Storage contract
 
-`AGENTS.md` is the durable domain contract. Domain language lives inline in its **Ubiquitous Language** section, and architectural decisions live inline in its **Architectural Decisions** section.
+> **When `dox.config.json` is present:** run `/dox` to retrieve the applicable contract records before adjudicating a change. Store settled terminology and durable decision semantics as DOX records, following the project's configured record structure. `/domain-modeling` decides what the terms and decisions mean; `/dox` retrieves them and validates their structure.
+
+### AGENTS.md contract
+
+`AGENTS.md` is the durable domain contract for projects organized around its hierarchy. Domain language lives inline in its **Ubiquitous Language** section, and architectural decisions live inline in its **Architectural Decisions** section.
 
 The applicable contract is hierarchical. Before proposing or recording a change:
 
@@ -53,13 +57,15 @@ When the user states how something works, check whether the code agrees. Surface
 
 Treat code as evidence, not automatic truth. Resolve whether the code, the documentation, or the user's current explanation needs to change.
 
-### Update AGENTS.md inline
+### Record settled semantics
 
-When language is resolved, update the **Ubiquitous Language** section of the nearest owning `AGENTS.md` immediately. Do not batch settled terms until the end of the session.
+> **When `dox.config.json` is present:** write each resolved canonical term, relationship, and durable decision as its appropriate DOX record as it crystallises. Use `/dox` to validate the changed record structure. Keep the record focused on canonical language, definitions, relationships, useful domain dialogue, and explicitly flagged ambiguity; put implementation guidance, specifications, and scratch notes elsewhere.
+
+For an `AGENTS.md` contract, update the **Ubiquitous Language** section of the nearest owning document immediately. Do not batch settled terms until the end of the session.
 
 Keep that section focused on the domain model: canonical language, definitions, relationships, useful domain dialogue, and explicitly flagged ambiguity. Put implementation guidance, specifications, and scratch notes in the appropriate parts of the DOX contract or elsewhere, not in the glossary.
 
-### Offer ADRs sparingly
+### Offer durable decisions sparingly
 
 Only offer to add an architectural decision when all three are true:
 
@@ -67,4 +73,4 @@ Only offer to add an architectural decision when all three are true:
 2. **Surprising without context** — a future reader will wonder why the system works this way.
 3. **The result of a real trade-off** — genuine alternatives existed and one was chosen for specific reasons.
 
-If any condition is missing, skip the ADR. When all three apply, allocate the next global immutable number and add the entry to the **Architectural Decisions** section of the nearest owning `AGENTS.md` using [ADR-FORMAT.md](./ADR-FORMAT.md).
+If any condition is missing, skip the decision record. When all three apply, record the decision at its owning scope, using the project's record format. In an `AGENTS.md` contract, allocate the next global immutable number and add the entry to the **Architectural Decisions** section using [ADR-FORMAT.md](./ADR-FORMAT.md).
