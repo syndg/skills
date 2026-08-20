@@ -33,6 +33,8 @@ Refine through the CLI until the receipt accounts for the task's known paths and
 
 Keep structured-record retrieval inside `dox resolve` and `dox search`. Direct record access is only for editing a specifically resolved record or maintaining DOX itself; never enumerate, grep, or bulk-read the configured record directory.
 
+An empty search receipt switches the next step to source-path discovery outside the configured record directory, followed by one path-plus-intent resolution. One search per domain concept is enough; avoid synonym sweeps that add calls without adding evidence.
+
 Read the receipt as evidence: `reason` says what matched and `edge` says whether it was a record path, enforcement binding, or dependent relationship. A path that hits invariant enforcement returns its full binding; a dependent path returns an impact summary.
 
 ## Record shape

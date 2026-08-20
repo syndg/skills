@@ -39,7 +39,7 @@ Architectural decisions are full `decision` records identified by a globally uni
 ## It's working if
 
 - A DOX receipt appears before broad source inspection, including on read-only tasks.
-- The agent refines `dox resolve` or `dox search` instead of enumerating the record directory.
+- The agent refines `dox resolve` or `dox search` instead of enumerating the record directory; an empty search switches to source-path discovery rather than a synonym sweep.
 - The resulting plan or answer accounts for every returned critical record and uses targeted code reads to verify behavior.
 
 ## Where it fits

@@ -22,7 +22,7 @@
     {
       "id": 4,
       "prompt": "Read-only: explain how authentication works in this DOX-enabled repository and identify the governing decisions and invariants. Do not edit anything.",
-      "expected_output": "DOX is queried before broad source inspection; record retrieval stays inside the CLI; the answer accounts for receipt-backed owners, decisions, contracts, invariants, and dependencies without enumerating the record directory.",
+      "expected_output": "DOX is queried before broad source inspection; record retrieval stays inside the CLI; an empty search switches to source-path discovery without a synonym sweep; the answer accounts for receipt-backed owners, decisions, contracts, invariants, and dependencies without enumerating the record directory.",
       "files": []
     }
   ]
