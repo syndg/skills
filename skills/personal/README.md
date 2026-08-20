@@ -3,6 +3,8 @@
 Skills tied to my own setup (syndg), not promoted.
 
 - [cmux](./cmux/SKILL.md) — control cmux topology and routing (windows, workspaces, panes, focus).
+- [pi-update](./pi-update/SKILL.md) — safely merge official Pi updates into the personalized Syn Pi fork.
+- [skills-fork-update](./skills-fork-update/SKILL.md) — safely sync Matt Pocock's upstream into this personalized skills fork.
 - [synclaw-server](./synclaw-server/SKILL.md) — direct SSH access to the synclaw server.
 - [wiki-digest](./wiki-digest/SKILL.md) — deep-propagate ingested sources across the knowledge wiki.
 - [wiki-fetch-readwise-document](./wiki-fetch-readwise-document/SKILL.md) — fetch Readwise Reader documents into the wiki's raw/ layer.

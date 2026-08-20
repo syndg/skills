@@ -1,0 +1,3 @@
+interface:
+  display_name: "Syn Pi Update"
+  short_description: "Safely update the personalized Syn Pi fork"

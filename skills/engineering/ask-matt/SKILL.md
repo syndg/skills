@@ -73,6 +73,11 @@ Off the main flow entirely.
 - **`/teach`** — learn a concept over multiple sessions, using the current directory as a stateful workspace.
 - **`/writing-great-skills`** — reference for writing and editing skills well.
 
+## Fork maintenance
+
+- **`/pi-update`** — maintain the personalized Syn Pi fork. Use it to merge official Pi updates into `syn-pi`, preserve the focused downstream behavior, validate and build it, keep the official `pi` launcher separate, and push the verified non-force update unless local-only work was requested.
+- **`/skills-fork-update`** — maintain this personalized fork of Matt's skills. Use it to check `mattpocock/skills` for upstream changes or merge them into `~/skills` while preserving the AGENTS/DOX conventions, personal/vendor inventory, teaching kit, and `mp-code-review` rename. It validates locally and deliberately does not push.
+
 ## Precondition
 
 **`/setup-matt-pocock-skills`** — run before your first engineering flow to configure the issue tracker, triage labels, and AGENTS/DOX domain contract the other skills assume. Custom issue trackers also work.
