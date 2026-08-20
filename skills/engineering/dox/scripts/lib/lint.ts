@@ -26,18 +26,10 @@ export async function lint(root: string, config: Config): Promise<Diagnostic[]> 
   const files = await trackedFiles(root);
   const byId = new Map<string, DoxRecord>();
   const recordAdrs = new Map<string, DoxRecord>();
-  const decisionAdrs = new Map<string, string[]>();
   const contracts = new Set<string>();
 
   for (const file of files.filter((file) => basename(file) === "DECISIONS.md")) {
-    const text = await readFile(join(root, file), "utf8");
-    for (const match of text.matchAll(/^###\s+(ADR-\d{4})\b/gmu)) {
-      const id = match[1];
-      decisionAdrs.set(id, [...(decisionAdrs.get(id) ?? []), file]);
-    }
-  }
-  for (const [id, owners] of decisionAdrs) {
-    if (owners.length > 1) for (const file of owners.slice(1)) add(diagnostics, "error", `duplicate ADR body: ${id}`, file);
+    add(diagnostics, "error", "parallel ADR source found; migrate decisions into DOX records", file);
   }
 
   for (const record of records) {
@@ -57,15 +49,15 @@ export async function lint(root: string, config: Config): Promise<Diagnostic[]> 
       for (const edge of record.enforced_by) {
         if (!edge.path) add(diagnostics, "error", "missing invariant enforcement target", record.file);
         else if (!files.some((file) => globMatches(edge.path!, file))) add(diagnostics, "error", `missing invariant enforcement target: ${edge.path}`, record.file);
-        if (edge.symbol && !(await containsSymbol(root, files, edge.path, edge.symbol))) add(diagnostics, "warning", `stale enforcement symbol: ${edge.symbol}`, record.file);
+        if (edge.symbol && !(await containsSymbol(root, files, edge.path, edge.symbol))) add(diagnostics, "error", `stale enforcement symbol: ${edge.symbol}`, record.file);
       }
       for (const edge of record.depended_on_by) {
-        if (edge.path && !files.some((file) => globMatches(edge.path!, file))) add(diagnostics, "warning", `empty invariant dependency path: ${edge.path}`, record.file);
+        if (edge.path && !files.some((file) => globMatches(edge.path!, file))) add(diagnostics, "error", `empty invariant dependency path: ${edge.path}`, record.file);
       }
     }
   }
 
-  const knownAdrs = new Set([...recordAdrs.keys(), ...decisionAdrs.keys()]);
+  const knownAdrs = new Set(recordAdrs.keys());
   for (const record of records) {
     for (const ref of record.adr_refs) if (!knownAdrs.has(ref)) add(diagnostics, "error", `broken ADR reference: ${ref}`, record.file);
     for (const ref of record.contract_refs) if (!contracts.has(ref) && !byId.has(ref)) add(diagnostics, "error", `broken contract reference: ${ref}`, record.file);
@@ -85,7 +77,7 @@ export async function lint(root: string, config: Config): Promise<Diagnostic[]> 
     for (const symbol of record.symbols) {
       const patterns = record.paths.length ? record.paths : [undefined];
       if (!(await Promise.any(patterns.map(async (pattern) => (await containsSymbol(root, files, pattern, symbol)) || Promise.reject())).catch(() => false))) {
-        add(diagnostics, "warning", `stale symbol: ${symbol}`, record.file);
+        add(diagnostics, "error", `stale symbol: ${symbol}`, record.file);
       }
     }
   }
@@ -93,7 +85,7 @@ export async function lint(root: string, config: Config): Promise<Diagnostic[]> 
   if (config.coverage?.paths) {
     for (const target of config.coverage.paths) {
       for (const file of files.filter((file) => globMatches(target, file))) {
-        const covered = records.some((record) => [...record.paths, ...record.enforced_by.map((edge) => edge.path).filter(Boolean) as string[]].some((pattern) => globMatches(pattern, file)));
+        const covered = records.some((record) => [...record.paths, ...((record.kind === "invariant" && ["accepted", "enforced"].includes(record.state ?? "")) ? record.enforced_by.map((edge) => edge.path).filter(Boolean) as string[] : [])].some((pattern) => globMatches(pattern, file)));
         if (!covered) add(diagnostics, "error", `uncovered path: ${file}`);
       }
     }

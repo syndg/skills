@@ -39,6 +39,7 @@ export type Record = {
 };
 
 export type Config = {
+  schema_version: 1;
   records_dir: string;
   owners?: string[];
   coverage?: { paths?: string[] };

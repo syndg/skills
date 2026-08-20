@@ -11,6 +11,15 @@ function includes(values: string[], value: string): boolean {
   return values.some((candidate) => same(candidate, value));
 }
 
+function bindingInvariant(record: DoxRecord): boolean {
+  return record.kind === "invariant" && (record.state === "accepted" || record.state === "enforced");
+}
+
+function matchLabel(match: Match): string {
+  if (match.record.kind === "invariant" && !bindingInvariant(match.record)) return match.record.state === "proposed" ? "proposal" : "record";
+  return match.full ? "binding" : "dependent";
+}
+
 function bindingMatch(binding: Binding, cues: Cues): { reason: string; score: number } | undefined {
   if (binding.path) {
     for (const path of cues.paths) if (globMatches(binding.path, path)) return { reason: `path:${path}`, score: 9500 + globSpecificity(binding.path) };
@@ -39,7 +48,7 @@ export function resolve(records: DoxRecord[], cues: Cues): Match[] {
   const matches = new Map<string, Match>();
   for (const record of records) {
     let found: Match | undefined;
-    if (record.kind === "invariant") {
+    if (bindingInvariant(record)) {
       for (const binding of record.enforced_by) {
         const match = bindingMatch(binding, cues);
         if (match) {
@@ -74,7 +83,7 @@ export function publicRecord(match: Match): Record<string, unknown> {
   const source = record.source_path ? { path: record.source_path, heading: record.source_heading, sha256: record.source_sha256, digest: record.source_digest } : undefined;
   const base = {
     id: record.id, kind: record.kind, owner: record.owner, state: record.state, statement: record.statement,
-    file: record.file, source, match: match.full ? "binding" : "dependent",
+    file: record.file, source, match: matchLabel(match),
   };
   if (!match.full && record.kind === "invariant") return {
     ...base, summary: invariantSummary(record), impact: record.impact, criticality: record.criticality,
@@ -91,14 +100,14 @@ export function publicRecord(match: Match): Record<string, unknown> {
 }
 
 export function receipt(matches: Match[]): Record<string, string>[] {
-  return matches.map((match) => ({ id: match.record.id, match: match.full ? "binding" : "dependent", reason: match.reason, edge: match.edge }));
+  return matches.map((match) => ({ id: match.record.id, match: matchLabel(match), reason: match.reason, edge: match.edge }));
 }
 
 export function markdown(matches: Match[]): string {
   const lines = ["# DOX resolution", ""];
   for (const match of matches) {
     const record = match.record;
-    lines.push(`## ${record.id}`, `- Match: ${match.full ? "binding" : "dependent"}`, `- Reason: ${match.reason}`, `- Edge: ${match.edge}`, `- Owner: ${record.owner ?? "unassigned"}`);
+    lines.push(`## ${record.id}`, `- Match: ${matchLabel(match)}`, `- Reason: ${match.reason}`, `- Edge: ${match.edge}`, `- Owner: ${record.owner ?? "unassigned"}`);
     if (record.statement) lines.push(`- Statement: ${record.statement}`);
     if (record.source_path) lines.push(`- Source: ${record.source_path}${record.source_heading ? `#${record.source_heading}` : ""}`);
     if (record.verification.length) lines.push(`- Proof: ${record.verification.join("; ")}`);

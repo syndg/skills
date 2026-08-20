@@ -2,6 +2,8 @@
 
 Each record is a Markdown file with YAML frontmatter.
 
+`dox.config.json` must declare `"schema_version": 1`. Unsupported versions and unknown config or record fields fail closed.
+
 ```md
 ---
 id: payment-authorization
@@ -13,8 +15,8 @@ intents: [charge]
 symbols: [authorizeCharge]
 terms: [authorization]
 aliases: [authz]
-adr: ADR-014
-adr_refs: [ADR-002]
+adr: ADR-0014
+adr_refs: [ADR-0002]
 contract_refs: [payments-api]
 enforcement: [chokepoint, test]
 enforced_by:
@@ -39,7 +41,9 @@ Explain the decision, contract, or invariant in Markdown.
 
 `paths`, `intents`, `symbols`, `terms`, and `aliases` are matching cues. `adr` identifies the record's ADR. `adr_refs` and `contract_refs` must resolve during lint. Declare contract names with `contracts`, or use a `terms` value prefixed with `contract:`.
 
-Invariant enforcement is explicit: `enforcement` classifies the mechanisms (`database`, `type`, `chokepoint`, `test`, `lint`, or `prose`) while `enforced_by` identifies where the guarantee can be weakened. An enforcement-path match returns the full invariant. `depended_on_by` identifies consumers whose behavior relies on the guarantee; a consumer match returns a useful impact summary and dependency receipt.
+Supported record kinds are `record`, `decision`, `contract`, `invariant`, `ownership`, and `term`. Every record requires one `owner` and a non-empty body. Store each full architectural decision as a `decision` record with its globally unique `adr`; `adr_refs` only point to those records. A DOX project must not retain a parallel `DECISIONS.md` source.
+
+Invariant enforcement is explicit: `enforcement` classifies the mechanisms (`database`, `type`, `chokepoint`, `test`, `lint`, or `prose`) while `enforced_by` identifies where the guarantee can be weakened. Invariants require a statement, state, impact, criticality, failure modes, and dependency targets. `accepted` and `enforced` invariants also require enforcement classifications, enforcement targets, and verification. Supported states are `proposed`, `accepted`, `enforced`, and `retired`; proposals remain nonbinding. An enforcement-path match returns the full invariant. `depended_on_by` identifies consumers whose behavior relies on the guarantee; a consumer match returns a useful impact summary and dependency receipt.
 
 `source_path`, `source_heading`, `source_sha256`, and `source_digest` are optional provenance metadata. Resolution returns them with the record so callers can trace migrated knowledge to the frozen source and section digest.
 

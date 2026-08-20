@@ -37,6 +37,8 @@ Create records under the configured `records_dir` (default `dox/records`). Use t
 
 For an invariant, record its enforcement target, verification, failure modes, impact, criticality, state, and dependency edges. The precision makes a change-impact answer actionable rather than merely descriptive.
 
+Use `kind: decision` plus a globally unique four-digit `adr` for full architectural decision bodies. In a DOX project, do not retain a parallel `DECISIONS.md`. Proposed invariants remain nonbinding; accepted or enforced invariants must name their enforcement classes, targets, and verification. Unknown schema fields and incomplete binding records fail closed.
+
 ## Verify the seam
 
 ```bash
@@ -44,7 +46,7 @@ dox lint
 dox lint --json
 ```
 
-Treat errors as blockers. Lint checks record structure, ownership, path coverage when configured, references, ADR and contract links, invariant enforcement, dependency patterns, and stale symbols. Warnings do not change the exit status.
+Treat errors as blockers. Lint checks strict record and config structure, ownership, path coverage when configured, references, unique four-digit ADR records, invariant enforcement, dependency patterns, and stale symbols. It also rejects parallel decision sources.
 
 ## Boundaries
 

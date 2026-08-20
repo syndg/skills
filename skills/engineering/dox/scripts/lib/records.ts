@@ -5,6 +5,18 @@ import { asBindings, asStrings, DoxError, isInside, safeGlob, safeRelative } fro
 
 const DEFAULT_RECORDS_DIR = "dox/records";
 const ENFORCEMENT_KINDS = new Set(["database", "type", "chokepoint", "test", "lint", "prose"]);
+const RECORD_KINDS = new Set(["record", "decision", "contract", "invariant", "ownership", "term"]);
+const INVARIANT_STATES = new Set(["proposed", "accepted", "enforced", "retired"]);
+const CONFIG_FIELDS = new Set(["schema_version", "records_dir", "owners", "coverage"]);
+const RECORD_FIELDS = new Set([
+  "id", "kind", "owner", "statement", "paths", "path", "intents", "intent", "symbols", "symbol", "terms", "term", "aliases", "alias",
+  "adr", "adr_refs", "contracts", "contract", "contract_refs", "depends_on", "enforced_by", "depended_on_by", "enforcement", "verification",
+  "failure_modes", "impact", "criticality", "state", "source_path", "source_heading", "source_sha256", "source_digest",
+]);
+function rejectUnknown(data: Record<string, unknown>, allowed: Set<string>, label: string) {
+  const unknown = Object.keys(data).filter((key) => !allowed.has(key)).sort();
+  if (unknown.length) throw new DoxError(`unknown ${label} field: ${unknown[0]}`);
+}
 export async function loadConfig(root: string): Promise<Config> {
   const configPath = join(root, "dox.config.json");
   let configStat: Awaited<ReturnType<typeof lstat>>;
@@ -14,14 +26,18 @@ export async function loadConfig(root: string): Promise<Config> {
   try { parsed = JSON.parse(await Bun.file(configPath).text()); } catch { throw new DoxError("invalid dox.config.json"); }
   if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new DoxError("invalid dox.config.json");
   const raw = parsed as Record<string, unknown>;
+  rejectUnknown(raw, CONFIG_FIELDS, "config");
+  if (raw.schema_version !== 1) throw new DoxError("unsupported schema_version; expected 1");
   const records_dir = raw.records_dir === undefined ? DEFAULT_RECORDS_DIR : raw.records_dir;
   if (typeof records_dir !== "string") throw new DoxError("invalid records_dir");
   safeRelative(records_dir, "records_dir");
-  const config: Config = { records_dir };
+  const config: Config = { schema_version: 1, records_dir };
   if (raw.owners !== undefined) config.owners = asStrings(raw.owners, "owners");
   if (raw.coverage !== undefined) {
     if (!raw.coverage || typeof raw.coverage !== "object" || Array.isArray(raw.coverage)) throw new DoxError("invalid coverage");
-    const paths = asStrings((raw.coverage as Record<string, unknown>).paths, "coverage.paths");
+    const coverageRaw = raw.coverage as Record<string, unknown>;
+    rejectUnknown(coverageRaw, new Set(["paths"]), "coverage");
+    const paths = asStrings(coverageRaw.paths, "coverage.paths");
     paths.forEach((path) => safeGlob(path, "coverage.paths"));
     config.coverage = { paths };
   }
@@ -39,15 +55,17 @@ function frontmatter(text: string): { data: Record<string, unknown>; body: strin
 
 export function parseRecord(text: string, file: string): DoxRecord {
   const { data, body } = frontmatter(text);
+  rejectUnknown(data, RECORD_FIELDS, "record");
   const id = asStrings(data.id, "id", true)[0];
   const kind = asStrings(data.kind, "kind")[0] ?? "record";
-  const owners = asStrings(data.owner, "owner");
+  if (!RECORD_KINDS.has(kind)) throw new DoxError(`unsupported record kind: ${kind}`);
+  const owners = asStrings(data.owner, "owner", true);
   if (owners.length > 1) throw new DoxError("ambiguous owner");
   const adr = asStrings(data.adr, "adr")[0];
   const record: DoxRecord = {
     id, kind, owner: owners[0],
     statement: asStrings(data.statement, "statement")[0],
-    paths: asStrings(data.paths, "paths").map((path) => safeGlob(path, "paths")),
+    paths: asStrings(data.paths ?? data.path, "paths").map((path) => safeGlob(path, "paths")),
     intents: asStrings(data.intents ?? data.intent, "intents"),
     symbols: asStrings(data.symbols ?? data.symbol, "symbols"),
     terms: asStrings(data.terms ?? data.term, "terms"),
@@ -71,8 +89,23 @@ export function parseRecord(text: string, file: string): DoxRecord {
     source_digest: asStrings(data.source_digest, "source_digest")[0],
     body, file,
   };
+  if (!body.trim()) throw new DoxError("missing record body");
+  if (record.adr && !/^ADR-\d{4}$/u.test(record.adr)) throw new DoxError(`invalid adr: ${record.adr}`);
+  for (const field of [record.source_sha256, record.source_digest]) if (field && !/^[a-f0-9]{64}$/u.test(field)) throw new DoxError(`invalid source digest: ${field}`);
   for (const kind of record.enforcement) if (!ENFORCEMENT_KINDS.has(kind)) throw new DoxError(`invalid enforcement kind: ${kind}`);
-  if (record.kind === "invariant" && !record.owner) throw new DoxError("invariant is missing owner");
+  if (record.kind === "invariant") {
+    if (!record.statement) throw new DoxError("invariant is missing statement");
+    if (!record.state || !INVARIANT_STATES.has(record.state)) throw new DoxError("invariant has invalid or missing state");
+    if (!record.impact) throw new DoxError("invariant is missing impact");
+    if (!record.criticality) throw new DoxError("invariant is missing criticality");
+    if (record.failure_modes.length === 0) throw new DoxError("invariant is missing failure modes");
+    if (["accepted", "enforced"].includes(record.state)) {
+      if (record.depended_on_by.length === 0) throw new DoxError("binding invariant is missing dependency targets");
+      if (record.enforcement.length === 0) throw new DoxError("binding invariant is missing enforcement classification");
+      if (record.enforced_by.length === 0) throw new DoxError("binding invariant is missing enforcement targets");
+      if (record.verification.length === 0) throw new DoxError("binding invariant is missing verification");
+    }
+  }
   return record;
 }
 
@@ -107,6 +140,19 @@ export async function loadRecords(root: string, config: Config, tolerateMalforme
       if (!tolerateMalformed) throw new DoxError(`${file}: ${error instanceof Error ? error.message : "malformed record"}`);
       diagnostics.push({ level: "error", file, message: error instanceof Error ? error.message : "malformed record" });
     }
+  }
+  if (!tolerateMalformed) {
+    const ids = new Set<string>();
+    const adrs = new Set<string>();
+    for (const record of records) {
+      if (ids.has(record.id)) throw new DoxError(`duplicate id: ${record.id}`);
+      ids.add(record.id);
+      if (record.adr) {
+        if (adrs.has(record.adr)) throw new DoxError(`duplicate ADR record: ${record.adr}`);
+        adrs.add(record.adr);
+      }
+    }
+    for (const record of records) for (const ref of record.adr_refs) if (!adrs.has(ref)) throw new DoxError(`broken ADR reference: ${ref}`);
   }
   return { records: records.sort((a, b) => a.id.localeCompare(b.id)), diagnostics };
 }

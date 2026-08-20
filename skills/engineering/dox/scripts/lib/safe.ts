@@ -16,7 +16,7 @@ export function safeRelative(value: string, label = "path"): string {
 
 export function safeGlob(value: string, label = "glob"): string {
   safeRelative(value, label);
-  if (value.includes("[") || value.includes("]") || value.includes("{") || value.includes("}") || value.includes("(")) {
+  if (/[\[\]{}()?]/u.test(value)) {
     throw new DoxError(`invalid ${label}: ${value}`);
   }
   return value;
@@ -50,6 +50,8 @@ export function asBindings(value: unknown, label: string): { path?: string; symb
     if (typeof item === "string") return { path: safeGlob(item, label) };
     if (!item || typeof item !== "object" || Array.isArray(item)) throw new DoxError(`invalid ${label}`);
     const binding = item as Record<string, unknown>;
+    const unknown = Object.keys(binding).filter((key) => !["path", "symbol", "contract", "intent"].includes(key));
+    if (unknown.length) throw new DoxError(`unknown ${label} field: ${unknown.sort()[0]}`);
     const out: { path?: string; symbol?: string; contract?: string; intent?: string } = {};
     for (const key of ["path", "symbol", "contract", "intent"] as const) {
       if (binding[key] !== undefined) {

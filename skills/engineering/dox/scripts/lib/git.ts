@@ -20,6 +20,10 @@ export async function changedPaths(root: string, base?: string): Promise<string[
 }
 
 export async function trackedFiles(root: string): Promise<string[]> {
-  const output = await run(root, ["ls-files"]);
-  return output ? output.split("\n").filter(Boolean).sort() : [];
+  const [output, deleted] = await Promise.all([
+    run(root, ["ls-files", "--cached", "--others", "--exclude-standard"]),
+    run(root, ["ls-files", "--deleted"]),
+  ]);
+  const removed = new Set(deleted.split("\n").filter(Boolean));
+  return output ? output.split("\n").filter((path) => path && !removed.has(path)).sort() : [];
 }

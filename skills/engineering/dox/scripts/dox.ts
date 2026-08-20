@@ -56,7 +56,8 @@ async function query(root: string, cues: Cues, json: boolean) {
   const { records } = await loadRecords(root, config);
   const matches = resolve(records, cues);
   for (const path of cues.paths) {
-    if (config.coverage?.paths?.some((pattern) => globMatches(pattern, path)) && !matches.some((match) => match.reason === `path:${path}`)) {
+    const covered = records.some((record) => [...record.paths, ...((record.kind === "invariant" && ["accepted", "enforced"].includes(record.state ?? "")) ? record.enforced_by.map((edge) => edge.path).filter(Boolean) as string[] : [])].some((pattern) => globMatches(pattern, path)));
+    if (config.coverage?.paths?.some((pattern) => globMatches(pattern, path)) && !covered) {
       throw new DoxError(`uncovered path: ${path}`);
     }
   }
