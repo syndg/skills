@@ -12,15 +12,15 @@ npx skills update dox
 
 ## What it does
 
-`dox` retrieves the contract records that apply to the work at hand and validates their structure as they change. It makes durable project knowledge available to the agent before a flow reasons from it.
+`dox` is the **DOX-first** context seam for repositories that keep engineering contracts as structured records. Before an agent researches or changes the repository—even for a read-only question—it resolves the applicable ownership, decisions, contracts, binding invariants, and dependencies, then uses that receipt to guide targeted source inspection.
 
 Its defining constraint is structural: `dox` retrieves and validates records, but it does not adjudicate what a term, relationship, or decision means. Use [domain-modeling](https://aihero.dev/skills-domain-modeling) for that semantic work.
 
 ## When to reach for it
 
-Type `/dox`, or the agent reaches for it automatically when a task fits.
+Type `/dox`, or the agent reaches for it automatically whenever it works in a repository with `dox.config.json`.
 
-Reach for it when a project has DOX records and work needs its applicable contract retrieved or its record structure checked. For resolving ambiguous terminology or deciding whether a trade-off deserves a durable decision, use [domain-modeling](https://aihero.dev/skills-domain-modeling) instead.
+In a configured repository, reach for it before research, planning, debugging, review, or implementation. The CLI is the retrieval interface: agents refine resolver cues and follow the receipt instead of enumerating the record directory. For resolving ambiguous terminology or deciding whether a trade-off deserves a durable decision, use [domain-modeling](https://aihero.dev/skills-domain-modeling) instead.
 
 ## Prerequisites
 
@@ -28,13 +28,19 @@ Resolution requires a project-local `dox.config.json` and its configured records
 
 ## The contract layer
 
-`dox` is the automatic **contract-retrieval and structural-validation** layer underneath engineering flows. It keeps the relevant record-shaped knowledge present and well-formed so the skills doing design or implementation can reason from one coherent contract.
+`dox` is the automatic **contract-retrieval and structural-validation** layer underneath engineering flows. DOX-first keeps structured-record discovery inside the CLI, returns a receipt-backed context bundle, and directs the agent toward only the source paths and symbols needed to verify behavior.
 
 Resolution also surfaces optional source path, heading, and digest metadata, so migrated records remain traceable to the exact frozen source section without reading a second runtime source.
 
 Records use a versioned, closed schema. Each record has one owner and a Markdown body; unknown fields and incomplete binding records fail closed. Invariants capture enforcement targets, dependent consumers, verification, failure modes, impact, criticality, and lifecycle state. Proposed invariants are nonbinding until accepted or enforced.
 
 Architectural decisions are full `decision` records identified by a globally unique four-digit ADR number. A DOX project uses those records directly rather than keeping a parallel decision source. `dox lint` blocks broken ADR or contract references, stale symbols, uncovered configured paths, incomplete invariants, and parallel decision files.
+
+## It's working if
+
+- A DOX receipt appears before broad source inspection, including on read-only tasks.
+- The agent refines `dox resolve` or `dox search` instead of enumerating the record directory.
+- The resulting plan or answer accounts for every returned critical record and uses targeted code reads to verify behavior.
 
 ## Where it fits
 

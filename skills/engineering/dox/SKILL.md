@@ -1,6 +1,6 @@
 ---
 name: dox
-description: Use this skill whenever a repository needs durable, queryable engineering context rather than scattered Markdown guidance. It creates and operates a DOX record store for decisions, contracts, invariants, ownership, path-aware implementation context, change-impact resolution, and repository documentation linting. Trigger for requests to initialize DOX, find the records relevant to files or a change, resolve an intent/symbol/term/ADR, capture an invariant with enforcement and dependents, audit record quality, or replace ad-hoc repository guidance with a direct DOX cutover. Use it proactively before implementation when context may constrain a touched path.
+description: DOX-first repository context retrieval and maintenance. Use whenever working in a repository with dox.config.json, or when the user asks to initialize, migrate, query, lint, or capture a decision, contract, or invariant in DOX. In a configured repository, invoke it before repository research or code work—including read-only questions, planning, debugging, review, and implementation—so decisions, contracts, invariants, ownership, and change impact come through the resolver rather than broad record-store inspection.
 ---
 
 # DOX
@@ -18,16 +18,20 @@ dox init --apply
 
 `init` prints its proposal first. Only `--apply` writes the config, record directory, migration manifest, and an ignored cache directory. It does not invent an invariant ledger.
 
-## Query before changing code
+## DOX-first
 
-Resolve using the narrowest available cue:
+In a configured repository, query DOX before repository research or code work, including read-only tasks. Start with the narrowest available cue:
 
 ```bash
-dox resolve --path src/payments/charge.ts
+dox resolve --path src/payments/charge.ts --intent "authorize a charge" --json
+dox resolve --intent "trace sign-in" --symbol authorize --json
+dox search "authorization"
 dox resolve --changed --json
-dox resolve --symbol authorize --intent signin
-dox search authorization
 ```
+
+Refine through the CLI until the receipt accounts for the task's known paths and intent plus every applicable owner, decision, contract, binding invariant, and dependency. Then use the returned paths and symbols to guide targeted source inspection. A context pass is complete only when those receipt-backed records are reflected in the plan or answer.
+
+Keep structured-record retrieval inside `dox resolve` and `dox search`. Direct record access is only for editing a specifically resolved record or maintaining DOX itself; never enumerate, grep, or bulk-read the configured record directory.
 
 Read the receipt as evidence: `reason` says what matched and `edge` says whether it was a record path, enforcement binding, or dependent relationship. A path that hits invariant enforcement returns its full binding; a dependent path returns an impact summary.
 
