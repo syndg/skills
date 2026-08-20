@@ -34,6 +34,10 @@ paths: src/**
 terms: [boundary]
 aliases: [edge]
 adr: ADR-001
+source_path: AGENTS.md
+source_heading: Ownership
+source_sha256: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+source_digest: abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
 ---
 # Architecture
 `);
@@ -89,6 +93,11 @@ describe("public DOX CLI", () => {
     expect(data.records[0].id).toBe("login");
     const alias = await run(root, "search", "edge", "--json");
     expect(JSON.parse(alias.stdout).records[0].id).toBe("architecture");
+    expect(JSON.parse(alias.stdout).records[0].source).toEqual({
+      path: "AGENTS.md", heading: "Ownership",
+      sha256: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      digest: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    });
   });
 
   test("uses changed paths and emits a deterministic receipt", async () => {

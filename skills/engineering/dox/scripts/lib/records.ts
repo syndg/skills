@@ -65,6 +65,10 @@ export function parseRecord(text: string, file: string): DoxRecord {
     impact: asStrings(data.impact, "impact")[0],
     criticality: asStrings(data.criticality, "criticality")[0],
     state: asStrings(data.state, "state")[0],
+    source_path: asStrings(data.source_path, "source_path")[0],
+    source_heading: asStrings(data.source_heading, "source_heading")[0],
+    source_sha256: asStrings(data.source_sha256, "source_sha256")[0],
+    source_digest: asStrings(data.source_digest, "source_digest")[0],
     body, file,
   };
   for (const kind of record.enforcement) if (!ENFORCEMENT_KINDS.has(kind)) throw new DoxError(`invalid enforcement kind: ${kind}`);

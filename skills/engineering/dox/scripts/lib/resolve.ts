@@ -71,9 +71,10 @@ function invariantSummary(record: DoxRecord): string {
 
 export function publicRecord(match: Match): Record<string, unknown> {
   const record = match.record;
+  const source = record.source_path ? { path: record.source_path, heading: record.source_heading, sha256: record.source_sha256, digest: record.source_digest } : undefined;
   const base = {
     id: record.id, kind: record.kind, owner: record.owner, state: record.state, statement: record.statement,
-    file: record.file, match: match.full ? "binding" : "dependent",
+    file: record.file, source, match: match.full ? "binding" : "dependent",
   };
   if (!match.full && record.kind === "invariant") return {
     ...base, summary: invariantSummary(record), impact: record.impact, criticality: record.criticality,
@@ -99,6 +100,7 @@ export function markdown(matches: Match[]): string {
     const record = match.record;
     lines.push(`## ${record.id}`, `- Match: ${match.full ? "binding" : "dependent"}`, `- Reason: ${match.reason}`, `- Edge: ${match.edge}`, `- Owner: ${record.owner ?? "unassigned"}`);
     if (record.statement) lines.push(`- Statement: ${record.statement}`);
+    if (record.source_path) lines.push(`- Source: ${record.source_path}${record.source_heading ? `#${record.source_heading}` : ""}`);
     if (record.verification.length) lines.push(`- Proof: ${record.verification.join("; ")}`);
     if (match.full) lines.push("", record.body.trim());
     else lines.push(`- Summary: ${invariantSummary(record)}`, `- Impact: ${record.impact ?? "unspecified"}`);

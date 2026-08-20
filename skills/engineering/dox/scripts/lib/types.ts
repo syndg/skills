@@ -30,6 +30,10 @@ export type Record = {
   impact?: string;
   criticality?: string;
   state?: string;
+  source_path?: string;
+  source_heading?: string;
+  source_sha256?: string;
+  source_digest?: string;
   body: string;
   file: string;
 };

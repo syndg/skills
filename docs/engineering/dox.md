@@ -30,6 +30,8 @@ Resolution requires a project-local `dox.config.json` and its configured records
 
 `dox` is the automatic **contract-retrieval and structural-validation** layer underneath engineering flows. It keeps the relevant record-shaped knowledge present and well-formed so the skills doing design or implementation can reason from one coherent contract.
 
+Resolution also surfaces optional source path, heading, and digest metadata, so migrated records remain traceable to the exact frozen source section without reading a second runtime source.
+
 ## Where it fits
 
 `dox` is a **reach-for-it-anytime standalone** that most often runs beneath another flow. Its closest neighbor is [domain-modeling](https://aihero.dev/skills-domain-modeling), because that skill supplies the semantic adjudication for terminology and durable decisions; [ask-matt](https://aihero.dev/skills-ask-matt) maps both layers into the larger engineering flows.
