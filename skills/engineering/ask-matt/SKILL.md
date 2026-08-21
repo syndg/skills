@@ -55,7 +55,7 @@ Not feature work — upkeep.
 
 Three model-invoked layers run *beneath* the other skills. They retrieve or maintain the contracts that make a flow coherent. Reach for them directly when the contract, words, or module shape is the problem; or let the skills above pull them in.
 
-- **`/dox`** — the automatic **DOX-first contract-retrieval and structural-validation** layer for a project with DOX records. It runs before repository research or code work, including read-only tasks, and keeps structured-record discovery behind the resolver so the rest of the flow starts from a receipt-backed contract bundle.
+- **`/dox`** — the automatic **DOX-first contract-retrieval and structural-validation** layer for a project with DOX records. It runs before repository research or code work, including read-only tasks. Give it one task plus known paths or changed files; it returns a compact, budgeted, receipt-backed contract bundle with complete binding invariants and defers full bodies to explicit receipt-backed expansion.
 - **`/domain-modeling`** — the semantic-adjudication layer for the project's *domain* language: challenge a fuzzy term, resolve an overloaded word ("account" doing three jobs), and decide whether a hard-to-reverse choice deserves a durable decision record. In a DOX project it records settled terminology and decisions as DOX records; it owns the meaning, while `/dox` owns retrieval and structural validation.
 - **`/codebase-design`** — the deep-module vocabulary (module, interface, depth, seam, adapter, leverage, locality) for designing a module's *shape*: a lot of behaviour behind a small interface at a clean seam. `/tdd` and `/improve-codebase-architecture` both speak it.
 

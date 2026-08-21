@@ -15,9 +15,9 @@ export async function gitRoot(cwd = process.cwd()): Promise<string> {
 }
 
 export async function changedPaths(root: string, base?: string): Promise<string[]> {
-  const args = base ? ["diff", "--name-only", `${base}...HEAD`] : ["diff", "--name-only", "HEAD"];
-  const [tracked, untracked] = await Promise.all([run(root, args), run(root, ["ls-files", "--others", "--exclude-standard"])]);
-  return [...new Set([...tracked.split("\n"), ...untracked.split("\n")].filter(Boolean))].sort();
+  const committed = base ? await run(root, ["diff", "--name-only", `${base}...HEAD`]) : "";
+  const [working, untracked] = await Promise.all([run(root, ["diff", "--name-only", "HEAD"]), run(root, ["ls-files", "--others", "--exclude-standard"])]);
+  return [...new Set([...committed.split("\n"), ...working.split("\n"), ...untracked.split("\n")].filter((path) => path && !path.startsWith(".dox/")))].sort();
 }
 
 export async function trackedFiles(root: string): Promise<string[]> {

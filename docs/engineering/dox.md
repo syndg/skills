@@ -20,11 +20,23 @@ Its defining constraint is structural: `dox` retrieves and validates records, bu
 
 Type `/dox`, or the agent reaches for it automatically whenever it works in a repository with `dox.config.json`.
 
-In a configured repository, reach for it before research, planning, debugging, review, or implementation. The CLI is the retrieval interface: agents refine resolver cues and follow the receipt instead of enumerating the record directory. For resolving ambiguous terminology or deciding whether a trade-off deserves a durable decision, use [domain-modeling](https://aihero.dev/skills-domain-modeling) instead.
+In a configured repository, reach for it before research, planning, debugging, review, or implementation. Give `dox resolve` one natural-language task plus any known paths or changed-file cues. The CLI performs normalization, ranking, relationship closure, deduplication, and budgeting; agents do not enumerate the record directory or make overlapping synonym queries. For ambiguous terminology or deciding whether a trade-off deserves a durable decision, use [domain-modeling](https://aihero.dev/skills-domain-modeling) instead.
 
 ## Prerequisites
 
 Resolution requires a project-local `dox.config.json` and its configured records. Project setup is always explicit: inspect `dox init`, then run `dox init --apply` only when you intend to initialize the current repository. Installing or invoking the skill never initializes a project automatically.
+
+## Retrieval interface
+
+```bash
+dox resolve "change login authorization without bypassing policy" --path src/auth/login.ts
+dox resolve "review changed authorization behavior" --changed --base origin/main
+dox resolve --from <receipt-id> --expand <record-id>
+```
+
+Normal retrieval returns canonical compact JSON under a 16,384-byte default budget. Capsules include a summary, a bounded task-relevant excerpt, evidence, provenance, and body digest. Accepted and enforced invariants include their complete binding tuple. Optional records that do not fit are named in `receipt.deferred`; mandatory context is atomic, so an undersized budget fails instead of truncating a binding.
+
+Full bodies stay behind receipt-backed expansion. Expansion returns only newly requested bodies and a child receipt. Unknown record IDs, repeated expansion, stale corpus receipts, unsafe receipt-cache paths, and outputs that exceed the expansion budget fail closed.
 
 ## The contract layer
 
@@ -38,9 +50,11 @@ Architectural decisions are full `decision` records identified by a globally uni
 
 ## It's working if
 
-- A DOX receipt appears before broad source inspection, including on read-only tasks.
-- The agent refines `dox resolve` or `dox search` instead of enumerating the record directory; an empty search switches to source-path discovery rather than a synonym sweep.
-- The resulting plan or answer accounts for every returned critical record and uses targeted code reads to verify behavior.
+- A compact DOX receipt appears before broad source inspection, including on read-only tasks.
+- The agent makes one task-oriented resolution with known paths or changed files instead of enumerating records or sweeping synonyms.
+- Optional detail is visibly deferred, while every returned binding invariant is complete.
+- Full bodies are expanded only by discovered ID and only when the compact excerpt is insufficient.
+- The resulting plan or answer accounts for the applicable owners, decisions, contracts, invariants, and dependencies, then uses targeted code reads to verify behavior.
 
 ## Where it fits
 

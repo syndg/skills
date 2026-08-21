@@ -20,22 +20,30 @@ dox init --apply
 
 ## DOX-first
 
-In a configured repository, query DOX before repository research or code work, including read-only tasks. Start with the narrowest available cue:
+In a configured repository, query DOX before repository research or code work, including read-only tasks. Give the resolver one natural-language task and any known paths:
 
 ```bash
-dox resolve --path src/payments/charge.ts --intent "authorize a charge" --json
-dox resolve --intent "trace sign-in" --symbol authorize --json
-dox search "authorization"
-dox resolve --changed --json
+dox resolve "authorize a charge without bypassing payment policy" --path src/payments/charge.ts
+dox resolve "trace the sign-in boundary" --path src/auth/login.ts --path src/auth/session.ts
+dox resolve "review the authorization changes" --changed
+dox resolve "review changes since the release branch" --changed --base origin/main
 ```
 
-Refine through the CLI until the receipt accounts for the task's known paths and intent plus every applicable owner, decision, contract, binding invariant, and dependency. Then use the returned paths and symbols to guide targeted source inspection. A context pass is complete only when those receipt-backed records are reflected in the plan or answer.
+The normal result is canonical compact JSON. It contains ranked record capsules, bounded relevant excerpts, complete accepted or enforced invariant bindings, evidence edges, deferred record IDs, and a deterministic receipt. The default 16,384-byte budget removes optional capsules before mandatory knowledge. If complete mandatory context cannot fit, resolution fails with `DOX_BUDGET_TOO_SMALL`; it never returns a partial invariant binding.
 
-Keep structured-record retrieval inside `dox resolve` and `dox search`. Direct record access is only for editing a specifically resolved record or maintaining DOX itself; never enumerate, grep, or bulk-read the configured record directory.
+Use the returned paths and symbols for targeted source inspection. If you need a full body, expand only a discovered ID from its receipt:
 
-An empty search receipt switches the next step to source-path discovery outside the configured record directory, followed by one path-plus-intent resolution. One search per domain concept is enough; avoid synonym sweeps that add calls without adding evidence.
+```bash
+dox resolve --from <receipt-id> --expand <record-id>
+```
 
-Read the receipt as evidence: `reason` says what matched and `edge` says whether it was a record path, enforcement binding, or dependent relationship. A path that hits invariant enforcement returns its full binding; a dependent path returns an impact summary.
+Expansion returns only newly requested bodies and a child receipt. Stale receipts, unknown IDs, repeated expansions, and over-budget expansions fail closed.
+
+Keep structured-record retrieval inside `dox resolve`. Do not enumerate, grep, or bulk-read the configured record directory. Direct record access is only for editing a specifically resolved record or maintaining DOX itself.
+
+If the result has no useful capsule, discover a relevant source path outside the configured record directory, then run one new task-plus-path resolution. Do not perform synonym sweeps or repeated overlapping calls. Treat `receipt.deferred` as an explicit signal that optional details remain available, not as silent truncation.
+
+Read each capsule's `evidence`: `source` identifies task, path, changed-path, binding, or graph evidence; `edge` identifies the matched field or relationship. A path that hits invariant enforcement returns the complete binding tuple. A dependent path returns the same invariant with dependent relation evidence.
 
 ## Record shape
 

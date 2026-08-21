@@ -25,8 +25,14 @@ export function safeGlob(value: string, label = "glob"): string {
 export function globMatches(pattern: string, path: string): boolean {
   safeGlob(pattern);
   safeRelative(path);
+  if (pattern.endsWith("/**") && path === pattern.slice(0, -3)) return true;
   const quoted = pattern.replace(/[.+^$|\\]/g, "\\$&").replaceAll("**", "\u0000").replaceAll("*", "[^/]*").replaceAll("\u0000", ".*");
   return new RegExp(`^${quoted}$`).test(path);
+}
+
+export function ownerScopeMatches(owner: string | undefined, path: string): boolean {
+  const scope = owner?.replace(/\/$/u, "");
+  return Boolean(scope && scope !== "." && scope.includes("/") && (path === scope || path.startsWith(`${scope}/`)));
 }
 
 export function globSpecificity(pattern: string): number {

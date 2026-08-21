@@ -87,42 +87,40 @@ describe("public DOX CLI", () => {
     expect(await Bun.file(join(root, ".dox", ".gitignore")).exists()).toBe(true);
   });
 
-  test("resolves exact paths before broad paths and aliases", async () => {
+  test("ranks narrow paths before broad paths and cuts over legacy search", async () => {
     const root = await project();
-    const result = await run(root, "resolve", "--path", "src/auth/login.ts", "--json");
+    const result = await run(root, "resolve", "inspect login boundary edge ADR-0001", "--path", "src/auth/login.ts");
     expect(result.code).toBe(0); const data = JSON.parse(result.stdout);
-    expect(data.records[0].id).toBe("login");
-    const alias = await run(root, "search", "edge", "--json");
-    expect(JSON.parse(alias.stdout).records[0].id).toBe("architecture");
-    expect(JSON.parse(alias.stdout).records[0].source).toEqual({
+    const ids = data.items.map((item: { id: string }) => item.id);
+    expect(ids.indexOf("login")).toBeLessThan(ids.indexOf("architecture"));
+    expect(data.items.find((item: { id: string }) => item.id === "architecture").source).toEqual({
       path: "AGENTS.md", heading: "Ownership",
       sha256: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
       digest: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
     });
-    const adr = await run(root, "resolve", "--adr", "ADR-0001", "--json");
-    expect(JSON.parse(adr.stdout).records[0].id).toBe("architecture");
+    const legacy = await run(root, "search", "edge");
+    expect(legacy.code).toBe(1); expect(legacy.stderr).toContain("unknown command: search");
   });
 
   test("uses changed paths and emits a deterministic receipt", async () => {
     const root = await project();
-    const clean = await run(root, "resolve", "--changed", "--json");
-    expect(clean.code).toBe(0); expect(JSON.parse(clean.stdout).records).toEqual([]);
     await writeFile(join(root, "src", "auth", "login.ts"), "export const authorize = () => false;\n");
     await writeFile(join(root, "src", "other.ts"), "export const other = 2;\n");
-    const one = await run(root, "resolve", "--changed", "--json");
-    const two = await run(root, "resolve", "--changed", "--json");
+    const one = await run(root, "resolve", "review changed authorization", "--changed");
+    const two = await run(root, "resolve", "review changed authorization", "--changed");
     expect(one.code).toBe(0); expect(one.stdout).toBe(two.stdout);
-    const data = JSON.parse(one.stdout); expect(data.receipt.some((item: { edge: string }) => item.edge.startsWith("enforcement:"))).toBe(true);
+    const data = JSON.parse(one.stdout);
+    expect(data.items.find((item: { id: string }) => item.id === "authz-invariant").evidence.some((item: { edge: string }) => item.edge.startsWith("enforcement:"))).toBe(true);
   });
 
-  test("returns full invariant bindings and dependent summaries", async () => {
+  test("returns complete invariant bindings and dependent context", async () => {
     const root = await project();
-    const enforced = JSON.parse((await run(root, "resolve", "--path", "src/auth/login.ts", "--json")).stdout);
-    expect(enforced.records.find((item: { id: string }) => item.id === "authz-invariant").verification).toEqual(["bun test"]);
-    const dependent = JSON.parse((await run(root, "resolve", "--path", "src/api.ts", "--json")).stdout);
-    const invariant = dependent.records.find((item: { id: string }) => item.id === "authz-invariant");
-    expect(invariant.match).toBe("dependent"); expect(invariant.summary).toContain("guarded writer");
-    expect(dependent.receipt.some((item: { edge: string }) => item.edge.startsWith("dependency:"))).toBe(true);
+    const enforced = JSON.parse((await run(root, "resolve", "change login authorization", "--path", "src/auth/login.ts")).stdout);
+    expect(enforced.items.find((item: { id: string }) => item.id === "authz-invariant").invariant.verification).toEqual(["bun test"]);
+    const dependent = JSON.parse((await run(root, "resolve", "inspect API authorization dependency", "--path", "src/api.ts")).stdout);
+    const invariant = dependent.items.find((item: { id: string }) => item.id === "authz-invariant");
+    expect(invariant.relation).toBe("dependent"); expect(invariant.summary).toContain("guarded writer");
+    expect(invariant.evidence.some((item: { edge: string }) => item.edge.startsWith("dependency:"))).toBe(true);
   });
 
   test("validates and resolves contract dependency bindings", async () => {
@@ -147,21 +145,26 @@ failure_modes: [contract-bypass]
 # Contract dependency
 `;
     await writeFile(invariantPath, invariant("missing-contract"));
-    const missing = await run(root, "resolve", "--term", "missing-contract", "--json");
+    const missing = await run(root, "resolve", "inspect missing-contract");
     expect(missing.code).toBe(1); expect(missing.stderr).toContain("broken invariant dependency contract: missing-contract");
     await writeFile(join(root, "dox", "records", "named-contract.md"), `---
 id: named-contract
 kind: contract
 owner: platform
 contracts: [known-contract]
+paths: [src/contracts/**]
 ---
 # Named contract
 `);
     await writeFile(invariantPath, invariant("known-contract"));
-    const result = await run(root, "resolve", "--term", "known-contract", "--json");
+    const result = await run(root, "resolve", "inspect known-contract");
     expect(result.code).toBe(0);
-    const dependent = JSON.parse(result.stdout).records.find((item: { id: string }) => item.id === "contract-dependent");
-    expect(dependent.match).toBe("dependent");
+    const dependent = JSON.parse(result.stdout).items.find((item: { id: string }) => item.id === "contract-dependent");
+    expect(dependent.relation).toBe("dependent");
+    const byPath = await run(root, "resolve", "inspect this consumer", "--path", "src/contracts/consumer.ts");
+    expect(byPath.code).toBe(0);
+    const pathDependent = JSON.parse(byPath.stdout).items.find((item: { id: string }) => item.id === "contract-dependent");
+    expect(pathDependent.relation).toBe("dependent");
   });
 
   test("lint reports duplicate ADRs and stale Markdown references", async () => {
@@ -176,7 +179,7 @@ symbols: [retiredSymbol]
 ---
 [missing](nope.md)
 `);
-    const ambiguous = await run(root, "resolve", "--adr", "ADR-0001", "--json");
+    const ambiguous = await run(root, "resolve", "inspect ADR-0001");
     expect(ambiguous.code).toBe(1); expect(ambiguous.stderr).toContain("duplicate ADR record: ADR-0001");
     await mkdir(join(root, "docs"), { recursive: true });
     await writeFile(join(root, "DECISIONS.md"), "### ADR-0099 — First body\n");
@@ -191,7 +194,7 @@ symbols: [retiredSymbol]
   test("fails closed on unknown schema fields and incomplete invariants", async () => {
     const root = await project();
     await writeFile(join(root, "dox.config.json"), '{"schema_version":1,"records_dir":"dox/records","mystery":true}\n');
-    const unknownConfig = await run(root, "resolve", "--path", "src/api.ts", "--json");
+    const unknownConfig = await run(root, "resolve", "inspect api", "--path", "src/api.ts");
     expect(unknownConfig.code).toBe(1); expect(unknownConfig.stderr).toContain("unknown config field: mystery");
     await writeFile(join(root, "dox.config.json"), '{"schema_version":1,"records_dir":"dox/records","coverage":{"paths":["src/**"]}}\n');
     await writeFile(join(root, "dox", "records", "unknown.md"), `---
@@ -202,7 +205,7 @@ mystery: true
 ---
 # Unknown
 `);
-    const unknown = await run(root, "resolve", "--path", "src/api.ts", "--json");
+    const unknown = await run(root, "resolve", "inspect api", "--path", "src/api.ts");
     expect(unknown.code).toBe(1); expect(unknown.stderr).toContain("unknown record field: mystery");
     await rm(join(root, "dox", "records", "unknown.md"));
     await writeFile(join(root, "dox", "records", "incomplete.md"), `---
@@ -212,7 +215,7 @@ owner: platform
 ---
 # Incomplete
 `);
-    const incomplete = await run(root, "resolve", "--path", "src/api.ts", "--json");
+    const incomplete = await run(root, "resolve", "inspect api", "--path", "src/api.ts");
     expect(incomplete.code).toBe(1); expect(incomplete.stderr).toContain("invariant is missing statement");
   });
 
@@ -233,24 +236,24 @@ state: proposed
 ---
 # Proposal
 `);
-    const result = await run(root, "resolve", "--path", "src/api.ts", "--json");
+    const result = await run(root, "resolve", "inspect proposed API guarantee", "--path", "src/api.ts");
     expect(result.code).toBe(0);
     const data = JSON.parse(result.stdout);
-    const proposal = data.records.find((item: { id: string }) => item.id === "proposal");
-    expect(proposal.match).toBe("proposal");
-    expect(data.receipt.find((item: { id: string }) => item.id === "proposal").edge).toBe("record.path:src/api.ts");
+    const proposal = data.items.find((item: { id: string }) => item.id === "proposal");
+    expect(proposal.relation).toBe("proposal");
+    expect(proposal.evidence.find((item: { edge: string }) => item.edge === "record.path:src/api.ts").value).toBe("src/api.ts");
   });
 
   test("requires explicit project initialization", async () => {
     const root = await mkdtemp("/tmp/dox-no-config-"); roots.push(root); await git(root, "init", "-q");
-    const result = await run(root, "resolve", "--path", "src/file.ts", "--json");
+    const result = await run(root, "resolve", "inspect source file", "--path", "src/file.ts");
     expect(result.code).toBe(1); expect(result.stderr).toContain("dox.config.json not found");
   });
 
   test("fails closed on record symlinks", async () => {
     const root = await project();
     await symlink(join(root, "src", "api.ts"), join(root, "dox", "records", "linked.md"));
-    const result = await run(root, "resolve", "--path", "src/api.ts", "--json");
+    const result = await run(root, "resolve", "inspect API", "--path", "src/api.ts");
     expect(result.code).toBe(1); expect(result.stderr).toContain("symlink escape denied");
   });
 
@@ -274,7 +277,7 @@ symbols: [sentinel]
 
   test("fails closed on traversal", async () => {
     const root = await project();
-    const result = await run(root, "resolve", "--path", "../outside", "--json");
+    const result = await run(root, "resolve", "inspect outside path", "--path", "../outside");
     expect(result.code).toBe(1); expect(result.stderr).toContain("unsafe path");
   });
 });
