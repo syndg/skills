@@ -11,9 +11,17 @@ import type {
 import { DoxError, globMatches, globSpecificity, ownerScopeMatches, safeRelative } from "./safe.ts";
 
 const RESOLVER_VERSION = 2;
+const MAX_DIRECT_DISCOVERY = 64;
 const STOP_WORDS = new Set([
-  "a", "an", "and", "about", "change", "find", "for", "from", "how", "in", "into", "is", "of", "on", "or", "repository",
-  "review", "show", "task", "that", "the", "this", "to", "what", "where", "which", "with", "without",
+  "a", "an", "and", "about", "apps", "change", "find", "for", "from", "how", "in", "into", "is", "of", "on", "or", "repository",
+  "review", "show", "src", "task", "that", "the", "this", "to", "what", "where", "which", "with", "without",
+]);
+const EXACT_TASK_PRIORITIES = new Set([620, 670, 720, 770, 820, 870]);
+const WEAK_EXACT_SINGLE_TOKENS = new Set([
+  "agent", "agents", "behavior", "change", "clarification", "code", "command", "commands", "contract", "contracts",
+  "decision", "decisions", "expected", "fact", "facts", "file", "files", "implementation", "inference", "invariant", "invariants",
+  "modify", "obligation", "obligations", "owner", "owners", "path", "paths", "plan", "relevant", "review", "source", "sources",
+  "symbol", "symbols", "task", "test", "testing", "unrelated", "verification", "verify",
 ]);
 
 type Relation = ContextItem["relation"];
@@ -25,6 +33,8 @@ type Candidate = {
   taskHits: number;
   metadataHits: number;
   referenceScore: number;
+  referenceSources: Set<string>;
+  direct: boolean;
 };
 
 type Resolution = { output: string; envelope: ResolveEnvelope; manifest: ReceiptManifest };
@@ -69,6 +79,11 @@ function phrase(value: string): string {
   return splitWords(value).join(" ");
 }
 
+function orderedPhrase(value: string): string {
+  const separated = value.normalize("NFKC").replace(/([\p{Ll}\d])([\p{Lu}])/gu, "$1 $2").toLocaleLowerCase("en-US");
+  return (separated.match(/[\p{L}\p{N}]+/gu) ?? []).filter((word) => !STOP_WORDS.has(word)).join(" ");
+}
+
 function headings(body: string): string[] {
   return body.split(/\r?\n/u).map((line) => /^#{1,6}\s+(.+)$/u.exec(line)?.[1]?.trim()).filter((line): line is string => Boolean(line));
 }
@@ -82,6 +97,38 @@ function taskHitCount(record: DoxRecord, taskTokens: Set<string>, includeBody = 
 
 function bindingInvariant(record: DoxRecord): boolean {
   return record.kind === "invariant" && (record.state === "accepted" || record.state === "enforced");
+}
+
+function exactTaskEvidence(item: Candidate["evidence"][number]): boolean {
+  return item.source === "task" && (EXACT_TASK_PRIORITIES.has(item.priority)
+    || item.edge.startsWith("enforcement:") || item.edge.startsWith("dependency:"));
+}
+
+function strongExactTaskEvidence(item: Candidate["evidence"][number]): boolean {
+  if (!exactTaskEvidence(item)) return false;
+  const words = splitWords(item.value);
+  if (words.length >= 2) return item.priority >= 770
+    || item.edge.startsWith("enforcement:") || item.edge.startsWith("dependency:");
+  if (words.length !== 1 || WEAK_EXACT_SINGLE_TOKENS.has(words[0])) return false;
+  return item.priority >= 770
+    || item.edge.startsWith("enforcement:") || item.edge.startsWith("dependency:");
+}
+
+function applicableDirectCandidate(candidate: Candidate, taskTokenCount: number): boolean {
+  if (candidate.evidence.some((item) => item.source !== "task")) return true;
+  const exactMetadata = candidate.evidence.filter((item) => EXACT_TASK_PRIORITIES.has(item.priority));
+  if (!bindingInvariant(candidate.record)) {
+    if (candidate.evidence.some(strongExactTaskEvidence)) return true;
+    if (exactMetadata.some((item) => taskTokenCount <= 3 || splitWords(item.value).length >= 2)) return true;
+    const bodyThreshold = Math.min(taskTokenCount, Math.max(4, Math.ceil(taskTokenCount / 2)));
+    const metadataThreshold = Math.min(6, Math.max(1, taskTokenCount));
+    return candidate.metadataHits >= metadataThreshold
+      || (candidate.metadataHits >= 3 && candidate.evidence.some((item) => item.edge === "record.term"))
+      || candidate.taskHits >= bodyThreshold;
+  }
+  if (candidate.evidence.some(strongExactTaskEvidence)
+    || candidate.evidence.some((item) => exactTaskEvidence(item) && splitWords(item.value).length >= 2)) return true;
+  return false;
 }
 
 function includesPhrase(taskPhrase: string, value: string): boolean {
@@ -109,7 +156,7 @@ function directCandidate(record: DoxRecord, request: ResolveRequest): Candidate 
   const taskTokens = new Set(splitWords(request.task));
   const taskHits = taskHitCount(record, taskTokens);
   const metadataHits = taskHitCount(record, taskTokens, false);
-  const candidate: Candidate = { record, relation: record.kind === "invariant" && record.state === "proposed" ? "proposal" : "record", evidence: [], graphDepth: 0, taskHits, metadataHits, referenceScore: 0 };
+  const candidate: Candidate = { record, relation: record.kind === "invariant" && record.state === "proposed" ? "proposal" : "record", evidence: [], graphDepth: 0, taskHits, metadataHits, referenceScore: 0, referenceSources: new Set(), direct: true };
 
   for (const path of request.paths) {
     for (const pattern of record.paths) if (globMatches(pattern, path)) {
@@ -165,7 +212,7 @@ function directCandidate(record: DoxRecord, request: ResolveRequest): Candidate 
         if (value && includesPhrase(taskPhrase, value)) {
           if (edgeKind === "enforcement") candidate.relation = "binding";
           else if (candidate.relation !== "binding") candidate.relation = "dependent";
-          addEvidence(candidate, { source: "binding", edge: `${edgeKind}:${value}`, value }, priority);
+          addEvidence(candidate, { source: "task", edge: `${edgeKind}:${key}:${value}`, value }, priority);
         }
       }
     }
@@ -223,18 +270,21 @@ function addClosure(candidates: Map<string, Candidate>, records: readonly DoxRec
       const taskHits = taskHitCount(record, taskTokens);
       const metadataHits = taskHitCount(record, taskTokens, false);
       const sourceSpecificity = Math.max(0, ...candidate.evidence.map((item) => item.specificity));
-      const sourceStrong = sourceSpecificity >= 100 || candidate.metadataHits >= 2;
-      const referenceScore = referenced.length === 1 && sourceStrong ? 20 + candidate.metadataHits * 10 + candidate.taskHits : metadataHits >= 2 ? metadataHits * 10 : 0;
+      const sourceStrong = sourceSpecificity >= 100 || candidate.evidence.some(strongExactTaskEvidence)
+        || candidate.evidence.some((item) => exactTaskEvidence(item) && splitWords(item.value).length >= 2);
+      const referenceScore = sourceStrong ? 20 + candidate.metadataHits * 10 + candidate.taskHits : metadataHits >= 2 ? metadataHits * 10 : 0;
+      if (referenceScore > 0) candidate.referenceScore = Math.max(candidate.referenceScore, referenceScore + 1);
       const existing = candidates.get(record.id);
       if (existing) {
         if (link.relation === "dependent" && existing.relation !== "binding") existing.relation = "dependent";
         else if (existing.relation === "record") existing.relation = "reference";
         existing.referenceScore = Math.max(existing.referenceScore, referenceScore);
+        existing.referenceSources.add(candidate.record.id);
         addEvidence(existing, { source: link.source, edge: link.edge, value: record.id }, 400 - depth * 25);
         continue;
       }
       const relation: Relation = link.relation === "dependent" ? "dependent" : bindingInvariant(record) ? "binding" : "reference";
-      const added: Candidate = { record, relation, evidence: [], graphDepth: depth + 1, taskHits, metadataHits, referenceScore };
+      const added: Candidate = { record, relation, evidence: [], graphDepth: depth + 1, taskHits, metadataHits, referenceScore, referenceSources: new Set([candidate.record.id]), direct: false };
       addEvidence(added, { source: link.source, edge: link.edge, value: record.id }, 400 - depth * 25);
       candidates.set(record.id, added);
       if (qualifiesAsSeed(added)) queue.push({ candidate: added, depth: depth + 1 });
@@ -242,13 +292,20 @@ function addClosure(candidates: Map<string, Candidate>, records: readonly DoxRec
   }
 }
 
-function rank(candidate: Candidate): [number, number, number, number, number, number, number, number] {
+function rank(candidate: Candidate): [number, number, number, number, number, number, number, number, number, number, number] {
   const mandatory = bindingInvariant(candidate.record) ? 1 : 0;
   const best = Math.max(...candidate.evidence.map((item) => item.priority));
   const classes = new Set(candidate.evidence.map((item) => `${item.source}:${item.edge.split(":")[0]}`)).size;
   const specificity = Math.max(0, ...candidate.evidence.map((item) => item.specificity));
+  const authoritative = candidate.evidence.some((item) => item.source !== "task");
+  const exactTask = candidate.evidence.filter(exactTaskEvidence);
+  const exactMultiword = exactTask.some((item) => splitWords(item.value).length >= 2);
+  const strongExactMetadata = candidate.evidence.some(strongExactTaskEvidence) ? 1 : 0;
+  const applicability = authoritative || strongExactMetadata || candidate.metadataHits >= 3 ? 1 : 0;
+  const exactPath = candidate.evidence.some((item) => (item.source === "path" || item.source === "changed-path") && item.edge.startsWith("record.path:") && !/[*?\[]/u.test(item.edge.slice("record.path:".length))) ? 1 : 0;
   const narrowScope = specificity >= 100 ? 1 : 0;
-  return [mandatory, narrowScope, candidate.referenceScore, candidate.metadataHits, candidate.taskHits, best, classes, -candidate.graphDepth];
+  const relevance = candidate.metadataHits * 4 + candidate.taskHits + narrowScope;
+  return [mandatory, applicability, exactPath, strongExactMetadata, candidate.referenceScore, Number(exactMultiword), relevance, narrowScope, best, classes, -candidate.graphDepth];
 }
 
 function compareCandidates(left: Candidate, right: Candidate): number {
@@ -258,11 +315,18 @@ function compareCandidates(left: Candidate, right: Candidate): number {
 }
 
 function relevantExcerpt(record: DoxRecord, task: string): string {
+  const taskPhrase = orderedPhrase(task);
   const taskTokens = new Set(splitWords(task));
+  const exactMetadataPhrases = [...record.terms, ...record.aliases, ...record.symbols, ...record.intents]
+    .map((value) => orderedPhrase(value))
+    .filter((value) => value.split(" ").length >= 2 && (` ${taskPhrase} `).includes(` ${value} `));
   const paragraphs = record.body.split(/\r?\n\s*\r?\n/u).map((paragraph) => paragraph.trim()).filter(Boolean);
   const prose = paragraphs.filter((paragraph) => !/^#{1,6}\s+/u.test(paragraph));
-  const ranked = (prose.length ? prose : paragraphs).map((paragraph) => ({ paragraph, hits: tokenCoverage(taskTokens, paragraph).hits }));
-  ranked.sort((left, right) => right.hits - left.hits);
+  const ranked = (prose.length ? prose : paragraphs).map((paragraph) => {
+    const paragraphPhrase = orderedPhrase(paragraph);
+    return { paragraph, exactMetadataHits: exactMetadataPhrases.filter((value) => (` ${paragraphPhrase} `).includes(` ${value} `)).length, hits: tokenCoverage(taskTokens, paragraph).hits };
+  });
+  ranked.sort((left, right) => right.exactMetadataHits - left.exactMetadataHits || right.hits - left.hits);
   const selected = ranked[0]?.paragraph.replace(/\s+/gu, " ").trim() ?? record.id;
   if (Buffer.byteLength(selected) <= 1024) return selected;
   const sentences = selected.split(/(?<=[.!?])\s+/u);
@@ -329,14 +393,39 @@ export function resolveContext(records: readonly DoxRecord[], request: ResolveRe
   request.paths.forEach((path) => safeRelative(path));
   const normalizedRequest: ResolveRequest = { ...request, paths: [...new Set(request.paths)].sort() };
   const candidates = new Map<string, Candidate>();
+  const taskTokenCount = splitWords(normalizedRequest.task).length;
   for (const record of records) {
     const candidate = directCandidate(record, normalizedRequest);
-    if (candidate) candidates.set(record.id, candidate);
+    if (candidate && applicableDirectCandidate(candidate, taskTokenCount)) candidates.set(record.id, candidate);
   }
   addClosure(candidates, records, normalizedRequest.task);
-  const ranked = [...candidates.values()].sort(compareCandidates);
-  const mandatory = ranked.filter((candidate) => bindingInvariant(candidate.record));
-  const optional = ranked.filter((candidate) => !bindingInvariant(candidate.record));
+  const allRanked = [...candidates.values()].sort(compareCandidates);
+  const authoritativeDirect = (candidate: Candidate) => candidate.direct && candidate.evidence.some(
+    (item) => item.source === "path" || item.source === "changed-path" || item.source === "binding",
+  );
+  let retainedDirect = 0;
+  const ranked = allRanked.filter((candidate) => {
+    if (bindingInvariant(candidate.record) || !candidate.direct || candidate.referenceSources.size > 0 || authoritativeDirect(candidate)) return true;
+    retainedDirect += 1;
+    return retainedDirect <= MAX_DIRECT_DISCOVERY;
+  });
+  const exactSources = ranked.filter((candidate) => candidate.direct && rank(candidate)[3] === 1);
+  const graphEligible = new Set(ranked.filter((candidate) => candidate.direct && (
+    bindingInvariant(candidate.record) || authoritativeDirect(candidate)
+  )).map((candidate) => candidate.record.id));
+  exactSources.forEach((candidate) => graphEligible.add(candidate.record.id));
+  if (exactSources.length > 0) {
+    let previousSize = -1;
+    while (graphEligible.size !== previousSize) {
+      previousSize = graphEligible.size;
+      for (const candidate of ranked) {
+        if ([...candidate.referenceSources].some((source) => graphEligible.has(source))) graphEligible.add(candidate.record.id);
+      }
+    }
+  }
+  const deliveryRanked = exactSources.length > 0 ? ranked.filter((candidate) => graphEligible.has(candidate.record.id)) : ranked;
+  const mandatory = deliveryRanked.filter((candidate) => bindingInvariant(candidate.record));
+  const optional = deliveryRanked.filter((candidate) => !bindingInvariant(candidate.record));
   const selected = [...mandatory];
 
   const trial = (selection: Candidate[]) => {
@@ -353,7 +442,9 @@ export function resolveContext(records: readonly DoxRecord[], request: ResolveRe
   }
   for (const candidate of optional) {
     const next = trial([...selected, candidate]);
-    if (Buffer.byteLength(next.output) <= normalizedRequest.budgetBytes) { selected.push(candidate); current = next; }
+    if (Buffer.byteLength(next.output) > normalizedRequest.budgetBytes) break;
+    selected.push(candidate);
+    current = next;
   }
   return current;
 }
