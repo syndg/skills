@@ -14,6 +14,8 @@ description: Set up Husky pre-commit hooks with lint-staged (Prettier), type che
 
 ## Steps
 
+Before detecting tooling or changing the repository, check for `dox.config.json`. When present, invoke `/dox` with one pre-commit setup task and the known package and hook paths, then use its compact resolved items for targeted work. This is a direct cutover: do not enumerate records or also read `AGENTS.md`. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. Another worktree resolves locally and treats supplied compact items only as hints.
+
 ### 1. Detect package manager
 
 Check for `package-lock.json` (npm), `pnpm-lock.yaml` (pnpm), `yarn.lock` (yarn), `bun.lockb` (bun). Use whichever is present. Default to npm if unclear.

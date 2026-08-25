@@ -18,7 +18,9 @@ Work from whatever is already in the conversation context. If the user passes a 
 
 ### 2. Explore the codebase (optional)
 
-If you have not already explored the codebase, do so to understand the current state of the code. Ticket titles and descriptions should use the Ubiquitous Language from the applicable `AGENTS.md` chain and respect its inherited Architectural Decisions.
+Before repository exploration or planning, establish contract context for this exact breakdown. If `dox.config.json` exists, invoke `/dox` with one ticket-planning task and every known relevant path, then use its compact resolved items for targeted exploration. Treat that as a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable `AGENTS.md` chain from the repo root to the nearest owning document and any relevant co-located `DECISIONS.md` entries it indexes when project contract context is needed. Reuse compact resolved context only when it came from the same worktree for the same task and paths. Another worktree resolves locally and treats supplied items only as hints.
+
+If you have not already explored the codebase, do so to understand the current state of the code. Use the resolved project language and decisions in ticket titles and descriptions.
 
 Look for opportunities to prefactor the code to make the implementation easier. "Make the change easy, then make the easy change."
 

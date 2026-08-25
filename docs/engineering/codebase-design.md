@@ -4,6 +4,8 @@
 
 It is a reference, not a process. There is no loop to run, no artifact it produces, no checkpoint where it asks you a question. Every other skill that touches design borrows its vocabulary; on its own it gives you the language and stops. That is the thing to know before you invoke it, because a skill with no process and no stopping rule will improvise one if you point a [session](https://www.aihero.dev/ai-coding-dictionary/session) at it and say "go" — see the questions below.
 
+When the vocabulary is applied to repository code, contract grounding precedes source inspection. A configured DOX repository resolves one module-design task with known paths; without DOX, the skill reads the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. A vocabulary-only question needs neither route.
+
 ## When to reach for it
 
 Type `/codebase-design`, or the agent reaches for it automatically when a design task fits.
@@ -43,7 +45,7 @@ Depth is deliberately *not* defined as the ratio of implementation lines to inte
 - **The interface is the test surface.** Callers and tests cross the same seam. If you want to test *past* the interface, the module is the wrong shape.
 - **One adapter means a hypothetical seam. Two adapters means a real one.** Don't cut a seam until something actually varies across it. A single-adapter seam is just indirection.
 
-Two supporting files go further, and the skill reads them on demand rather than up front. [DEEPENING.md](https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DEEPENING.md) classifies a candidate's dependencies — in-process, local-substitutable, remote-but-owned, true-external — because the category decides how the deepened module gets tested across its seam. [DESIGN-IT-TWICE.md](https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DESIGN-IT-TWICE.md) spins up parallel [sub-agents](https://www.aihero.dev/ai-coding-dictionary/subagent) to produce three or more radically different interfaces for the same module, then compares them on depth, locality and seam placement.
+Two supporting files go further, and the skill reads them on demand rather than up front. [DEEPENING.md](https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DEEPENING.md) classifies a candidate's dependencies — in-process, local-substitutable, remote-but-owned, true-external — because the category decides how the deepened module gets tested across its seam. [DESIGN-IT-TWICE.md](https://github.com/mattpocock/skills/blob/main/skills/engineering/codebase-design/DESIGN-IT-TWICE.md) spins up parallel [sub-agents](https://www.aihero.dev/ai-coding-dictionary/subagent) to produce three or more radically different interfaces for the same module, then compares them on depth, locality and seam placement. A same-worktree brief may carry relevant compact DOX items only for the exact design task and path set; another worktree resolves locally and treats supplied items only as hints. The unconfigured fallback carries the applicable `AGENTS.md` language and indexed co-located `DECISIONS.md` entries.
 
 ## Common questions
 

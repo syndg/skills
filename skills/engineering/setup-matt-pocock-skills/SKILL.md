@@ -1,93 +1,92 @@
 ---
 name: setup-matt-pocock-skills
-description: Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and AGENTS/DOX domain documentation. Run once before first use of the other engineering skills.
+description: Configure a repository's issue tracker, triage labels, and contract lookup. Preserve configured DOX records as canonical; scaffold the AGENTS fallback only when `dox.config.json` is absent.
 disable-model-invocation: true
 ---
 
-# Setup Matt Pocock's Skills
+# Setup Matt Pocock's skills
 
-Scaffold the per-repo configuration that the engineering skills assume:
+Set up the per-repository configuration used by the engineering skills:
 
-- **Issue tracker** — where issues live (GitHub by default; local markdown is also supported out of the box)
-- **Triage labels** — the strings used for the five canonical triage roles
-- **Domain docs** — the AGENTS/DOX hierarchy where domain language and architectural decisions live, and the consumer rules for reading it
+- **Issue tracker**: where issues live.
+- **Triage labels**: the strings for the five canonical triage roles.
+- **Domain docs**: how skills resolve the repository's canonical contract.
 
-This is a prompt-driven skill, not a deterministic script. Explore, present what you found, confirm with the user, then write.
+This is prompt-driven setup. Discover the repository, present a draft, get confirmation, then write.
 
 ## Process
 
-### 1. Explore
+### 1. Select contract storage before exploration
 
-Look at the current repo to understand its starting state. Read whatever exists; don't assume:
+Check for `dox.config.json` before reading source, history, or repository instructions. Its presence selects one of two mutually exclusive branches.
 
-- `git remote -v` and `.git/config` — is this a GitHub repo? Which one?
-- `AGENTS.md` and `CLAUDE.md` at the repo root — does either exist? Is there already an `## Agent skills` section in either?
-- Every `AGENTS.md` from the repo root down — what DOX hierarchy already exists, and do the documents have `## Change Protocol`, `## Ubiquitous Language`, `## Architectural Decisions`, or `## Child DOX Index` sections?
-- `docs/agents/` — does this skill's prior output already exist?
-- `.scratch/` — sign that a local-markdown issue tracker convention is already in use
-- Is the `triage` skill installed? (a `triage` skill folder alongside this one, or `triage` in your available skills.) This decides whether Section B runs at all.
-- Monorepo signals — a `pnpm-workspace.yaml`, a `workspaces` field in `package.json`, or a populated `packages/*` with its own `src/`. Present only in a genuinely large multi-package repo; their absence means single-context, which is almost every repo.
+**Configured DOX branch.** Invoke `/dox` for this setup task before further repository exploration. Treat the configured records as canonical. Use the compact resolved items to understand ownership and existing contract pointers. Do not enumerate the configured record directory or every `AGENTS.md`, build an AGENTS domain hierarchy, mirror records into `AGENTS.md`, or create `DECISIONS.md`.
 
-### 2. Present findings and ask
+**Unconfigured AGENTS fallback.** When `dox.config.json` is absent, inspect the root instruction files, the existing root-to-nearest `AGENTS.md` paths for likely work areas, and any relevant co-located `DECISIONS.md` entries those chains index. This branch may scaffold a root-only fallback or preserve durable child boundaries already present.
 
-Summarise what's present and what's missing. Then take the sections in order — one section, one answer or confirmation, then the next.
+This skill never initializes DOX implicitly. Do not run `dox init --apply` unless the human explicitly asks to initialize DOX, has reviewed the proposal from `dox init`, and approves applying that proposal.
 
-Lead each section with the recommended answer so the user can accept it in a word. Give a one-line explainer only when the choice genuinely branches. Skip Section B when `triage` isn't installed. Section C is the fixed AGENTS/DOX convention: present the discovered hierarchy and its root-only default for confirmation.
+### 2. Explore the selected branch
 
-**Section A — Issue tracker.**
+Inspect the rest of the repository's setup without crossing the storage boundary:
 
-> Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it — they need to know whether to call `gh issue create`, write a markdown file under `.scratch/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
+- `git remote -v` and `.git/config`: identify the issue tracker host.
+- Root `AGENTS.md` and `CLAUDE.md`: find an existing `## Agent skills` pointer block. In the configured branch, read these only as root instruction files, not as a parallel domain store.
+- `docs/agents/`: find prior setup output.
+- `.scratch/`: detect an existing local Markdown issue tracker convention.
+- The installed skills: run the triage-label section only when `triage` is installed.
+- Monorepo signals such as `pnpm-workspace.yaml`, a `workspaces` field, or populated package source trees. Use these only to propose fallback ownership boundaries in the unconfigured branch.
 
-Default posture: these skills were designed for GitHub. If a `git remote` points at GitHub, propose that. If a `git remote` points at GitLab (`gitlab.com` or a self-hosted host), propose GitLab. Otherwise (or if the user prefers), offer:
+Summarize what exists and what is missing. Then present Sections A through C in order, one answer or confirmation at a time. Lead with the recommendation and explain only real branches.
 
-- **GitHub** — issues live in the repo's GitHub Issues (uses the `gh` CLI)
-- **GitLab** — issues live in the repo's GitLab Issues (uses the [`glab`](https://gitlab.com/gitlab-org/cli) CLI)
-- **Local markdown** — issues live as files under `.scratch/<feature>/` in this repo (good for solo projects or repos without a remote)
-- **Other** (Jira, Linear, etc.) — ask the user to describe the workflow in one paragraph; the skill will record it as freeform prose
+### 3. Confirm the setup choices
 
-Record the choice in `docs/agents/issue-tracker.md`. The GitHub and GitLab templates carry a "PRs as a request surface" flag, defaulted **off** — leave it off and don't raise it; a user who wants external PRs in the triage queue can flip the flag in the file later.
+**Section A: issue tracker.**
 
-**Section B — Triage label vocabulary.** Skip this section entirely if the `triage` skill isn't installed (exploration told you) — an uninstalled skill needs no labels.
+Recommend GitHub when a remote points there, GitLab for a GitLab remote, and otherwise offer:
 
-If it is installed, ask exactly one question:
+- **GitHub**: issues live in GitHub Issues through `gh`.
+- **GitLab**: issues live in GitLab Issues through `glab`.
+- **Local Markdown**: issues live under `.scratch/<feature>/`.
+- **Other**: ask for one paragraph describing a programmable Jira, Linear, or custom workflow.
+
+Write the choice to `docs/agents/issue-tracker.md`. The GitHub and GitLab templates keep "PRs as a request surface" off by default. Leave it off unless the user changes it.
+
+**Section B: triage label vocabulary.** Skip this section when `triage` is not installed.
+
+Ask one question:
 
 > Do you want to keep the default triage labels? (recommended: **yes**)
 
-The defaults are the five canonical roles, each label string equal to its name: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. On **yes**, write them as-is. Only if the user says no — usually because their tracker already uses other names (e.g. `bug:triage` for `needs-triage`) — collect the overrides so `triage` applies existing labels instead of creating duplicates.
+The defaults are `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, and `wontfix`. If the user declines, collect mappings to their existing labels rather than creating duplicates.
 
-**Section C — Domain docs.** Use the fixed AGENTS/DOX hierarchy, rooted at `AGENTS.md`.
+**Section C: domain docs.** Present only the selected branch.
 
-> Explainer: Some skills (`improve-codebase-architecture`, `diagnosing-bugs`, `tdd`) read the applicable `AGENTS.md` chain to learn the project's domain language and past architectural decisions. The chain runs from the repo root to the nearest document that owns the area being changed; parent language and decisions are inherited. Domain language lives inline under `## Ubiquitous Language`, globally numbered ADR entries live inline under `## Architectural Decisions`, and each parent keeps its `## Child DOX Index` current.
-
-This layout is not configurable. Present the hierarchy you found and confirm that its ownership boundaries match the repo:
-
-- **Root `AGENTS.md`** — repository-wide language, decisions, and inherited contracts.
-- **Child `AGENTS.md` files** — app-, package-, or subtree-specific additions, created only for durable local boundaries and linked from the parent's `## Child DOX Index`.
-
-Default: keep a root-only chain unless the repo already has, or clearly needs, a durable child boundary. Monorepo signals can justify a child boundary, but do not require one. Follow the nearest owning document's `## Change Protocol`; don't create empty domain-language or decision sections upfront.
-
-### 3. Confirm and edit
+- **Configured DOX**: confirm that `dox.config.json` selects direct-cutover retrieval through `/dox`. Preserve the configured records and ownership. Setup adds consumer pointers only; it creates no AGENTS domain hierarchy or duplicate decision ledger.
+- **Unconfigured AGENTS fallback**: confirm the root-to-nearest hierarchy. Default to a root-only `AGENTS.md`. Add child documents only for durable subtree ownership, and list them in the parent's `## Child DOX Index`. Keep domain language under `## Ubiquitous Language`; keep globally numbered decisions under `## Architectural Decisions`, with co-located `DECISIONS.md` only after that section outgrows the hot path.
 
 Show the user a draft of:
 
-- The `## Agent skills` block to add to whichever of `CLAUDE.md` / `AGENTS.md` is being edited (see step 4 for selection rules)
-- Any minimal changes needed to establish the root `AGENTS.md` and keep its DOX chain coherent
-- The contents of `docs/agents/issue-tracker.md` and `docs/agents/domain.md`, plus `docs/agents/triage-labels.md` only when `triage` is installed
+- the `## Agent skills` block;
+- `docs/agents/issue-tracker.md` and `docs/agents/domain.md`;
+- `docs/agents/triage-labels.md` when Section B ran;
+- only in the unconfigured branch, any minimal fallback `AGENTS.md` changes.
 
-Let them edit before writing.
+Let the user revise the draft before writing.
 
 ### 4. Write
 
-**Pick the file for the `## Agent skills` block:**
+Pick the root instruction file for the `## Agent skills` block:
 
-- If `CLAUDE.md` exists, edit it.
-- Otherwise, edit the root `AGENTS.md`, creating it if necessary.
+- Prefer an existing `CLAUDE.md`.
+- Otherwise use an existing root `AGENTS.md`.
+- If neither exists, ask which instruction file the active harness reads before creating one. In the configured branch, a new `AGENTS.md` may hold the pointer block only; it does not become a domain hierarchy.
 
-Always ensure a root `AGENTS.md` exists to anchor the DOX chain, even when the `## Agent skills` block lives in `CLAUDE.md`. Preserve existing instructions and follow its `## Change Protocol`. When creating or substantially structuring it, use the `/domain-modeling` skill's [AGENTS-FORMAT.md](../domain-modeling/AGENTS-FORMAT.md); use [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md) for inline decisions. Create domain sections and child documents lazily, only when they have useful content.
+In the unconfigured branch, ensure the root fallback `AGENTS.md` exists. Preserve current instructions and follow its `## Change Protocol`. Use the `/domain-modeling` skill's [AGENTS-FORMAT.md](../domain-modeling/AGENTS-FORMAT.md) and [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md). Create domain sections and children only when they have useful content.
 
-If an `## Agent skills` block already exists in the chosen file, update its contents in-place rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
+Update an existing `## Agent skills` block in place. Do not append a duplicate or overwrite surrounding user instructions.
 
-The block:
+Use this shape:
 
 ```markdown
 ## Agent skills
@@ -102,21 +101,21 @@ The block:
 
 ### Domain docs
 
-[one-line summary of the root-to-nearest AGENTS/DOX hierarchy]. See `docs/agents/domain.md`.
+[one-line summary: configured DOX direct cutover, or unconfigured root-to-nearest AGENTS fallback]. See `docs/agents/domain.md`.
 ```
 
-Include the `### Triage labels` sub-block, and write `docs/agents/triage-labels.md`, only when `triage` is installed and Section B ran. When it isn't, both are omitted.
+Include the triage sub-block and file only when Section B ran.
 
-Then write the docs files using the seed templates in this skill folder as a starting point:
+Write the docs from these seed files:
 
-- [issue-tracker-github.md](./issue-tracker-github.md) — GitHub issue tracker
-- [issue-tracker-gitlab.md](./issue-tracker-gitlab.md) — GitLab issue tracker
-- [issue-tracker-local.md](./issue-tracker-local.md) — local-markdown issue tracker
-- [triage-labels.md](./triage-labels.md) — label mapping (only if `triage` is installed)
-- [domain.md](./domain.md) — consumer rules for the AGENTS/DOX hierarchy
+- [issue-tracker-github.md](./issue-tracker-github.md)
+- [issue-tracker-gitlab.md](./issue-tracker-gitlab.md)
+- [issue-tracker-local.md](./issue-tracker-local.md)
+- [triage-labels.md](./triage-labels.md), when `triage` is installed
+- [domain.md](./domain.md), preserving its mutually exclusive storage branches
 
-For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
+For another issue tracker, write `docs/agents/issue-tracker.md` from the user's description.
 
-### 5. Done
+### 5. Finish
 
-Tell the user the setup is complete and which engineering skills will now read from these files and the applicable `AGENTS.md` chain. Mention they can edit `docs/agents/*.md` and the owning `AGENTS.md` directly later — re-running this skill is only necessary if they want to switch issue trackers or restart from scratch.
+Report the chosen issue tracker, label mapping, and contract branch. In a configured repository, name `/dox` and the configured records as canonical. In an unconfigured repository, name the applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` fallback. Re-run setup only to change these repository-level choices.

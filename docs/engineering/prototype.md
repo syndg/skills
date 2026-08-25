@@ -4,6 +4,8 @@
 
 Throwaway is a constraint on how the code is *written*, not a promise to destroy it. No tests, no error handling beyond what makes it run, no abstractions, no persistence — because none of that helps you learn the one thing you're trying to learn. What survives is the answer, folded into the real code, and the prototype itself, parked on a branch out of main as the evidence the answer came from.
 
+Before reading surrounding code, the skill resolves one contract route. A configured DOX repository resolves the prototype question with the known paths. Without DOX, it reads the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. It never initializes DOX as part of prototyping.
+
 ## When to reach for it
 
 Type `/prototype`, or the [agent](https://www.aihero.dev/ai-coding-dictionary/agent) reaches for it automatically when a task fits.
@@ -11,6 +13,8 @@ Type `/prototype`, or the [agent](https://www.aihero.dev/ai-coding-dictionary/ag
 Reach for it the moment you hit a question you can't settle by talking — a state machine whose edge cases you can't hold in your head, a screen you can't picture until you see three versions side by side. [Grilling](https://www.aihero.dev/ai-coding-dictionary/grilling) sessions balloon on exactly these questions: the agent rephrases, you guess, and the scope grows to fill the uncertainty. Stop grilling, build the throwaway version, look at it, then answer in one line. If instead something already built is misbehaving and you want to know why, use [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs) — prototyping explores what to build, not why the built thing is broken.
 
 You will also arrive here without choosing to. [wayfinder](https://aihero.dev/skills-wayfinder) files `prototype` decision [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) on its map, and working one is this skill.
+
+Before it reads surrounding repository code, the skill checks for `dox.config.json`. A configured repository uses compact contract items resolved through `/dox`; an unconfigured repository reads the applicable root-to-nearest `AGENTS.md` fallback. Prototyping never initializes DOX.
 
 ## Two branches
 
@@ -25,7 +29,7 @@ Both keep state in memory, start with no thinking required, and show you the ful
 
 A finished prototype leaves two things, and they go to different places.
 
-The **answer** (the verdict plus the question it settled) is captured durably: on the implementation issue, in a commit message, or as an architectural decision in the nearest owning `AGENTS.md` or co-located `DECISIONS.md`. In a configured DOX project, use the canonical decision record instead. That is what the main branch keeps, folded into the real code.
+The **answer** is the verdict plus the question it settled. Capture it on the implementation issue or in a commit. If it becomes durable domain language or an architectural decision, use the canonical DOX record when `dox.config.json` is present and run `/dox` validation; only without the config should it go to the nearest owning `AGENTS.md` or co-located `DECISIONS.md`. Main keeps the validated decision in the real code.
 
 The **prototype** is the runnable evidence the answer came from, and it is not deleted. It doesn't belong in main either — there is nothing there to maintain and it rots fast — so it is committed to a throwaway `prototype/<name>` branch out of main, never merged, with a [context pointer](https://www.aihero.dev/ai-coding-dictionary/context-pointer) to that branch left on the implementation issue. Main stays clean; the exploration stays findable and re-runnable by whoever picks the work up next.
 
@@ -56,7 +60,7 @@ It can be, if you prototype questions you could have answered by talking, or let
 - Someone says "wait, that shouldn't be possible" or "huh, I assumed X". That's a bug in the *idea*, which is the entire point.
 - The UI variants disagree about layout and information hierarchy, not just colour and copy — and the feedback you get is "the header from B with the sidebar from C".
 - It is answered in one sitting. If you're still building it a day later, the question was too big; split it.
-- When it's over, main contains the decision and none of the prototype, and the implementation issue points at the branch that still holds it.
+- When it ends, main contains the validated production change and none of the prototype, the issue points at the evidence branch, and any durable contract decision exists in exactly one selected store.
 
 ## Where it fits
 

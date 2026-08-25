@@ -11,9 +11,7 @@ description: >
 
 # Ingest a song
 
-Operates on a wiki hub (default `~/Knowledge`) per its `AGENTS.md` / `CLAUDE.md` schema —
-read the **Music domain** section of that schema once before starting if you haven't this
-session. This is the music-specific counterpart to `wiki-ingest`.
+Operate on a wiki hub (default `~/Knowledge`). Before reading wiki content, check its root for `dox.config.json`. When present, invoke `/dox` with the song-ingest task and known Music-domain paths and use the compact resolved Music items as the schema; do not also read `AGENTS.md` as a parallel contract. When absent, read the **Music domain** material in the hub's applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes before starting. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose. This is the music-specific counterpart to `wiki-ingest`.
 
 The goal is NOT a glorified playlist entry. It's a **songwriter's commonplace book**:
 capture the transferable *craft* of each song the user loves, and wire it into spine pages

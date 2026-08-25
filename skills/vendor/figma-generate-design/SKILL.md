@@ -53,6 +53,8 @@ For non-web apps (iOS, Android, etc.) or when updating existing screens, use the
 
 Before touching Figma, understand what you're building:
 
+When this task reads from a repository, check for `dox.config.json` before source inspection. If it exists, invoke `/dox` with one design-translation task and every known relevant path, then use the compact resolved items for targeted reads. This is a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes when project contract context is needed. Context from another worktree is only a hint; resolve locally in the worktree that contains the source.
+
 1. If building from code, read the relevant source files to understand the structure, sections, and which components are used.
 2. Identify the major sections of the view (e.g., for a page: Header, Hero, Content Panels, Footer; for a modal: Title Bar, Form Sections, Action Bar; for a sidebar: Navigation, Content Area, Footer Actions).
 3. For each section, list the UI components involved (buttons, inputs, cards, navigation pills, accordions, etc.).

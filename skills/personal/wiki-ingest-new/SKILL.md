@@ -10,9 +10,9 @@ description: >
 
 # Catch-up ingest
 
-Operates on a wiki hub (default `~/Knowledge`) per its `AGENTS.md` / `CLAUDE.md` schema.
-Finds raw sources that exist on disk but haven't been turned into wiki pages yet, and
-ingests each one. This is the batch counterpart to `wiki-ingest` (single source).
+Before reading wiki content, check the hub root (default `~/Knowledge`) for `dox.config.json`. When present, invoke `/dox` with the catch-up ingest task and known wiki paths and use the compact resolved items as the schema; do not also read `AGENTS.md` as a parallel contract. When absent, read the hub's applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
+
+Find raw sources that exist on disk but have not been turned into wiki pages yet. This is the batch counterpart to `wiki-ingest` (single source).
 
 ## Step 1 — Find un-ingested raws
 

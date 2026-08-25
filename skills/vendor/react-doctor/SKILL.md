@@ -8,6 +8,10 @@ version: "1.1.0"
 
 Scans React codebases for security, performance, correctness, and architecture issues. Outputs a 0–100 health score.
 
+## Repository grounding
+
+Before the first scan, repository inspection, or fix, check for `dox.config.json`. If it exists, invoke `/dox` with one React diagnosis task and the known or changed paths, then use its compact resolved items as the project contract. This is a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes when project contract context is needed. A scan in another worktree resolves locally and treats supplied compact items only as hints.
+
 ## After making React code changes:
 
 Run `npx react-doctor@latest --verbose --diff` (or `npx react-doctor@latest --verbose --scope changed` when the CLI warns that `--diff` is deprecated) and check the score did not regress.

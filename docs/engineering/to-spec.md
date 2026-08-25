@@ -2,7 +2,7 @@
 
 `to-spec` turns the conversation you have just had into a **[spec](https://www.aihero.dev/ai-coding-dictionary/spec)**, and publishes it to your issue tracker as a single issue.
 
-It does not interview you. By the time you reach for it the deciding is already done, so it synthesises what is known from the thread, the codebase, and the applicable root-to-nearest `AGENTS.md` chain. Parent **Ubiquitous Language** and **Architectural Decisions** are inherited. In a configured DOX project, `/dox` resolves the applicable records first. The spec records decisions already made; it is not where new ones are made.
+It does not interview you. By the time you reach for it the deciding is already done, so it synthesises what is known from the thread, the codebase, and one project-contract route. A configured DOX repository resolves one spec task with the known paths before exploration; otherwise `to-spec` uses the root-to-nearest `AGENTS.md` chain when contract context is needed. DOX is a direct cutover, not an extra pass beside `AGENTS.md`. The spec records decisions already made; it is not where new ones are made.
 
 ## When to reach for it
 
@@ -51,13 +51,13 @@ The main map issue — `/to-spec #<map_issue>`, not the individual decision tick
 Mostly for the agent, and it reads that way — complete, dense, reference-heavy. The parts worth your eyes are the seams and the out-of-scope section, because those are the two places a wrong decision is cheapest to catch and most expensive to discover later. Reading the whole thing end to end is a real complaint people have, and there is no summary mode: the honest answer is that if the spec surprises you, the grilling was too shallow, not the spec too long.
 
 **Do I keep the spec frozen once tickets start, or let the agent rewrite it?**
-Nothing keeps it in sync, so it is a snapshot of what you knew when it was written and goes stale when implementation teaches you something. Treat it as disposable once the work ships. Knowledge meant to outlive it belongs in the nearest owning `AGENTS.md`: domain terms under **Ubiquitous Language**, and durable decisions under **Architectural Decisions**, graduating to a co-located `DECISIONS.md` when that section becomes too large. In a configured DOX project, preserve it in the appropriate record through `domain-modeling`; `/dox` handles retrieval and structural validation.
+Nothing keeps it in sync, so it is a snapshot of what you knew when it was written and goes stale when implementation teaches you something. Treat it as disposable once the work ships. Knowledge meant to outlive it belongs in the configured DOX record through `domain-modeling`, or, without DOX, in the nearest owning `AGENTS.md`: domain terms under **Ubiquitous Language**, and durable decisions under **Architectural Decisions**, graduating to a co-located `DECISIONS.md` when that section grows.
 
 **My work is a refactor or a module boundary, not a feature. Does the template fit?**
 Less well, and this is a known limitation. The template leans hard on user stories, which is the wrong shape for architectural work. Lean on the implementation-decisions and testing-decisions sections instead, and let durable architectural calls land through [domain-modeling](https://aihero.dev/skills-domain-modeling) rather than making the spec a parallel decision store.
 
 **Will it check the tracker for related work, or cite the inherited architectural decisions it respects?**
-No to both. It reads and respects the applicable root-to-nearest `AGENTS.md` chain, or the records resolved by `/dox`, but it does not cite every governing decision. It also does not search the tracker for overlapping issues before drafting, so a spec can quietly duplicate existing work. Search the tracker first when the area is busy.
+No to both. It reads and respects the compact items resolved by `/dox`, or, without DOX, the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries, but it does not cite every governing decision. It also does not search the tracker for overlapping issues before drafting, so a spec can quietly duplicate existing work. Search the tracker first when the area is busy.
 
 **`/to-tickets` couldn't read my spec — it kept truncating.**
 Very large specs can outgrow what a tracker issue will serve back cleanly, and there is no local copy to fall back on. The fix is context hygiene: don't [clear](https://www.aihero.dev/ai-coding-dictionary/clearing) or [compact](https://www.aihero.dev/ai-coding-dictionary/compaction) between `/to-spec` and `/to-tickets`. Run them in the same window and the spec never has to be re-fetched at all.

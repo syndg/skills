@@ -7,7 +7,7 @@ description: Test-driven development. Use when the user wants to build features 
 
 TDD is the red → green loop. This skill is the reference that makes that loop produce tests worth keeping: what a good test is, where tests go, the anti-patterns, and the rules of the loop. Every section applies on every cycle — consult them before and during the loop, not after.
 
-When exploring the codebase, read the applicable `AGENTS.md` chain from the repo root to the nearest owning document so test names and interface vocabulary match its Ubiquitous Language, and respect its inherited Architectural Decisions.
+Before repository exploration or code work, establish contract context for this exact change. If `dox.config.json` exists, invoke `/dox` with one implementation task and every known relevant path, then use its compact resolved items to choose vocabulary and seams. Treat that as a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable `AGENTS.md` chain from the repo root to the nearest owning document and any relevant co-located `DECISIONS.md` entries it indexes when project contract context is needed, and respect its inherited language and decisions. Reuse compact resolved context only when the calling workflow produced it in the same worktree for the same task and paths. Another worktree resolves locally; supplied items are hints, not authority.
 
 ## What a good test is
 

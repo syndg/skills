@@ -42,6 +42,8 @@ For motion implementation, use both tools with distinct roles:
 
 ## Required Workflow
 
+Before inspecting or writing the target codebase, check it for `dox.config.json`. When present, invoke `/dox` with one motion-implementation task and every known component path, then use its compact resolved items for targeted work. This is a direct cutover: do not enumerate records or also read `AGENTS.md`. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. Another worktree resolves locally and treats supplied compact items only as hints.
+
 ### Step 1: Confirm static design context is available
 
 ```

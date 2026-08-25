@@ -5,7 +5,7 @@ description: Search X/Twitter for tweets on a topic via browser automation, extr
 
 # Ingest tweets on a topic
 
-Operates on a wiki hub (default `~/Knowledge`) per its `AGENTS.md` / `CLAUDE.md` schema. Use browser automation to search X/Twitter for a topic, extract the good tweets, and run them through `wiki-ingest`.
+Operate on a wiki hub (default `~/Knowledge`). Before reading wiki content, check its root for `dox.config.json`. When present, invoke `/dox` with the tweet-ingest task and known wiki paths and use the compact resolved items as the schema; do not also read `AGENTS.md` as a parallel contract. When absent, read the hub's applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose. Then use browser automation to search X/Twitter for a topic, extract the good tweets, and run them through `wiki-ingest`.
 
 ## Prerequisites
 

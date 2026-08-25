@@ -1,49 +1,41 @@
-# Domain Docs
+# Domain docs
 
-How the engineering skills should consume this repo's domain documentation when exploring the codebase.
+Before repository exploration, check for `dox.config.json`. Its presence selects exactly one branch below. Never combine the branches.
 
-## Before exploring, read these
+## Configured DOX branch
 
-- Locate the code, plan, or domain area you're about to work in.
-- Find the nearest **`AGENTS.md`** at or above that area.
-- Read every **`AGENTS.md`** from the repo root down to that nearest document. Parent contracts, `## Ubiquitous Language`, and `## Architectural Decisions` are inherited unless a child explicitly specializes them.
-- Follow the nearest owning document's **`## Change Protocol`**.
+Use this branch when `dox.config.json` is present.
 
-If the applicable domain sections don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The `/domain-modeling` skill (reached via `/grill-with-docs` and `/improve-codebase-architecture`) creates sections and child documents lazily when terms or decisions actually get resolved.
+1. Invoke `/dox` with the current task and any known paths before reading repository source, history, or instruction-file domain sections.
+2. Use the resolver's compact items as the canonical contract context. Expand only record IDs discovered by that resolution.
+3. Use the resolved language, decisions, invariants, and ownership in the work.
+4. After a semantic record edit through `/domain-modeling`, run `/dox` validation with `dox lint`. Treat lint errors as blockers.
 
-## DOX hierarchy
+DOX is a direct-cutover store. Do not enumerate its record directory, fall back to an `AGENTS.md` domain hierarchy, mirror records into instruction files, or keep a parallel `DECISIONS.md`. DOX initialization is separate setup: preview `dox init`, then run `dox init --apply` only after explicit human approval.
 
-Root-only repo (most repos):
+## Unconfigured AGENTS fallback
 
-```
+Use this branch only when `dox.config.json` is absent.
+
+1. Locate the code, plan, or domain area about to change.
+2. Find the nearest `AGENTS.md` at or above that area.
+3. Read each `AGENTS.md` from the repository root to that nearest document. Parent contracts, `## Ubiquitous Language`, and `## Architectural Decisions` are inherited unless a child specializes them.
+4. Follow the nearest owner's `## Change Protocol`.
+
+Proceed when the domain sections are absent. `/domain-modeling` creates them lazily after terms or decisions settle.
+
+A root-only repository uses one fallback document:
+
+```text
 /
-├── AGENTS.md                       ← repository-wide language and decisions
+├── AGENTS.md
 └── src/
 ```
 
-Repo with durable local boundaries:
+Add a child `AGENTS.md` only for a durable local ownership boundary. List each direct child in the parent's `## Child DOX Index`. Put new knowledge in the nearest owner. Architectural decisions use global, immutable `ADR-NNNN` numbers, with co-located `DECISIONS.md` available only when the inline section outgrows the hot path.
 
-```
-/
-├── AGENTS.md                       ← repository-wide language and decisions
-├── apps/
-│   └── billing/
-│       └── AGENTS.md               ← billing-specific additions
-└── packages/
-    └── payments/
-        └── AGENTS.md               ← payments-specific additions
-```
+Use canonical terms from the applicable `## Ubiquitous Language` sections. If a needed concept is missing, reconsider the wording or take the gap to `/domain-modeling`.
 
-Each parent lists its direct child documents in `## Child DOX Index`. Put new knowledge in the nearest `AGENTS.md` that owns it; create a child only for a durable subtree-specific contract and update the parent's index at the same time. Architectural decisions use global, immutable `ADR-NNNN` numbers across the entire hierarchy.
+If work conflicts with an inherited decision, cite it instead of silently overriding it:
 
-## Use the Ubiquitous Language
-
-When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in the `## Ubiquitous Language` sections of the applicable `AGENTS.md` chain. Don't drift to synonyms those sections explicitly avoid.
-
-If the concept you need isn't in the applicable chain yet, that's a signal — either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/domain-modeling`).
-
-## Flag ADR conflicts
-
-If your output contradicts an existing ADR, surface it explicitly rather than silently overriding:
-
-> _Contradicts ADR-0007 (event-sourced orders) — but worth reopening because…_
+> _Contradicts ADR-0007 (event-sourced orders), but worth reopening because..._

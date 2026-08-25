@@ -8,23 +8,26 @@ disable-model-invocation: true
 
 Surface architectural friction and propose **deepening opportunities** — refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability.
 
-This command is _informed_ by the project's domain model and built on a shared design vocabulary:
+This command uses compact resolved project-contract items and a shared design vocabulary:
 
-- Run the `/codebase-design` skill for the architecture vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Use these terms exactly in every suggestion — don't drift into "component," "service," "API," or "boundary."
-- The `## Ubiquitous Language` sections in the applicable `AGENTS.md` chain give names to good seams; its `## Architectural Decisions` sections record decisions this command should not re-litigate.
+- Run `/codebase-design` for **module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, and **locality**, plus the deletion test and "the interface is the test surface." Use those terms in every suggestion.
+- Use the compact items' domain language to name seams and their durable decisions to avoid re-litigating settled trade-offs.
 
 ## Process
 
-### 1. Explore
+### 1. Resolve, scope, then explore
 
-**Scope before you scan — YAGNI.** Deepening a module pays off by making future changes to it easier, so put extra weight on the parts of the codebase that have recently changed. Decide *where* to look before you look:
+Check for `dox.config.json` before reading history or source.
 
-- If the user named a direction — a module, a subsystem, a pain point — take it, and skip the inference below.
-- Otherwise, walk back a good stretch of the commit history (`git log --oneline`) to find the codebase's hot spots — the files and areas that keep coming up — and let those paths pull your attention first. If the changes are scattered with no clear hot spot, widen the net.
+- **Configured DOX:** invoke `/dox` for the architecture survey with any user-named paths. Use the compact returned items as canonical context. If history later identifies a candidate path that was not supplied to resolution or represented in the returned items, resolve the task with that path before opening its source. Do not fall back to an AGENTS decision store.
+- **Unconfigured fallback:** use the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes. Read that context for each candidate area before inspecting its source.
 
-Resolve the applicable project contract first. When `dox.config.json` exists, run `/dox` for the task and candidate paths; otherwise read the `AGENTS.md` chain from the repo root to the nearest owning document, including its domain language and architectural decisions.
+Then decide where to look. Deepening pays when future changes become easier, so bias toward active code:
 
-Then spawn an exploration subagent using the harness's available mechanism to walk the codebase. Don't follow rigid heuristics — explore organically and note where you experience friction:
+- If the user named a module, subsystem, or pain point, use it.
+- Otherwise, inspect a useful stretch of `git log --oneline` for recurring files and areas. If changes are scattered, widen the scan.
+
+Spawn an exploration subagent using the harness's available mechanism to walk the selected code. Explore organically and note friction:
 
 - Where does understanding one concept require bouncing between many small modules?
 - Where are modules **shallow** — interface nearly as complex as the implementation?
@@ -51,9 +54,9 @@ For each candidate, render a card with:
 
 End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
 
-**Use the resolved contract's Ubiquitous Language for the domain, and the `/codebase-design` vocabulary for the architecture.** If the contract defines "Order," talk about "the Order intake module" — not "the FooBarHandler," and not "the Order service."
+Use the compact resolved items' domain language and the `/codebase-design` vocabulary. If the project contract defines "Order," write "the Order intake module," not "the FooBarHandler" or "the Order service."
 
-**ADR conflicts**: if a candidate contradicts an existing ADR, only surface it when the friction is real enough to warrant revisiting the ADR. Mark it clearly in the card (e.g. a warning callout: _"contradicts ADR-0007 — but worth reopening because…"_). Don't list every theoretical refactor an ADR forbids.
+**Decision conflicts:** surface a conflict only when the friction justifies reopening the decision. Cite its DOX record ID or fallback ADR number in the card and explain why it may be worth revisiting.
 
 See [HTML-REPORT.md](HTML-REPORT.md) for the full HTML scaffold, diagram patterns, and styling guidance.
 
@@ -63,9 +66,9 @@ Do NOT propose interfaces yet. After the file is written, ask the user: "Which o
 
 Once the user picks a candidate, run the `/grilling` skill to walk the decision tree with them — constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
 
-Side effects happen inline as decisions crystallize — run the `/domain-modeling` skill to keep the domain model current as you go:
+As decisions crystallize, run `/domain-modeling` to keep the selected contract store current:
 
-- **Naming a deepened module after a concept absent from the resolved contract?** Record the canonical term at its owning scope.
-- **Sharpening a fuzzy term during the conversation?** Update the owning DOX or `AGENTS.md` contract right there.
-- **User rejects the candidate with a load-bearing reason?** Offer a durable architectural decision in the project's configured record format so future reviews do not re-suggest it. Skip ephemeral reasons ("not worth it right now") and self-evident ones.
-- **Want to explore alternative interfaces for the deepened module?** Run the `/codebase-design` skill and use its design-it-twice parallel sub-agent pattern.
+- **A deepened module uses a missing domain concept:** record the canonical term in its owning DOX record when configured, or the nearest owning `AGENTS.md` fallback otherwise.
+- **A fuzzy term becomes precise:** update that same selected store immediately. In configured DOX, finish the semantic edit with `/dox` lint validation.
+- **The user rejects a candidate for a durable reason:** offer a decision in the selected store so later surveys do not repeat it. Skip temporary reasons such as "not worth it right now".
+- **Alternative interfaces need exploration:** run `/codebase-design` and use its design-it-twice pattern.

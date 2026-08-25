@@ -246,8 +246,8 @@ Three step types:
 
 **Do**
 1. Read the PRD. Extract: title, problem, goals, non-goals, owner, audience, success metrics, rollout hints, risks.
-2. If entry points provided: follow `codebase-grounding.md` — bounded 20-file cap, depth-1 imports, walk up to `CLAUDE.md`/`ARCHITECTURE.md`/`OWNERS`.
-3. Produce the **tech-context object**: `files_read`, `services`, `external_deps`, `key_modules`, `architecture_notes`, `ownership`, `expansion_truncated`.
+2. If entry points provided: follow `codebase-grounding.md` — resolve configured DOX context before repository research, then use bounded 20-file expansion and depth-1 imports. In the unconfigured fallback, load the root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md`; read `CLAUDE.md` only for harness-operational instructions. `ARCHITECTURE.md` and `OWNERS` remain ordinary grounding inputs.
+3. Produce the **tech-context object**: `files_read`, `contract_context`, `services`, `external_deps`, `key_modules`, `architecture_notes`, `ownership`, `expansion_truncated`.
 
 **Self-check**
 - Have: project title, problem statement, at least 1 concrete goal, owner (or "TBD"), services touched (or empty list with a reason).

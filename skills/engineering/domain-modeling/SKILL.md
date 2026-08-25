@@ -3,74 +3,74 @@ name: domain-modeling
 description: Build and sharpen a project's domain model. Use when discussing codebase terminology or ubiquitous language, resolving ambiguous or overloaded terms, writing or editing a domain contract or architectural decision, or when another skill needs semantic adjudication for the project's contract.
 ---
 
-# Domain Modeling
+# Domain modeling
 
-Actively build and sharpen the project's domain model as you design. This is the active discipline: challenge terms, invent edge-case scenarios, resolve ambiguity, and write the resulting language and decisions down as soon as they crystallise. Merely reading the existing domain model is a normal codebase habit; use this skill when the model itself may change.
+Build the project's domain model while designing. Challenge terms, test edge cases, resolve ambiguity, and record settled language and durable decisions as they crystallise.
 
-## Storage contract: AGENTS/DOX
+## Select one storage branch
 
-> **When `dox.config.json` is present:** run `/dox` to retrieve the applicable contract records before adjudicating a change. Store settled terminology and durable decision semantics as DOX records, following the project's configured record structure. `/domain-modeling` decides what the terms and decisions mean; `/dox` retrieves them and validates their structure.
+Check for `dox.config.json` before repository research. Its presence selects one branch. Never read or write both stores.
 
-### AGENTS.md contract
+### Configured DOX direct cutover
 
-`AGENTS.md` is the durable domain contract for projects organized around its hierarchy. Domain language lives inline in its **Ubiquitous Language** section, and architectural decisions live inline in its **Architectural Decisions** section.
+When `dox.config.json` is present:
 
-The applicable contract is hierarchical. Before proposing or recording a change:
+1. Invoke `/dox` with the semantic task and any known paths before inspecting source.
+2. Use the resolver's compact returned items as the contract. Expand only a record ID discovered in the local receipt when its full body is needed.
+3. Adjudicate terminology and decisions against that resolved context. Edit the resolved owning record, or create a configured record only when resolution shows a real gap and the owner and schema are known. Do not mirror the result into `AGENTS.md` or `DECISIONS.md`.
+4. After semantic edits, run `/dox` validation with `dox lint` (and `dox lint --json` when structured output helps). Treat errors as blockers.
 
-1. Locate the code, plan, or domain area under discussion.
-2. Find the nearest `AGENTS.md` at or above that area.
-3. Read every `AGENTS.md` from the repository root down to that nearest document. Parent language and decisions are inherited unless a child explicitly specializes them.
-4. Choose the nearest owning `AGENTS.md` for the new knowledge: root for repository-wide knowledge, app or package level for that scope, and a child document for a durable subtree-specific boundary.
+`/domain-modeling` owns meaning. `/dox` owns retrieval and structural validation.
 
-Create sections lazily, only when there is something worth recording. Create a child `AGENTS.md` only when its subtree needs a durable local contract. Follow the owning document's **Change Protocol** on every edit; when adding a child document, also add it to the parent's **Child DOX Index**.
+### Unconfigured AGENTS fallback
 
-Read [AGENTS-FORMAT.md](./AGENTS-FORMAT.md) before adding or restructuring domain language. Read [ADR-FORMAT.md](./ADR-FORMAT.md) before allocating or recording an architectural decision.
+Use this branch only when `dox.config.json` is absent. Locate the work area, find its nearest `AGENTS.md`, and read each `AGENTS.md` from the repository root to that owner plus any relevant co-located `DECISIONS.md` entries the chain indexes. Parent language and decisions are inherited unless a child specializes them.
+
+Write new knowledge at the narrowest owning scope. Create sections only when they have content and child `AGENTS.md` files only for durable local ownership. Follow the owner's `## Change Protocol` and keep its parent's `## Child DOX Index` current.
+
+Read [AGENTS-FORMAT.md](./AGENTS-FORMAT.md) before adding or restructuring fallback domain language. Read [ADR-FORMAT.md](./ADR-FORMAT.md) before allocating or recording a fallback architectural decision.
 
 ## During the session
 
-### Challenge against the inherited language
+### Challenge the resolved language
 
-Compare the user's terms with the **Ubiquitous Language** in the entire applicable `AGENTS.md` chain. Call out conflicts immediately: "The domain model defines 'cancellation' as X, but you seem to mean Y. Which is it?"
+Compare the user's words with the configured DOX items or the fallback `## Ubiquitous Language` chain. Call out conflicts immediately: "The domain model defines 'cancellation' as X, but you seem to mean Y. Which is it?"
 
-If a child appears to give an inherited term a different meaning, treat that as a modeling problem. Prefer one canonical term; if the concepts really differ, qualify or rename them so the distinction is visible.
+If one scope gives an inherited term a different meaning, treat that as a modeling problem. Prefer one canonical term. If the concepts differ, qualify or rename them so the distinction is visible.
 
 ### Extract and sharpen the glossary
 
-Scan the conversation for domain-relevant nouns, verbs, events, states, and relationships. Look specifically for:
+Scan for domain nouns, verbs, events, states, and relationships. Look for:
 
 - one word used for different concepts;
-- several words used for the same concept;
+- several words used for one concept;
 - vague or overloaded terms;
-- relationships or lifecycle boundaries that remain implicit.
+- implicit relationships or lifecycle boundaries.
 
-Propose an opinionated canonical term for each concept: "You're saying 'account' — do you mean the Customer or the User? Those are different things." Record aliases to avoid, flag unresolved ambiguity explicitly, and keep definitions short and domain-facing. Exclude generic programming terms and implementation names unless domain experts genuinely use them.
+Propose one canonical term for each concept. Record aliases to avoid, flag unresolved ambiguity, and keep definitions short and domain-facing. Exclude programming terms and implementation names unless domain experts use them.
 
-When conducting an explicit glossary-building pass, capture the relationships between terms and state cardinality when it is known. Include a short example dialogue between a developer and domain expert that uses the canonical terms naturally and clarifies their boundaries. Use the structures in [AGENTS-FORMAT.md](./AGENTS-FORMAT.md); merge with existing material instead of duplicating inherited definitions.
+During an explicit glossary pass, capture relationships and known cardinality. Add a short developer/domain-expert dialogue when it clarifies boundaries. In configured DOX, follow the resolved record's schema and local shape. In the unconfigured fallback, use [AGENTS-FORMAT.md](./AGENTS-FORMAT.md) and merge with inherited material instead of duplicating it.
 
 ### Discuss concrete scenarios
 
-Stress-test domain relationships with specific scenarios. Invent edge cases that force precision about ownership, boundaries, cardinality, lifecycle, and failure behavior.
+Invent edge cases that force precision about ownership, boundaries, cardinality, lifecycle, and failure behavior.
 
 ### Cross-reference with code
 
-When the user states how something works, check whether the code agrees. Surface contradictions directly: "The code cancels entire Orders, but you just said partial cancellation is possible. Which is the intended model?"
-
-Treat code as evidence, not automatic truth. Resolve whether the code, the documentation, or the user's current explanation needs to change.
+Check stated behavior against code. Surface contradictions directly: "The code cancels entire Orders, but you said partial cancellation is possible. Which is intended?" Treat code as evidence, not automatic truth.
 
 ### Record settled semantics
 
-> **When `dox.config.json` is present:** write each resolved canonical term, relationship, and durable decision as its appropriate DOX record as it crystallises. Use `/dox` to validate the changed record structure. Keep the record focused on canonical language, definitions, relationships, useful domain dialogue, and explicitly flagged ambiguity; put implementation guidance, specifications, and scratch notes elsewhere.
+Write each resolved canonical term and relationship when it settles. In configured DOX, update its owning record, or create one for a confirmed gap, then run `/dox` lint validation. In the unconfigured fallback, update the nearest owner's **Ubiquitous Language** section immediately.
 
-For an `AGENTS.md` contract, update the **Ubiquitous Language** section of the nearest owning document immediately. Do not batch settled terms until the end of the session.
-
-Keep that section focused on the domain model: canonical language, definitions, relationships, useful domain dialogue, and explicitly flagged ambiguity. Put implementation guidance, specifications, and scratch notes in the appropriate parts of the DOX contract or elsewhere, not in the glossary.
+Keep domain records focused on canonical language, definitions, relationships, useful dialogue, and flagged ambiguity. Put implementation guidance, specifications, and scratch notes elsewhere.
 
 ### Offer durable decisions sparingly
 
-Only offer to add an architectural decision when all three are true:
+Offer a decision record only when all three are true:
 
-1. **Hard to reverse** — the cost of changing the decision later is meaningful.
-2. **Surprising without context** — a future reader will wonder why the system works this way.
-3. **The result of a real trade-off** — genuine alternatives existed and one was chosen for specific reasons.
+1. **Hard to reverse**: changing it later is meaningfully costly.
+2. **Surprising without context**: a future reader will ask why.
+3. **A real trade-off**: alternatives existed and one was chosen for a reason.
 
-If any condition is missing, skip the decision record. When all three apply, record the decision at its owning scope, using the project's record format. In an `AGENTS.md` contract, allocate the next global immutable number and add the entry to the **Architectural Decisions** section using [ADR-FORMAT.md](./ADR-FORMAT.md).
+If any condition is absent, skip the record. In configured DOX, write the decision to the appropriate configured record and run `/dox` lint validation. In the unconfigured fallback, allocate the next global immutable number and use the nearest owner's **Architectural Decisions** section as described in [ADR-FORMAT.md](./ADR-FORMAT.md).

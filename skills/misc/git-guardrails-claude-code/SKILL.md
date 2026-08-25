@@ -23,6 +23,8 @@ When blocked, Claude sees a message telling it that it does not have authority t
 
 Ask the user: install for **this project only** (`.claude/settings.json`) or **all projects** (`~/.claude/settings.json`)?
 
+For project scope, check the target repository for `dox.config.json` before reading or writing project files. When present, invoke `/dox` with one Git-guardrail setup task and the known settings and hook paths, then use its compact resolved items. This is a direct cutover: do not enumerate records or also read `AGENTS.md`. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. Another worktree resolves locally and treats supplied compact items only as hints. Global scope is not repository work and skips both routes.
+
 ### 2. Copy the hook script
 
 The bundled script is at: [scripts/block-dangerous-git.sh](scripts/block-dangerous-git.sh)

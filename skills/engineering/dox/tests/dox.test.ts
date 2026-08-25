@@ -146,7 +146,7 @@ failure_modes: [contract-bypass]
 `;
     await writeFile(invariantPath, invariant("missing-contract"));
     const missing = await run(root, "resolve", "inspect missing-contract");
-    expect(missing.code).toBe(1); expect(missing.stderr).toContain("broken invariant dependency contract: missing-contract");
+    expect(missing.code).toBe(1); expect(missing.stderr).toContain("broken depended_on_by contract: missing-contract");
     await writeFile(join(root, "dox", "records", "named-contract.md"), `---
 id: named-contract
 kind: contract
@@ -165,6 +165,357 @@ paths: [src/contracts/**]
     expect(byPath.code).toBe(0);
     const pathDependent = JSON.parse(byPath.stdout).items.find((item: { id: string }) => item.id === "contract-dependent");
     expect(pathDependent.relation).toBe("dependent");
+  });
+
+  test("accepts declared contracts as invariant enforcement targets", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "enforcement-contract.md"), `---
+id: enforcement-contract
+kind: contract
+owner: platform
+aliases: [enforcement-alias]
+---
+# Enforcement contract
+`);
+    await writeFile(join(root, "dox", "records", "contract-enforced.md"), `---
+id: contract-enforced
+kind: invariant
+owner: platform
+statement: The enforcement contract guards the invariant.
+state: enforced
+enforcement: [chokepoint]
+impact: cross-module
+criticality: high
+enforced_by:
+  - contract: enforcement-alias
+depended_on_by:
+  - path: src/api.ts
+verification: [bun test]
+failure_modes: [contract-bypass]
+---
+# Contract enforcement
+`);
+
+    const strict = await run(root, "resolve", "inspect enforcement-alias");
+    expect(strict.code).toBe(0);
+    const invariant = JSON.parse(strict.stdout).items.find((item: { id: string }) => item.id === "contract-enforced");
+    expect(invariant.relation).toBe("binding");
+
+    const linted = await run(root, "lint", "--json");
+    expect(linted.code).toBe(0);
+    expect(JSON.parse(linted.stdout).diagnostics).toEqual([]);
+  });
+
+  test("fails closed for every undeclared contract relation", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "ordinary-target.md"), `---
+id: ordinary-target
+kind: record
+owner: platform
+---
+# Ordinary target
+`);
+    const cases = [
+      { file: "contract-ref.md", field: "contract_refs: [ordinary-target]", message: "broken contract reference: ordinary-target" },
+      { file: "depends-on.md", field: "depends_on:\n  - contract: ordinary-target", message: "broken depends_on contract: ordinary-target" },
+      { file: "enforced-by.md", field: "enforced_by:\n  - contract: ordinary-target", message: "broken enforced_by contract: ordinary-target" },
+      { file: "depended-on-by.md", field: "depended_on_by:\n  - contract: ordinary-target", message: "broken depended_on_by contract: ordinary-target" },
+    ];
+
+    for (const item of cases) {
+      const path = join(root, "dox", "records", item.file);
+      await writeFile(path, `---
+id: ${item.file.replace(".md", "")}
+kind: record
+owner: platform
+${item.field}
+---
+# Invalid contract relation
+`);
+      const result = await run(root, "resolve", "inspect contract relations");
+      expect(result.code).toBe(1);
+      expect(result.stderr).toContain(item.message);
+      await rm(path);
+    }
+
+    for (const item of cases) {
+      await writeFile(join(root, "dox", "records", item.file), `---
+id: ${item.file.replace(".md", "")}
+kind: record
+owner: platform
+${item.field}
+---
+# Invalid contract relation
+`);
+    }
+    const linted = await run(root, "lint", "--json");
+    expect(linted.code).toBe(1);
+    const messages = JSON.parse(linted.stdout).diagnostics.map((item: { message: string }) => item.message);
+    for (const item of cases) expect(messages).toContain(item.message);
+    for (const item of cases) await rm(join(root, "dox", "records", item.file));
+
+    await writeFile(join(root, "dox", "records", "declared-contract.md"), `---
+id: id-contract
+kind: contract
+owner: platform
+contracts: [named-contract]
+terms: [contract:term-contract]
+---
+# Declared contracts
+`);
+    await writeFile(join(root, "dox", "records", "valid-relations.md"), `---
+id: valid-relations
+kind: record
+owner: platform
+contract_refs: [id-contract, named-contract, term-contract]
+depends_on:
+  - contract: id-contract
+  - contract: named-contract
+  - contract: term-contract
+enforced_by:
+  - contract: id-contract
+  - contract: named-contract
+  - contract: term-contract
+depended_on_by:
+  - contract: id-contract
+  - contract: named-contract
+  - contract: term-contract
+---
+# Valid contract relations
+`);
+    const validResolve = await run(root, "resolve", "inspect declared contracts");
+    expect(validResolve.code).toBe(0);
+    const validLint = await run(root, "lint", "--json");
+    expect(validLint.code).toBe(0);
+  });
+
+  test("lint distinguishes AGENTS decision bodies from explicit DOX pointers and Markdown examples", async () => {
+    const root = await project();
+    await mkdir(join(root, "packages", "api"), { recursive: true });
+    await writeFile(join(root, "AGENTS.md"), `# Agent guidance
+
+## Architectural Decisions
+
+Architectural decisions are stored in DOX. See ADR-0001 in the resolved decision record.
+
+- [ADR-0001 — Existing decision](dox/records/architecture.md)
+- **ADR-0002 — Existing decision:** [Resolve the DOX record](dox/records/architecture.md)
+- **ADR-0003 — Existing decision:** See the DOX record for the decision body.
+
+### ADR-0004 — Existing heading
+
+- Resolve the DOX record for the decision body.
+
+<!--
+### ADR-0096 — Commented example
+
+- **ADR-0097 — Commented: example:** This is sample syntax, not a decision.
+-->
+
+\`\`\`\`md
+\`\`\`md
+### ADR-0098 — Nested fence example
+\`\`\`
+\`\`\`\`
+
+\`\`\`md
+\`\`\`\`ts
+### ADR-0099 — Longer info-string fence example
+\`\`\`\`
+\`\`\`
+`);
+    await writeFile(join(root, "packages", "api", "AGENTS.md"), `# API guidance
+
+Use the root decisions. For rationale, resolve ADR-0001.
+`);
+    await git(root, "add", "AGENTS.md", "packages/api/AGENTS.md");
+
+    const harmless = await run(root, "lint", "--json");
+    expect(harmless.code).toBe(0);
+    expect(JSON.parse(harmless.stdout).diagnostics.some((item: { message: string }) => item.message.includes("parallel ADR source"))).toBe(false);
+
+    await writeFile(join(root, "AGENTS.md"), `# Agent guidance
+
+## Architectural Decisions
+
+- **ADR-0009 — Canonical store:** DOX is the source of truth for architectural decisions.
+`);
+    const doxDecision = await run(root, "lint", "--json");
+    expect(doxDecision.code).toBe(1);
+    expect(JSON.parse(doxDecision.stdout).diagnostics).toContainEqual({
+      level: "error",
+      file: "AGENTS.md",
+      message: "parallel ADR source found; migrate decisions into DOX records",
+    });
+
+    await writeFile(join(root, "AGENTS.md"), `# Agent guidance
+
+## Architectural Decisions
+
+- **ADR-0010 — Authorization: keep one writer:** See every authorization request through the guarded writer.
+`);
+    await writeFile(join(root, "packages", "api", "AGENTS.md"), `# API guidance
+
+## Architectural Decisions
+
+### ADR-0011 — Keep the API stateless
+
+Store session state outside the API process.
+`);
+
+    const result = await run(root, "lint", "--json");
+    expect(result.code).toBe(1);
+    const parallelFiles = JSON.parse(result.stdout).diagnostics
+      .filter((item: { message: string }) => item.message === "parallel ADR source found; migrate decisions into DOX records")
+      .map((item: { file: string }) => item.file);
+    expect(parallelFiles).toEqual(["AGENTS.md", "packages/api/AGENTS.md"]);
+  });
+
+  test("decision-ledger lint ignores untracked AGENTS.md until it enters the index", async () => {
+    const root = await project();
+    await writeFile(join(root, "AGENTS.md"), `## Architectural Decisions
+
+- **ADR-0012 — Keep writes centralized:** Route writes through one chokepoint.
+`);
+    await writeFile(join(root, "src", "untracked.ts"), "export const untrackedSignal = true;\n");
+    await writeFile(join(root, "dox", "records", "untracked-source.md"), `---
+id: untracked-source
+kind: record
+owner: platform
+paths: [src/untracked.ts]
+symbols: [untrackedSignal]
+---
+# Untracked source
+`);
+
+    const untracked = await run(root, "lint", "--json");
+    expect(untracked.code).toBe(0);
+    expect(JSON.parse(untracked.stdout).diagnostics.some((item: { message: string }) => item.message.includes("parallel ADR source"))).toBe(false);
+
+    await git(root, "add", "AGENTS.md");
+    const indexed = await run(root, "lint", "--json");
+    expect(indexed.code).toBe(1);
+    expect(JSON.parse(indexed.stdout).diagnostics).toContainEqual({
+      level: "error",
+      file: "AGENTS.md",
+      message: "parallel ADR source found; migrate decisions into DOX records",
+    });
+  });
+
+  test("decision-ledger lint rejects untracked DECISIONS.md files", async () => {
+    const root = await project();
+    await writeFile(join(root, "DECISIONS.md"), `# Decisions
+
+### ADR-0013 — Keep writes centralized
+
+Route writes through one chokepoint.
+`);
+
+    const result = await run(root, "lint", "--json");
+    expect(result.code).toBe(1);
+    expect(JSON.parse(result.stdout).diagnostics).toContainEqual({
+      level: "error",
+      file: "DECISIONS.md",
+      message: "parallel ADR source found; migrate decisions into DOX records",
+    });
+  });
+
+  test("ADR declarations and references accept decision records only", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "not-a-decision.md"), `---
+id: not-a-decision
+kind: contract
+owner: platform
+adr: ADR-0002
+---
+# Not a decision
+`);
+    await writeFile(join(root, "dox", "records", "bad-adr-ref.md"), `---
+id: bad-adr-ref
+kind: record
+owner: platform
+adr_refs: [ADR-0002]
+---
+# Bad ADR reference
+`);
+
+    const strict = await run(root, "resolve", "inspect ADR-0002");
+    expect(strict.code).toBe(1);
+    expect(strict.stderr).toContain("ADR requires kind decision: ADR-0002");
+
+    const linted = await run(root, "lint", "--json");
+    expect(linted.code).toBe(1);
+    const messages = JSON.parse(linted.stdout).diagnostics.map((item: { message: string }) => item.message);
+    expect(messages).toContain("ADR requires kind decision: ADR-0002");
+    expect(messages).toContain("broken ADR reference: ADR-0002");
+  });
+
+  test("contract declarations are unique across records but may repeat within one record", async () => {
+    const root = await project();
+    const collisionCases = [
+      {
+        name: "id-contract-alias",
+        first: "id: id-contract-alias\nkind: contract",
+        second: "id: contract-alias-owner\nkind: record\ncontracts: [id-contract-alias]",
+      },
+      {
+        name: "id-contract-term",
+        first: "id: id-contract-term\nkind: contract",
+        second: "id: contract-term-owner\nkind: record\nterms: [contract:id-contract-term]",
+      },
+      {
+        name: "record-alias",
+        first: "id: alias-owner\nkind: contract\naliases: [record-alias]",
+        second: "id: record-alias\nkind: contract",
+      },
+      {
+        name: "alias-contract-term",
+        first: "id: term-alias-owner\nkind: contract\naliases: [alias-contract-term]",
+        second: "id: term-owner\nkind: record\nterms: [contract:alias-contract-term]",
+      },
+    ];
+
+    for (const [index, item] of collisionCases.entries()) {
+      const first = join(root, "dox", "records", `collision-${index}-a.md`);
+      const second = join(root, "dox", "records", `collision-${index}-b.md`);
+      await writeFile(first, `---\n${item.first}\nowner: platform\n---\n# First declaration\n`);
+      await writeFile(second, `---\n${item.second}\nowner: platform\n---\n# Second declaration\n`);
+
+      const strict = await run(root, "resolve", `inspect ${item.name}`);
+      expect(strict.code).toBe(1);
+      expect(strict.stderr).toContain(`duplicate contract declaration: ${item.name}`);
+
+      const linted = await run(root, "lint", "--json");
+      expect(linted.code).toBe(1);
+      expect(JSON.parse(linted.stdout).diagnostics.map((entry: { message: string }) => entry.message))
+        .toContain(`duplicate contract declaration: ${item.name}`);
+      await rm(first);
+      await rm(second);
+    }
+
+    await writeFile(join(root, "dox", "records", "self-declared-contract.md"), `---
+id: self-contract
+kind: contract
+owner: platform
+aliases: [self-contract, self-alias, self-alias]
+contracts: [self-contract, self-alias]
+terms: [contract:self-contract, contract:self-alias]
+---
+# Self-declared contract
+`);
+    await writeFile(join(root, "dox", "records", "self-contract-ref.md"), `---
+id: self-contract-ref
+kind: record
+owner: platform
+contract_refs: [self-alias]
+---
+# Self contract reference
+`);
+
+    const strict = await run(root, "resolve", "inspect self-alias");
+    expect(strict.code).toBe(0);
+    const linted = await run(root, "lint", "--json");
+    expect(linted.code).toBe(0);
   });
 
   test("lint reports duplicate ADRs and stale Markdown references", async () => {

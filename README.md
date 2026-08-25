@@ -40,7 +40,7 @@ In your agent, run it once per repo. It will:
 
 - Ask which issue tracker you use
 - Configure the triage label vocabulary
-- Establish the repository's AGENTS/DOX domain contract
+- Record whether skills use canonical DOX records or the root-to-nearest AGENTS fallback
 
 ### 3. Bam - you're ready to go.
 
@@ -82,7 +82,7 @@ I felt the same tension with my agents. Agents are usually dropped into a projec
 Example
 </summary>
 
-Here's a [shared-language example](https://github.com/mattpocock/course-video-manager/blob/076a5a7a182db0fe1e62971dd7a68bcadf010f1c/CONTEXT.md) from my `course-video-manager` repo. This fork stores the same kind of language in the applicable `AGENTS.md` hierarchy. Which phrasing is easier to read?
+Here's a [shared-language example](https://github.com/mattpocock/course-video-manager/blob/076a5a7a182db0fe1e62971dd7a68bcadf010f1c/CONTEXT.md) from my `course-video-manager` repo. This fork stores the same kind of language in canonical DOX records when `dox.config.json` exists, or in the applicable `AGENTS.md` hierarchy only as the unconfigured fallback. Which phrasing is easier to read?
 
 - **BEFORE**: "There's a problem when a lesson inside a section of a course is made 'real' (i.e. given a spot in the file system)"
 - **AFTER**: "There's a problem with the materialization cascade"
@@ -91,7 +91,7 @@ This concision pays off session after session.
 
 </details>
 
-This is built into [`/grill-with-docs`](./skills/engineering/grill-with-docs/SKILL.md). It's a grilling session that also helps you build a shared language with the AI and record hard-to-explain decisions in the AGENTS/DOX contract.
+This is built into [`/grill-with-docs`](./skills/engineering/grill-with-docs/SKILL.md). It builds shared language and records durable decisions in canonical DOX records when `dox.config.json` exists, or in the applicable AGENTS fallback otherwise.
 
 It's hard to explain how powerful this is. It might be the single coolest technique in this repo. Try it, and see.
 
@@ -155,10 +155,10 @@ Skills I use daily for code work.
 **User-invoked**
 
 - **[ask-matt](./skills/engineering/ask-matt/SKILL.md)** — Ask which skill or flow fits your situation. A router over the skills in this repo.
-- **[grill-with-docs](./skills/engineering/grill-with-docs/SKILL.md)** — Grilling session that also builds your project's domain model, sharpening terminology and updating the applicable `AGENTS.md` hierarchy's language and decisions inline.
+- **[grill-with-docs](./skills/engineering/grill-with-docs/SKILL.md)** — Grilling session that sharpens terminology and records settled language and decisions in canonical DOX records when configured, or the applicable AGENTS fallback otherwise.
 - **[triage](./skills/engineering/triage/SKILL.md)** — Move issues through a state machine of triage roles.
 - **[improve-codebase-architecture](./skills/engineering/improve-codebase-architecture/SKILL.md)** — Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.
-- **[setup-matt-pocock-skills](./skills/engineering/setup-matt-pocock-skills/SKILL.md)** — Configure this repo for the engineering skills (issue tracker, triage labels, domain doc layout). Run once per repo before using the other engineering skills.
+- **[setup-matt-pocock-skills](./skills/engineering/setup-matt-pocock-skills/SKILL.md)** — Configure the issue tracker, triage labels, and contract lookup. Preserves configured DOX records; scaffolds the AGENTS fallback only when unconfigured.
 - **[to-spec](./skills/engineering/to-spec/SKILL.md)** — Turn the current conversation into a spec and publish it to the issue tracker. No interview — just synthesizes what you've already discussed.
 - **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break any plan, spec, or conversation into a set of tracer-bullet tickets, each declaring its blocking edges — written as text in a local file, or as native blocking links on a real tracker.
 - **[implement](./skills/engineering/implement/SKILL.md)** — Build the work described by a spec or set of tickets, driving `/tdd` at pre-agreed seams and closing out with `/mp-code-review` before committing.

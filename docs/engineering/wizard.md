@@ -4,6 +4,8 @@
 
 The [agent](https://www.aihero.dev/ai-coding-dictionary/agent) writes the script; it never runs it. You do, on your own machine. So a wizard is not a list of instructions you follow — it is a program that drives the procedure and holds the state, and your part is to click, paste, and press Enter.
 
+Before scoping from repository files, the skill resolves one project-contract route. A configured DOX repository gets one wizard-scoping task with the known paths; other repositories use the root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. The DOX route is a direct cutover, so it does not also read `AGENTS.md` or enumerate records.
+
 ## When to reach for it
 
 You can type `/wizard`, and the agent can also reach for it on its own. When it hits a step you have to take — a key it can't mint, a dashboard it can't click — it builds you a wizard instead of writing the instructions into the chat, where they scroll away.

@@ -3,6 +3,7 @@
 `tdd` builds a feature or fixes a bug test-first: one failing test, then just enough code to pass it, then the next behaviour. It carries the standards that make that loop produce tests worth keeping — what a good test is, where tests go, what mocks are for, and the three anti-patterns that quietly ruin a suite.
 
 It writes no test at a seam you have not agreed to first. Before any test exists, it names the public boundaries it intends to test at and stops for your confirmation, because testing effort is finite and this is where you spend it on the critical paths instead of on every edge case. The other thing to know is that `tdd` is a **reference**, not a driver. It holds the rules of the loop, and something else (you, or [implement](https://aihero.dev/skills-implement)) runs the [session](https://www.aihero.dev/ai-coding-dictionary/session) that applies them.
+A standalone TDD run resolves repository contract context before it explores or writes code. In a configured DOX repository, that means one implementation task plus the known paths; otherwise it uses the root-to-nearest `AGENTS.md` chain when needed. It reuses compact context only when a calling workflow produced it in the same worktree for the same task and paths. Another worktree resolves locally and treats supplied items only as hints.
 
 ## When to reach for it
 
@@ -18,7 +19,7 @@ Reach for it when there is a concrete behaviour to build, with an input and an o
 | You have a [spec](https://www.aihero.dev/ai-coding-dictionary/spec) or [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) and want the whole build run for you | [implement](https://aihero.dev/skills-implement), which drives `tdd` per ticket |
 | Config, wiring, glue, type annotations, straight CRUD delegation | Nothing here fits well — see the open gap below |
 
-That last row is a real hole, not a stylistic preference. The skill decides *where* the seams go; nothing in it decides *whether* a change is worth the loop at all. Run it on a change with no independent source of truth to assert against and you get a test that restates the implementation: the tautological anti-pattern the skill itself warns about, arrived at from the other direction. It is [issue #746](https://github.com/mattpocock/skills/issues/746) and it is open. Until it closes, that judgement is yours or your applicable `AGENTS.md`'s.
+That last row is a real hole, not a stylistic preference. The skill decides *where* the seams go; nothing in it decides *whether* a change is worth the loop at all. Run it on a change with no independent source of truth to assert against and you get a test that restates the implementation: the tautological anti-pattern the skill itself warns about, arrived at from the other direction. It is [issue #746](https://github.com/mattpocock/skills/issues/746) and it is open. Until it closes, that judgement is yours or the applicable project contract's.
 
 ## Prerequisites
 
@@ -60,7 +61,7 @@ It happens. One user pushed the [model](https://www.aihero.dev/ai-coding-diction
 
 **Should it write browser or end-to-end tests first?**
 
-Usually not, and the skill will not stop it. A user reported the agent writing a Playwright test first, then burning a long loop re-running it and concluding the *test* was broken for a feature that did not exist yet. Configure this in your `AGENTS.md`. Browser tests are slow enough that the red-green feedback loop stops paying for itself; declare in the applicable `AGENTS.md` that they are written after the behaviour works.
+Usually not, and the skill will not stop it. A user reported the agent writing a Playwright test first, then burning a long loop re-running it and concluding the *test* was broken for a feature that did not exist yet. Put the rule in the project contract: a configured DOX record, or, without DOX, the applicable root-to-nearest `AGENTS.md` chain and its indexed co-located `DECISIONS.md` entries. Browser tests are slow enough that the red-green feedback loop stops paying for itself, so state that they are written after the behaviour works.
 
 **Does `/tdd` replace `/implement`, or the course's `/do-work`?**
 

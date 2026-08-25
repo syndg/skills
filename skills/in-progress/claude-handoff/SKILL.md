@@ -11,7 +11,9 @@ Always pass `-n`/`--name` with a descriptive name (e.g. `--name "Fix login bug"`
 
 Include a "suggested skills" section in the summary, naming each skill the next agent should explicitly invoke using `/skill`-style prose.
 
-Do not duplicate content already captured in other artifacts or contracts (specs, plans, DOX records, `AGENTS.md`/`DECISIONS.md`, issues, commits, diffs). Reference them by path, receipt, decision number, or URL instead.
+Keep settled material at its source. In an unconfigured project, reference specs, plans, issues, commits, diffs, and the applicable root-to-nearest `AGENTS.md` chain or its indexed co-located `DECISIONS.md` entries by path, decision number, or URL instead of copying them.
+
+When `dox.config.json` exists, include the target task and known paths, then tell the background agent to rerun `dox resolve` from its working directory. A receipt is a local manifest, not loaded contract prose, so do not pass one as the contract or direct the agent to read DOX record paths. Compact items supplied across worktrees are hints, not authority; include them only when useful, and require local resolution whenever the target can access its worktree.
 
 Redact any sensitive information, such as API keys, passwords, or personally identifiable information — the summary becomes the agent's prompt.
 

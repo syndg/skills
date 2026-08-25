@@ -9,14 +9,17 @@ Use DOX as the repository's structured context seam. Records are Markdown with Y
 
 ## Start safely
 
-Run commands from the target Git worktree:
+Run commands from the target Git worktree. Existing configured repositories start with resolution below; do not initialize them again.
+
+Only when the human explicitly asks to initialize DOX, preview the proposal first:
 
 ```bash
 dox init
+# After the human reviews and approves the proposal:
 dox init --apply
 ```
 
-`init` prints its proposal first. Only `--apply` writes the config, record directory, migration manifest, and an ignored cache directory. It does not invent an invariant ledger.
+`init` is read-only. Only `--apply` writes the config, record directory, migration manifest, and an ignored cache directory. It does not invent an invariant ledger.
 
 ## DOX-first
 
@@ -39,7 +42,7 @@ dox resolve --from <receipt-id> --expand <record-id>
 
 Expansion returns only newly requested bodies and a child receipt. Stale receipts, unknown IDs, repeated expansions, and over-budget expansions fail closed.
 
-Keep structured-record retrieval inside `dox resolve`. Do not enumerate, grep, or bulk-read the configured record directory. Direct record access is only for editing a specifically resolved record or maintaining DOX itself.
+Keep structured-record retrieval inside `dox resolve`. Do not enumerate, grep, or bulk-read the configured record directory. After resolution identifies a specific record, direct access may write that file for an approved semantic edit, but any full-body read must first use `dox resolve --from <receipt-id> --expand <record-id>`. Direct record reads are reserved for maintaining DOX itself.
 
 If the result has no useful capsule, discover a relevant source path outside the configured record directory, then run one new task-plus-path resolution. Do not perform synonym sweeps or repeated overlapping calls. Treat `receipt.deferred` as an explicit signal that optional details remain available, not as silent truncation.
 
@@ -51,7 +54,9 @@ Create records under the configured `records_dir` (default `dox/records`). Use t
 
 For an invariant, record its enforcement target, verification, failure modes, impact, criticality, state, and dependency edges. The precision makes a change-impact answer actionable rather than merely descriptive.
 
-Use `kind: decision` plus a globally unique four-digit `adr` for full architectural decision bodies. In a DOX project, do not retain a parallel `DECISIONS.md`. Proposed invariants remain nonbinding; accepted or enforced invariants must name their enforcement classes, targets, and verification. Unknown schema fields and incomplete binding records fail closed.
+Use `kind: decision` plus a globally unique four-digit `adr` for full architectural decision bodies. In a DOX project, keep decisions only in DOX records. Lint rejects parallel `DECISIONS.md` files and actual ADR entries in index-tracked `AGENTS.md` files while allowing explicit DOX pointers and inert Markdown examples.
+
+Every contract name belongs to one record, and every contract relation must resolve to a declared contract rather than an arbitrary record ID. Proposed invariants remain nonbinding; accepted or enforced invariants must name their enforcement classes, targets, and verification. Unknown schema fields, ambiguous declarations, and incomplete binding records fail closed.
 
 ## Verify the seam
 
@@ -60,7 +65,7 @@ dox lint
 dox lint --json
 ```
 
-Treat errors as blockers. Lint checks strict record and config structure, ownership, path coverage when configured, references, unique four-digit ADR records, invariant enforcement, dependency patterns, and stale symbols. It also rejects parallel decision sources.
+Treat errors as blockers. Lint checks strict record and config structure, ownership, path coverage when configured, references, unique four-digit ADR records, invariant enforcement, dependency patterns, and stale symbols. It also rejects parallel decision sources in index-tracked `DECISIONS.md` and `AGENTS.md`.
 
 ## Boundaries
 

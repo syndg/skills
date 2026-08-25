@@ -104,6 +104,8 @@ getUser(fromAny({ body: { id: 123 } }));
 
 ## Workflow
 
+Before repository inspection or migration, check for `dox.config.json`. If it exists, invoke `/dox` with one Shoehorn-migration task and every known test path, then use its compact resolved items for targeted work. Treat this as a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes. Another worktree resolves locally and treats supplied compact items only as hints.
+
 1. **Gather requirements** - ask user:
    - What test files have `as` assertions causing problems?
    - Are they dealing with large objects where only some properties matter?

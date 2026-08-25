@@ -8,13 +8,13 @@ You have been provided a spec with associated tickets. The goal is one PR that i
 
 The tickets are a **task graph**, not a list. Blocking relationships define a changing **frontier** of tickets ready to be claimed.
 
-Communication to and from subagents should be sparse. Communicate primarily through **context pointers** to the project contract, spec, tickets, research notes, and previous commits. Do not duplicate information already available through those pointers.
+Communication to and from subagents should be sparse. Point to the spec, issues, research notes, and previous commits instead of duplicating them. For a configured DOX project, pass the resolution task and known source paths rather than a direct record path.
 
 Run implementer subagents in the background where possible, but cap concurrency to what the repository and available worktrees can safely support.
 
 ## Steps
 
-1. **Resolve contracts and graph.** When `dox.config.json` exists, run `/dox` for the spec and known paths; otherwise read the applicable root-to-nearest `AGENTS.md` chains. Read the spec and tickets, validate every blocking edge, and stop on cycles, missing tickets, or an empty frontier with unfinished work.
+1. **Resolve contracts and graph.** When `dox.config.json` exists, run `/dox` for the spec and known paths in the parent's current worktree and use the compact items in its resolution envelope. Otherwise read the applicable root-to-nearest `AGENTS.md` chains. Read the spec and tickets, validate every blocking edge, and stop on cycles, missing tickets, or an empty frontier with unfinished work.
 
 2. **Preflight the repository.** Require a clean tracked worktree and no active merge or rebase. Inspect existing worktrees, branch/stack state, and repository-specific T3 or worktree instructions. Preserve all user work; do not stash, reset, clean, or reuse a worktree owned by another task.
 
@@ -22,7 +22,10 @@ Run implementer subagents in the background where possible, but cap concurrency 
 
 4. **Create the integration branch and draft PR.** Mark the PR as closing the spec issue and its tickets. Do this only after the graph and repository preflight pass.
 
-5. **Work the frontier.** Give each ticket to an implementer subagent in its own branch and worktree. Include the applicable contract receipt or `AGENTS.md` chain, ticket, verification requirements, and integration-branch base. An implementer owns only its worktree.
+5. **Work the frontier.** Give each ticket to an implementer subagent in its own branch and worktree.
+   - In configured DOX, every implementer runs resolution from inside its assigned worktree after checkout, using that ticket and its known paths. The parent may pass compact resolved items as hints, but never a bare receipt. A receipt is a worktree-local manifest, not loaded contract prose, and the implementer's own resolution envelope is authoritative.
+   - In an unconfigured project, every implementer reads the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes from its assigned worktree.
+   Include the ticket, verification requirements, and integration-branch base. An implementer owns only its worktree.
 
 6. **Integrate deliberately.** After an implementer finishes and reports its verification evidence, use a merger subagent to bring that branch into the PR branch. Recompute the frontier after every integration and dispatch newly unblocked tickets.
 

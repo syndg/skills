@@ -60,6 +60,7 @@ Keep the last verified Syn Pi build recoverable throughout the update.
 ## Update workflow
 
 1. **Inspect**
+   - Before repository research, check for `dox.config.json`. If it exists, run `dox resolve` for the Syn Pi upstream update with the known affected paths and use the compact items in its resolution envelope; do not substitute `AGENTS.md` or `DECISIONS.md` contract prose. If it is absent, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes as the repository contract. In both branches, read `CONTRIBUTING.md` for workflow instructions.
    - Confirm `/Users/syndg/Coding/syn-pi` is independent of external-volume Git object stores or worktree metadata.
    - Verify official and personal remotes by URL; refresh `origin/HEAD` if needed and confirm the personal fork's default is `origin/syn-pi`.
    - Record local `syn-pi`, `origin/syn-pi`, `upstream/main`, their merge-bases/divergence, downstream commits, status, and launcher targets.
@@ -82,7 +83,7 @@ Keep the last verified Syn Pi build recoverable throughout the update.
    - Never resolve by blindly choosing all of ours or theirs.
 
 5. **Install and validate**
-   - Read current `AGENTS.md` and `CONTRIBUTING.md`. Follow current lockfile and install instructions.
+   - Follow the repository contract and `CONTRIBUTING.md` instructions loaded during inspection. If DOX is configured, rerun resolution with newly known changed paths before editing them; otherwise read any applicable child `AGENTS.md` for those paths.
    - Hydrate generated model/provider data when required.
    - Run modified focused tests first: agent loop, compaction/settings regressions, `tui-alt-screen`, and interactive TUI wiring.
    - Run `npm run check`.

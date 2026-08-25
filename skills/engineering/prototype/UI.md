@@ -4,6 +4,10 @@ Generate **several radically different UI variations** on a single route, switch
 
 If the question is about logic/state rather than what something looks like — wrong branch. Use [LOGIC.md](LOGIC.md).
 
+## Resolve before repository work
+
+Before inspecting pages, components, routes, or styling, check for `dox.config.json`. When present, invoke `/dox` with the UI question and known paths and use the compact resolved items directly. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes. These branches are mutually exclusive.
+
 ## When this is the right shape
 
 - "What should this page look like?"
@@ -97,7 +101,7 @@ Surface the URL (and the `?variant=` keys). The user will flip through whenever 
 
 ### 6. Capture the answer and clean up
 
-Once a variant has won, capture the answer — which variant and why — in the issue, a commit, or an inline ADR in the nearest owning `AGENTS.md`; then capture the prototype the way the [SKILL](SKILL.md) describes. Fold the winner into the real code and move the rest onto the throwaway branch, not into main:
+Once a variant has won, capture which variant won and why in the issue or commit. If the answer is a durable architectural decision, use `/domain-modeling`: write the canonical DOX decision record and run `/dox` validation when `dox.config.json` is present; otherwise use an inline ADR in the nearest owning `AGENTS.md` or its co-located `DECISIONS.md`. Then capture the prototype as the [SKILL](SKILL.md) describes. Fold the winner into real code and move the rest onto the throwaway branch, not main:
 
 - **Sub-shape A** — fold the winner into the existing page; drop the losing variants and the switcher from main.
 - **Sub-shape B** — promote the winning variant to a real route; drop the throwaway route and the switcher from main.

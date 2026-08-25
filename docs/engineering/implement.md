@@ -4,6 +4,8 @@
 
 It never reopens the plan. There is no interview, no clarifying round, no proposal of a different approach. Whatever was settled upstream is the input, and the skill's whole job is to turn that into a commit. That is what separates it from typing "build this" at a fresh [agent](https://www.aihero.dev/ai-coding-dictionary/agent), which will happily redesign the work while it builds it.
 
+Before it explores or changes the repository, `implement` resolves one project-contract route for the work. A configured DOX repository gets one implementation task with the known paths; other repositories use the root-to-nearest `AGENTS.md` chain and its indexed co-located `DECISIONS.md` entries when needed. A TDD step may reuse compact context only in the same worktree for the exact task and path set. Another worktree resolves locally and treats supplied items only as hints. The closing review performs its own changed-path and base resolution before diff inspection.
+
 ## When to reach for it
 
 You invoke this by typing `/implement` — the agent won't reach for it on its own. It ships with `disable-model-invocation: true`, so no other skill can call it either. Wherever [ask-matt](https://aihero.dev/skills-ask-matt) or [to-tickets](https://aihero.dev/skills-to-tickets) says "then `/implement` per ticket", that is an instruction to you, not something the agent will do unprompted.

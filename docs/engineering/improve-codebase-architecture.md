@@ -6,6 +6,8 @@ It never changes the code. The whole run produces one HTML file in your OS temp 
 
 Two filters keep the report from becoming generic cleanup advice. Every candidate has to pass the **deletion test** — would removing this module concentrate complexity behind a smaller interface, or just spread it across callers? Only the "concentrates" cases earn a card. And unless you point it at a specific area, it reads recent commit history first and biases the scan toward paths that are actively changing, on the grounds that a deepening in code nobody touches is a refactor you will never cash in.
 
+Contract grounding precedes history and source inspection. A configured DOX repository resolves one architecture-survey task and any named or later-discovered candidate paths. Without DOX, each candidate uses its root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. The two storage routes are mutually exclusive.
+
 ## When to reach for it
 
 You invoke this by typing `/improve-codebase-architecture` — the [agent](https://www.aihero.dev/ai-coding-dictionary/agent) will not reach for it on its own.
@@ -25,13 +27,18 @@ Where it is confusable with siblings:
 - For a whole effort too large to hold in one session, use [wayfinder](https://aihero.dev/skills-wayfinder).
 - For "this specific thing is broken," use [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs). It hands back here when the real finding is that there is no good seam to lock the bug down.
 
-It speaks in the shared design vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and in the domain language inherited through the applicable root-to-nearest `AGENTS.md` chain. A candidate reads as "deepen the Order intake module," never "refactor the FooBarHandler." In a configured DOX project, `/dox` resolves the applicable records before the survey begins.
+It speaks the shared design vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and the domain language from the selected contract store. Before reading history or source, it checks for `dox.config.json`. A configured repository gets compact items from canonical records through `/dox`; only an unconfigured repository reads the root-to-nearest `AGENTS.md` fallback.
 
 ## Prerequisites
 
-None to run it. For an AGENTS-based contract, it reads the **Ubiquitous Language** and inherited **Architectural Decisions** from the repository root down to the nearest owner. In a configured DOX project, `/dox` resolves the applicable records instead.
+None to run it. Contract lookup is mutually exclusive:
 
-It writes the HTML report to `<tmpdir>/architecture-review-<timestamp>.html`, outside the repository. During the grilling loop, [domain-modeling](https://aihero.dev/skills-domain-modeling) can sharpen a term in the nearest owning `AGENTS.md` or DOX record. It can also offer to preserve a durable rejection as a globally numbered architectural decision, inline in that owner while small, later in its co-located `DECISIONS.md`, or as a DOX decision record.
+| Trigger | What the survey reads and writes |
+| --- | --- |
+| `dox.config.json` exists | `/dox` returns compact items from configured records before exploration. `domain-modeling` updates the applicable canonical records and runs `/dox` lint validation after semantic edits. |
+| `dox.config.json` is absent | The survey reads the applicable `AGENTS.md` chain. `domain-modeling` writes fallback language there and may use co-located `DECISIONS.md` for mature decision bodies. |
+
+The HTML report goes to `<tmpdir>/architecture-review-<timestamp>.html`, outside the repository.
 
 ## Depth, and the report that hunts for it
 
@@ -96,8 +103,8 @@ There is no good answer shipped with the skill. The recurring request is for a `
 - No code changed during the run. The only new file is the HTML report in your temp directory.
 - It stops after the report and asks which candidate you want rather than continuing on its own.
 - Each card explains the payoff as locality or leverage, and says which tests get simpler — not just "this is cleaner."
-- Rejecting a candidate for a durable reason gets you an offer to record an architectural decision at the nearest owning scope, so a later run does not re-suggest it.
+- Rejecting a candidate for a durable reason gets an offer to record the decision in canonical DOX when configured, or at the nearest fallback owner otherwise.
 
 ## Where it fits
 
-`improve-codebase-architecture` is **periodic maintenance**: run it every few days, outside any chain, to queue work rather than do it. Its neighbours are [codebase-design](https://aihero.dev/skills-codebase-design), which owns the depth-and-seam vocabulary; [grilling](https://aihero.dev/skills-grilling), which walks the decision tree once you choose a candidate; and [domain-modeling](https://aihero.dev/skills-domain-modeling), which keeps the applicable AGENTS/DOX language and architectural decisions current as the redesign settles. What it produces is an idea, which re-enters the main build flow at [grill-with-docs](https://aihero.dev/skills-grill-with-docs) or [to-spec](https://aihero.dev/skills-to-spec). [Ask-matt](https://aihero.dev/skills-ask-matt) routes the whole set.
+`improve-codebase-architecture` is **periodic maintenance**: run it every few days, outside any chain, to queue work rather than do it. Its neighbours are [codebase-design](https://aihero.dev/skills-codebase-design), which owns the depth-and-seam vocabulary; [grilling](https://aihero.dev/skills-grilling), which walks the decision tree once you choose a candidate; and [domain-modeling](https://aihero.dev/skills-domain-modeling), which updates exactly one contract store as the redesign settles. What it produces is an idea, which re-enters the main build flow at [grill-with-docs](https://aihero.dev/skills-grill-with-docs) or [to-spec](https://aihero.dev/skills-to-spec). [Ask-matt](https://aihero.dev/skills-ask-matt) routes the whole set.

@@ -36,7 +36,16 @@ Layering (which packages may depend on which) is a *different* concern and is le
 
 ## Steps
 
-### 1. Detect the environment
+### 1. Resolve the repository contract
+
+Before inspecting the package manager or source tree, check the repository root for `dox.config.json`.
+
+- When it exists, run `/dox` for "set up a lint-enforced package entry-point boundary" with any known paths, such as `package.json` and an existing dependency-cruiser config. Use the compact items in the resolution envelope. DOX is the contract store; do not fall back to `AGENTS.md` for contract prose.
+- When it does not exist, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes before continuing. Read `CLAUDE.md` only for harness-operational instructions, never as fallback domain-contract storage.
+
+**Done when:** the configured or unconfigured contract branch is known and its context is loaded before any repository research.
+
+### 2. Detect the environment
 
 - **Package manager** — `pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `bun.lockb` → bun, else npm. Use it for every command below (`pnpm`/`yarn`/`npm run`/`bunx`).
 - **Packages root** — if `src/` exists use `src/packages`, else `packages`. Confirm the choice with the user if the repo already has a different obvious convention.
@@ -44,19 +53,19 @@ Layering (which packages may depend on which) is a *different* concern and is le
 
 **Done when:** package manager, packages root, and existing-config status are all known.
 
-### 2. Install dependency-cruiser
+### 3. Install dependency-cruiser
 
 Install `dependency-cruiser` as a devDependency with the detected package manager.
 
 **Done when:** `dependency-cruiser` is in `devDependencies`.
 
-### 3. Write the config
+### 4. Write the config
 
-Copy [`dependency-cruiser.config.cjs`](./dependency-cruiser.config.cjs) to the repo root as `.dependency-cruiser.cjs`. Set `PACKAGES_ROOT` to the root detected in step 1. The rules are path-depth based and extension-agnostic, so nothing else needs adapting.
+Copy [`dependency-cruiser.config.cjs`](./dependency-cruiser.config.cjs) to the repo root as `.dependency-cruiser.cjs`. Set `PACKAGES_ROOT` to the root detected in step 2. The rules are path-depth based and extension-agnostic, so nothing else needs adapting.
 
 **Done when:** `.dependency-cruiser.cjs` exists with the correct `PACKAGES_ROOT`, and the four forbidden rules are present.
 
-### 4. Wire it into the checks
+### 5. Wire it into the checks
 
 - Add a `lint:boundaries` script: `depcruise <packages-root>` (or `depcruise src`).
 - Fold it into the repo's umbrella check command — the one that already runs typecheck (e.g. a `check` / `ci` / `validate` script). Do **not** touch `tsconfig` or add path aliases.
@@ -64,7 +73,7 @@ Copy [`dependency-cruiser.config.cjs`](./dependency-cruiser.config.cjs) to the r
 
 **Done when:** `lint:boundaries` exists and runs as part of the same command as typecheck.
 
-### 5. Scaffold the example package
+### 6. Scaffold the example package
 
 Create a committed `<packages-root>/example/` as a copy-me template:
 
@@ -76,7 +85,7 @@ Tell the user this is a starter template to copy or delete.
 
 **Done when:** the example package exists, exposes its behaviour through a root entry point, and hides `impl` in a subfolder.
 
-### 6. Prove the rules bite
+### 7. Prove the rules bite
 
 This is the completion criterion for the whole skill — a config that doesn't fail on a violation is worthless.
 
@@ -86,13 +95,39 @@ This is the completion criterion for the whole skill — a config that doesn't f
 
 **Done when:** you have observed a pass, then a fail on the deep import, then a pass again. If step 2 does not fail, the rules are not wired correctly — fix before finishing.
 
-### 7. Document the convention
+### 8. Document and bind the convention
 
-Write a `README.md` **in the packages folder** (`<packages-root>/README.md`) — next to the packages it governs — covering: the `src/packages/<name>/` layout (entry points at the root, `lib/` for implementation, `tests/` for tests), "import only through a package's entry points (its root files)", and how to run `lint:boundaries`. **Discourage barrel files** explicitly — expose several small entry points instead of re-exporting a whole subtree through one index. Keep it to the copy-me snippet plus the four rules in one paragraph each.
+Write a `README.md` **in the packages folder** (`<packages-root>/README.md`), next to the packages it governs. Cover the `src/packages/<name>/` layout, entry points at the root, `lib/` for implementation, `tests/` for tests, "import only through a package's entry points (its root files)", and how to run `lint:boundaries`. **Discourage barrel files** explicitly. Expose several small entry points instead of re-exporting a whole subtree through one index. Keep it to the copy-me snippet plus the four rules in one paragraph each.
 
-Then add a **context pointer** to it from the repo's agent-instructions file — `CLAUDE.md` if present, else `AGENTS.md` (create `AGENTS.md` if neither exists). One line is enough, e.g. `Packages are deep modules — see [src/packages/README.md](./src/packages/README.md) before adding or importing one.` This is what makes an agent discover the boundary rule instead of tripping over it.
+Then use the repository-contract branch selected in step 1:
 
-**Done when:** `<packages-root>/README.md` exists and discourages barrels, and the repo's `CLAUDE.md`/`AGENTS.md` links to it.
+- **Configured DOX:** create or update one binding invariant for the package boundary. If the resolution envelope identified the invariant, edit that specific record. Otherwise create it under the configured `records_dir`. Give it a stable `id`, one accountable `owner`, a non-empty body, and enough matching and binding evidence for the resolver to return it from either side of the boundary:
+
+  ```yaml
+  kind: invariant
+  id: package-entrypoint-boundary
+  owner: <accountable-owner>
+  statement: Code outside a package imports it only through root entry-point files.
+  paths: [.dependency-cruiser.cjs, package.json, <packages-root>/**]
+  intents: [add package, import package]
+  terms: [deep module, entry point, package boundary]
+  state: enforced
+  enforcement: [lint]
+  enforced_by:
+    - path: .dependency-cruiser.cjs
+    - path: package.json
+  depended_on_by:
+    - path: <packages-root>/**
+  verification: [<package-manager> run lint:boundaries]
+  failure_modes: [external-deep-import, cross-package-deep-import, test-internal-import, dependency-cycle]
+  impact: package-architecture
+  criticality: high
+  ```
+
+  Replace the `owner` placeholder with one accountable owner. Keep an existing invariant's stable `id` when updating it. The example shows the required schema evidence; the record also needs a non-empty Markdown body. Run `dox lint`, then rerun `dox resolve` for the boundary with `--path .dependency-cruiser.cjs`, `--path package.json`, and the packages root. The resolution must return the complete invariant binding, including enforcement targets, dependent paths, verification, and failure modes. Do not add an `AGENTS.md` or `CLAUDE.md` contract pointer in this branch.
+- **Unconfigured project:** add one context pointer to the packages README in the applicable `AGENTS.md`, creating the owning `AGENTS.md` only when a durable subtree boundary warrants one and indexing that child from its parent. For example: `Packages are deep modules; see [src/packages/README.md](./src/packages/README.md) before adding or importing one.`
+
+**Done when:** the packages README exists and discourages barrels. In configured DOX, the binding invariant passes `dox lint` and resolves completely from enforcement and dependent paths. In an unconfigured project, the applicable `AGENTS.md` links to the README.
 
 ## Notes
 

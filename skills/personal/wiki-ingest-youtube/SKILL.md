@@ -12,10 +12,9 @@ description: >
 
 # Ingest a YouTube video
 
-Capture a video's transcript into a wiki hub (default `~/Knowledge`, laid out per its
-`AGENTS.md` / `CLAUDE.md` schema), then file it like any other source. A YouTube video
-behaves exactly like a Readwise doc or a tweet thread: the **transcript is a raw source**
-(`raw/`), and the **summary is synthesis** (`wiki/sources/`), created by `wiki-ingest`.
+Capture a video's transcript into a wiki hub (default `~/Knowledge`). Before reading wiki content, check the hub root for `dox.config.json`. When present, invoke `/dox` with the video-ingest task and known wiki paths and use the compact resolved items as the schema; do not also read `AGENTS.md` as a parallel contract. When absent, read the hub's applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
+
+A YouTube video behaves exactly like a Readwise document or tweet thread: the **transcript is a raw source** (`raw/`), and the **summary is synthesis** (`wiki/sources/`), created by `wiki-ingest`.
 
 ## Prerequisites
 

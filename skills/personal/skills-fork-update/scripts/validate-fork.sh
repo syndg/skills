@@ -44,15 +44,112 @@ if [ "$git_root" != "$repo" ]; then
   exit 1
 fi
 
-# AGENTS/DOX and decision-storage adaptations.
+# Repository-contract and decision-storage adaptations.
 require_path "skills/engineering/domain-modeling/AGENTS-FORMAT.md"
 require_absent "skills/engineering/domain-modeling/CONTEXT-FORMAT.md"
-require_text "skills/engineering/domain-modeling/SKILL.md" "Storage contract: AGENTS/DOX"
+require_text "skills/engineering/domain-modeling/SKILL.md" 'When `dox.config.json` is present'
 require_text "skills/engineering/domain-modeling/ADR-FORMAT.md" "DECISIONS.md"
-require_text "skills/engineering/setup-matt-pocock-skills/SKILL.md" "AGENTS/DOX"
-require_text "skills/engineering/setup-matt-pocock-skills/domain.md" "DOX hierarchy"
+require_text "skills/engineering/setup-matt-pocock-skills/SKILL.md" "Domain docs"
+require_text "skills/engineering/setup-matt-pocock-skills/domain.md" "Configured DOX branch"
+require_text "skills/personal/skills-fork-update/SKILL.md" "DOX is a direct-cutover store"
+require_text "skills/personal/skills-fork-update/SKILL.md" "This is the AGENTS/DECISIONS fallback, not DOX"
+require_text "AGENTS.md" "Repository-aware skills must preserve the DOX direct-cutover contract"
+require_text "CLAUDE.md" "Keep this file limited to Claude-specific operational instructions and pointers"
+require_text ".agents/invocation.md" 'dox.config.json'
+require_text "AGENTS.md" "never initializes DOX"
+require_absent ".agents/adr"
+[ ! -L "$repo/AGENTS.md" ] || fail "AGENTS.md must be a canonical file, not a CLAUDE.md symlink"
+[ ! -L "$repo/CLAUDE.md" ] || fail "CLAUDE.md must remain a harness-only file, not a contract symlink"
+require_text ".agents/writing-docs.md" 'dox.config.json'
+require_text "skills/productivity/handoff/SKILL.md" "A receipt is a local manifest, not loaded contract prose"
+require_text "skills/in-progress/implement-spec/SKILL.md" "every implementer runs resolution from inside its assigned worktree"
+require_text "skills/engineering/mp-code-review/SKILL.md" "first repository operation"
+for path in \
+  diagnosing-bugs \
+  ask-matt \
+  codebase-design \
+  implement \
+  improve-codebase-architecture \
+  mp-code-review \
+  research \
+  resolving-merge-conflicts \
+  prototype \
+  tdd \
+  to-spec \
+  to-tickets \
+  triage \
+  wayfinder \
+  wizard
+do
+  require_text "skills/engineering/$path/SKILL.md" 'dox.config.json'
+  require_text "skills/engineering/$path/SKILL.md" 'DECISIONS.md'
+done
+for path in \
+  diagnosing-bugs \
+  codebase-design \
+  implement \
+  research \
+  tdd \
+  to-spec \
+  to-tickets \
+  wayfinder
+do
+  require_text "skills/engineering/$path/SKILL.md" 'worktree resolves locally'
+done
+for path in \
+  handoff \
+  unslop \
+  wait-what \
+  writing-for-agents
+do
+  require_text "skills/productivity/$path/SKILL.md" 'dox.config.json'
+  require_text "skills/productivity/$path/SKILL.md" 'DECISIONS.md'
+done
+for path in \
+  wiki-digest \
+  wiki-fetch-readwise-highlights \
+  wiki-fetch-readwise-document \
+  wiki-import-readwise \
+  wiki-ingest \
+  wiki-ingest-new \
+  wiki-ingest-song \
+  wiki-ingest-tweets \
+  wiki-ingest-youtube \
+  wiki-lint
+do
+  require_text "skills/personal/$path/SKILL.md" 'dox.config.json'
+  require_text "skills/personal/$path/SKILL.md" 'DECISIONS.md'
+done
+require_text "skills/vendor/generate-project-plan/references/foundation/codebase-grounding.md" 'dox.config.json'
+for path in \
+  figma-code-connect \
+  figma-design-to-code \
+  figma-generate-design \
+  figma-generate-library \
+  figma-implement-motion \
+  figma-swiftui \
+  frontend-design \
+  impeccable \
+  react-doctor \
+  skill-creator
+do
+  require_text "skills/vendor/$path/SKILL.md" 'dox.config.json'
+  require_text "skills/vendor/$path/SKILL.md" 'DECISIONS.md'
+  require_text "skills/vendor/$path/SKILL.md" 'worktree'
+done
+for path in \
+  git-guardrails-claude-code \
+  migrate-to-shoehorn \
+  scaffold-exercises \
+  setup-pre-commit
+do
+  require_text "skills/misc/$path/SKILL.md" 'dox.config.json'
+  require_text "skills/misc/$path/SKILL.md" 'DECISIONS.md'
+  require_text "skills/misc/$path/SKILL.md" 'worktree'
+done
 
 # Fork naming and local harness integration.
+require_absent ".claude-plugin"
 require_path "skills/engineering/mp-code-review/SKILL.md"
 require_absent "skills/engineering/code-review/SKILL.md"
 require_text "README.md" "skills/engineering/mp-code-review/SKILL.md"
@@ -220,4 +317,4 @@ if [ "$errors" -ne 0 ]; then
   exit 1
 fi
 
-printf 'Fork validation passed: AGENTS/DOX, naming, personal, teaching, vendor, and linker adaptations are present.\n'
+printf 'Fork validation passed: repository-contract storage, naming, personal, teaching, vendor, and linker adaptations are present.\n'

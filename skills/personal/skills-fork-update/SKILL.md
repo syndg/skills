@@ -1,6 +1,6 @@
 ---
 name: skills-fork-update
-description: Update the user's maintained fork of Matt Pocock's skills repository, preserve the local AGENTS/DOX and DECISIONS.md adaptations plus personal/vendor customizations, validate the merged result, and leave pushing to the user. Use whenever the user says "update my skills", "sync the skills fork", "pull Matt's skills upstream", "check the skills repo for updates", or asks what changed in mattpocock/skills. Do not use for updating one installed skill, Pi itself, or an unrelated skills repository.
+description: Update the user's maintained fork of Matt Pocock's skills repository, preserve configured DOX direct-cutover semantics and the unconfigured AGENTS/DECISIONS fallback plus personal/vendor customizations, validate the merged result, and leave pushing to the user. Use whenever the user says "update my skills", "sync the skills fork", "pull Matt's skills upstream", "check the skills repo for updates", or asks what changed in mattpocock/skills. Do not use for updating one installed skill, Pi itself, or an unrelated skills repository.
 ---
 
 # Skills Fork Update
@@ -42,15 +42,16 @@ If the wording genuinely does not reveal whether the user wants integration, def
 
 Treat the downstream commits and current downstream diff as intent, not noise. Preserve these adaptations while accepting upstream improvements:
 
-1. **AGENTS/DOX storage**
-   - Domain language lives in the applicable `AGENTS.md` hierarchy.
-   - Architectural decisions live inline in `AGENTS.md` while small, then move to a co-located `DECISIONS.md` while retaining an index in `AGENTS.md`.
-   - Preserve `skills/engineering/domain-modeling/AGENTS-FORMAT.md` and do not restore `CONTEXT-FORMAT.md` as the storage contract.
-   - When upstream changes a customized engineering skill or doc, carry its new behavior forward but translate storage guidance into the fork's AGENTS/DOX vocabulary.
+1. **Repository contract storage**
+   - Detect `dox.config.json` before repository research. When it exists, DOX is a direct-cutover store. Retrieve contract and decision language through `dox resolve`; do not use `AGENTS.md` or `DECISIONS.md` as parallel contract sources. Preserve compact resolution-envelope wording and treat receipts as local manifests rather than loaded prose.
+   - When `dox.config.json` is absent, domain language lives in the applicable `AGENTS.md` hierarchy. Architectural decisions live inline in `AGENTS.md` while small, then move to a co-located `DECISIONS.md` while retaining an index in `AGENTS.md`. This is the AGENTS/DECISIONS fallback, not DOX.
+   - Keep the root `AGENTS.md` as the canonical fallback contract file and `CLAUDE.md` as a separate harness-operational pointer file; do not symlink them together or restore a central `.agents/adr/` ledger.
+   - Preserve `skills/engineering/domain-modeling/AGENTS-FORMAT.md` and do not restore `CONTEXT-FORMAT.md` as the unconfigured storage contract.
+   - When upstream changes a customized engineering skill or doc, carry its new behavior forward but keep both branches explicit: configured DOX direct cutover and unconfigured AGENTS/DECISIONS.
 
 2. **Fork naming and flows**
    - Preserve `mp-code-review`; do not silently restore the upstream `code-review` path or stale `/code-review` links.
-   - Preserve the fork's AGENTS/DOX adaptations across the engineering flow and setup documentation.
+   - Preserve both repository-contract branches across the engineering flow and setup documentation.
 
 3. **Personal and vendor inventory**
    - Preserve the user's personal wiki, Readwise, YouTube history, Synclaw, cmux, and Syn Pi maintenance skills.
@@ -61,6 +62,7 @@ Treat the downstream commits and current downstream diff as intent, not noise. P
 4. **Other downstream work**
    - Preserve the customized `teach` skill and lesson kit.
    - Preserve `scripts/link-skills-syndg.sh` and the flattened links into Claude, Agent Skills/Pi, and Codex harness directories.
+   - Keep Claude plugin and marketplace packaging excluded, including `.claude-plugin/`; this fork ships through the local harness linker rather than a plugin manifest.
    - Accept genuinely new upstream skills and behavior unless they conflict with one of the explicit downstream decisions above.
 
 Never resolve a conflict by broadly choosing all of `ours` or `theirs`. Read the upstream change, the downstream version, and the fork-only commits touching that file; then produce a semantic combination. If intent remains uncertain, this workflow's candidate-branch safety rule wins: abort that candidate rather than completing a doubtful merge.
@@ -70,6 +72,8 @@ Never resolve a conflict by broadly choosing all of `ours` or `theirs`. Read the
 ### 1. Inspect
 
 From `~/skills`:
+
+- Detect `dox.config.json` before other repository research. If configured, run `dox resolve` for the fork update and known affected paths, then use the compact items in its resolution envelope. If unconfigured, read the applicable `AGENTS.md` chain and any decision file it indexes.
 
 - Confirm the active branch and repository root.
 - Locate the official and personal remotes by URL.
@@ -104,7 +108,7 @@ In report-only mode, stop after this summary.
 
 Merge official upstream `main` with `--no-ff --no-edit` on the candidate branch so the integration remains explicit even when Git could fast-forward.
 
-For conflicts, reconcile behavior semantically. In adapted engineering files, upstream's new workflow behavior should normally be retained while its `CONTEXT.md`/ADR assumptions are translated to AGENTS/DOX. Preserve custom paths, personal skills, vendor skills, and the teaching kit unless the user explicitly changes those decisions.
+For conflicts, reconcile behavior semantically. In adapted engineering files, retain upstream's new workflow behavior while preserving the configured DOX direct-cutover branch and the unconfigured AGENTS/DECISIONS branch. Preserve custom paths, personal skills, vendor skills, and the teaching kit unless the user explicitly changes those decisions.
 
 If the merge cannot be resolved confidently, abort the candidate merge, return to `main`, and report the exact unresolved intent. Do not weaken the preservation contract just to finish.
 
@@ -121,7 +125,7 @@ Also:
 
 - Inspect the final diff from `OLD_HEAD` and the downstream diff against the new upstream tip.
 - Confirm incoming upstream content is present, not accidentally discarded during conflict resolution.
-- If either Claude plugin manifest changed, run `claude plugin validate . --strict` when the CLI is available; report an unavailable validator rather than pretending it passed.
+- Run `bun test` and `bun run typecheck` from `skills/engineering/dox` whenever DOX source, tests, schema, skills, or consumer semantics changed.
 - Run any new validation commands introduced by upstream repository instructions.
 
 ### 6. Promote locally

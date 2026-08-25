@@ -4,6 +4,8 @@
 
 It refuses to treat a conflict as a text problem. Before touching a hunk it traces each side back to its **[primary source](https://www.aihero.dev/ai-coding-dictionary/primary-source)** — the commit message, the PR, the original issue — so it is choosing between two intents rather than between two blocks of text, and it preserves both wherever they are compatible. Where they genuinely are not, it picks the side matching the merge's stated goal and names the trade-off. It invents no new behaviour to paper over a clash, and `--abort` is not an option it has: the merge is always carried to a finished commit.
 
+After identifying the conflicting paths but before researching history or editing hunks, the skill resolves one project-contract route. A configured DOX repository gets one conflict-resolution task with every conflicting path; other repositories use the root-to-nearest `AGENTS.md` chains and relevant indexed co-located `DECISIONS.md` entries. The DOX path is a direct cutover, not a record sweep followed by an `AGENTS.md` pass.
+
 ## When to reach for it
 
 Type `/resolving-merge-conflicts`, or the [agent](https://www.aihero.dev/ai-coding-dictionary/agent) reaches for it automatically when a task fits.

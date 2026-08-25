@@ -1,10 +1,12 @@
-# AGENTS.md Domain Documentation Format
+# Fallback AGENTS.md domain documentation format
 
-This is the domain-language storage reference for the `domain-modeling` skill. Domain language lives inline in the **Ubiquitous Language** section of the nearest owning `AGENTS.md`. Do not create a parallel glossary document.
+Use this reference only when `dox.config.json` is absent. A configured DOX repository uses its compact resolved items directly and does not mirror domain language into `AGENTS.md`.
+
+In the unconfigured fallback, domain language lives in the **Ubiquitous Language** section of the nearest owning `AGENTS.md`. Do not create a parallel glossary.
 
 ## Read and write scope
 
-Before editing, locate the work area and read its DOX chain from the repository root down to the nearest `AGENTS.md`. The chain is one inherited contract:
+Before editing, locate the work area and read its fallback `AGENTS.md` chain from the repository root to the nearest owner. The chain is one inherited contract:
 
 ```text
 /
@@ -25,9 +27,9 @@ Put a term at the narrowest scope that owns its meaning:
 
 A child inherits its parents. Define only the terms the child introduces or deliberately specializes; reference inherited language instead of restating it. If the same word means different things in two subtrees, surface the ambiguity and choose one canonical term or qualify each term so the distinction is explicit.
 
-## Preferred AGENTS.md shape
+## Preferred fallback AGENTS.md shape
 
-When creating or substantially structuring an `AGENTS.md`, prefer this order while respecting any established local format:
+When creating or substantially structuring a fallback `AGENTS.md`, prefer this order while respecting any established local format:
 
 1. **Purpose** — what this folder owns and why it exists.
 2. **Ownership** — what belongs here versus in a parent or child scope.
@@ -114,11 +116,11 @@ When the ambiguity is resolved, update the canonical entries and either remove t
 - **Show relationships.** Use canonical names and state cardinality or direction when known.
 - **Keep the section cohesive.** Domain examples may clarify meaning; specifications, implementation decisions, and scratch notes do not belong in **Ubiquitous Language**.
 
-## Change protocol and child indexes
+## Fallback change protocol and child indexes
 
-For every domain-language change:
+For every domain-language change in an unconfigured repository:
 
-1. Read the applicable `AGENTS.md` chain root-to-nearest before editing.
+1. Confirm `dox.config.json` is absent, then read the applicable `AGENTS.md` chain root-to-nearest before editing.
 2. Follow the nearest owning document's **Change Protocol**.
 3. Write the smallest durable change at the scope that owns it.
 4. Avoid duplicating inherited terms; cross-reference the parent when a reminder is useful.

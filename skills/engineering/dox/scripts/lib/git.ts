@@ -20,11 +20,7 @@ export async function changedPaths(root: string, base?: string): Promise<string[
   return [...new Set([...committed.split("\n"), ...working.split("\n"), ...untracked.split("\n")].filter((path) => path && !path.startsWith(".dox/")))].sort();
 }
 
-export async function trackedFiles(root: string): Promise<string[]> {
-  const [output, deleted] = await Promise.all([
-    run(root, ["ls-files", "--cached", "--others", "--exclude-standard"]),
-    run(root, ["ls-files", "--deleted"]),
-  ]);
+async function existingFiles(root: string, output: string, deleted: string): Promise<string[]> {
   const removed = new Set(deleted.split("\n").filter(Boolean));
   const rootReal = await realpath(root);
   const files: string[] = [];
@@ -42,4 +38,20 @@ export async function trackedFiles(root: string): Promise<string[]> {
     } else if (fileStat.isFile()) files.push(path);
   }
   return files;
+}
+
+export async function trackedFiles(root: string): Promise<string[]> {
+  const [output, deleted] = await Promise.all([
+    run(root, ["ls-files", "--cached", "--others", "--exclude-standard"]),
+    run(root, ["ls-files", "--deleted"]),
+  ]);
+  return existingFiles(root, output, deleted);
+}
+
+export async function indexTrackedFiles(root: string): Promise<string[]> {
+  const [output, deleted] = await Promise.all([
+    run(root, ["ls-files", "--cached"]),
+    run(root, ["ls-files", "--deleted"]),
+  ]);
+  return existingFiles(root, output, deleted);
 }

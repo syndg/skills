@@ -19,7 +19,7 @@ Edit text to remove AI patterns and add human voice.
 
 ## Guardrails
 
-- **Project language wins.** Preserve exact code symbols and the canonical Ubiquitous Language from the applicable `AGENTS.md` chain or DOX receipt. A catalog word is not wrong when the project uses it precisely.
+- **Project language wins.** Preserve exact code symbols and canonical Ubiquitous Language. When `dox.config.json` exists, reuse compact items only if the current resolution came from the same worktree for this exact editing task and path set; otherwise invoke `/dox` locally with one editing task and the known paths. Compact items supplied from another worktree are hints only, never authority. Without DOX, use the applicable root-to-nearest `AGENTS.md` chain and its indexed co-located `DECISIONS.md` entries. A catalog word is not wrong when the project uses it precisely.
 - **Evidence wins.** Do not change facts, measurements, citations, or quoted text to make prose smoother. Paraphrase a quote only when the author has permission to do so.
 - **Voice wins.** These patterns are heuristics, not proof. Keep deliberate quirks that belong to the author or the audience.
 

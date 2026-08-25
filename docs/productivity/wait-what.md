@@ -1,6 +1,6 @@
 ## What it does
 
-`wait-what` is what you type when a message did not land. The [agent](https://www.aihero.dev/ai-coding-dictionary/agent) re-pitches what it just said, adds the missing context, writes in plain English, and uses the **Ubiquitous Language** inherited through the applicable root-to-nearest `AGENTS.md` chain. In a configured DOX project, that vocabulary comes from the records resolved through `/dox`.
+`wait-what` is what you type when a message did not land. The [agent](https://www.aihero.dev/ai-coding-dictionary/agent) re-pitches what it just said, adds the missing context, writes in plain English, and reuses the selected project vocabulary. In a configured DOX project, it may reuse compact items only when they came from the same worktree for the exact task and path set; otherwise it resolves locally, treating items supplied from another worktree as hints only. The unconfigured fallback uses the **Ubiquitous Language** inherited through the applicable root-to-nearest `AGENTS.md` chain and its indexed co-located `DECISIONS.md` entries.
 
 The skill is three lines long. That is the design, not an unfinished draft. Skills that fight verbosity fail by growing: a four-hundred-line concision skill still leaves the [model](https://www.aihero.dev/ai-coding-dictionary/model) verbose, because the model reads the volume, not the plea. This one carries a single precise leading word and nothing else.
 
@@ -22,7 +22,7 @@ The skill says re-pitch **that**, not "that last message". What lost you is usua
 
 The body reuses leading words already present in the standing instructions and the project's applicable domain contract. ASD-STE100 Simplified Technical English sets the register. The Ubiquitous Language supplies the nouns. The skill and the contract reach for the same [tokens](https://www.aihero.dev/ai-coding-dictionary/token), so invoking it is not a new instruction. It reminds the agent of one already in force.
 
-If the applicable `AGENTS.md` chain has no **Ubiquitous Language**, or a configured DOX resolution returns none for this task, the skill still works. You lose only the domain-vocabulary half.
+If the selected branch contains no relevant **Ubiquitous Language** — compact items in configured DOX, or the applicable `AGENTS.md` chain without DOX — the skill still works. You lose only the domain-vocabulary half.
 
 ## Common questions
 
@@ -42,9 +42,9 @@ The skill still re-pitches in plain language. It simply has no project-specific 
 
 - The re-pitch is **shorter and clearer**, not shorter and blunter.
 - It adds the premise you were missing, instead of only deleting words.
-- Project nouns replace invented ones. Terms from the inherited **Ubiquitous Language**, or the applicable DOX records, come back.
+- Project nouns replace invented ones. Terms from compact DOX items, or from the inherited **Ubiquitous Language** only in the unconfigured fallback, come back.
 - You can use it twice in a row, and it does not degrade into terseness.
 
 ## Where it fits
 
-You can use `wait-what` at any point, in any conversation, inside any other skill. It repairs one message after the fact. The real cure is shared language agreed upfront, and that is [grill-with-docs](https://aihero.dev/skills-grill-with-docs): a [grilling](https://www.aihero.dev/ai-coding-dictionary/grilling) session that runs [domain-modeling](https://aihero.dev/skills-domain-modeling), writes terms to the nearest owning contract, and preserves inherited architectural decisions. In configured DOX projects, `/dox` resolves records and `domain-modeling` owns semantic updates. [Ask-matt](https://aihero.dev/skills-ask-matt) routes the moment.
+You can use `wait-what` at any point, in any conversation, inside any other skill. It repairs one message after the fact. The real cure is shared language agreed upfront, and that is [grill-with-docs](https://aihero.dev/skills-grill-with-docs): a [grilling](https://www.aihero.dev/ai-coding-dictionary/grilling) session that runs [domain-modeling](https://aihero.dev/skills-domain-modeling). In configured DOX projects, `/dox` returns compact items and `domain-modeling` updates canonical records. In the unconfigured fallback, terms and inherited architectural decisions live at the nearest owning `AGENTS.md` scope. [Ask-matt](https://aihero.dev/skills-ask-matt) routes the moment.

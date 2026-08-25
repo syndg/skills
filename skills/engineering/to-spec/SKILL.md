@@ -10,7 +10,7 @@ The issue tracker and triage label vocabulary should have been provided to you. 
 
 ## Process
 
-1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the Ubiquitous Language from the applicable `AGENTS.md` chain throughout the spec, and respect its inherited Architectural Decisions.
+1. Before repository exploration or planning, establish contract context for this exact spec. If `dox.config.json` exists, invoke `/dox` with one spec task and every known relevant path, then use its compact resolved items to guide targeted exploration. Treat that as a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable `AGENTS.md` chain from the repo root to the nearest owning document and any relevant co-located `DECISIONS.md` entries it indexes when project contract context is needed; use its Ubiquitous Language and respect its inherited Architectural Decisions. Reuse context only when it was resolved in the same worktree for the same task and paths. Another worktree resolves locally and treats supplied items only as hints.
 
 2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
 

@@ -7,7 +7,7 @@ description: Diagnosis loop for hard bugs and performance regressions. Use when 
 
 A discipline for hard bugs. Skip phases only when explicitly justified.
 
-When exploring the codebase, read the applicable `AGENTS.md` chain from the repo root to the nearest owning document. Use its Ubiquitous Language to get a clear mental model of the relevant modules, and respect its inherited Architectural Decisions.
+Before repository exploration or debugging, establish contract context for this exact diagnosis. If `dox.config.json` exists, invoke `/dox` with one diagnosis task and every known relevant path, then use its compact resolved items for targeted inspection. Treat that as a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable `AGENTS.md` chain from the repo root to the nearest owning document and any relevant co-located `DECISIONS.md` entries it indexes when project contract context is needed; use its Ubiquitous Language and respect its inherited Architectural Decisions. Reuse compact resolved context only when it came from the same worktree for the same task and paths. Another worktree resolves locally; supplied items are hints, not authority.
 
 ## Redact
 

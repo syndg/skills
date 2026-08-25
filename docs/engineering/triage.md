@@ -3,8 +3,9 @@
 `triage` works through the issues on your project's tracker, moving each one through a small state machine of **triage roles** — a category role and a state role — and leaving behind either an agent-ready brief, a specific question for the reporter, or a closed issue with a recorded reason.
 
 It is only for issues **you didn't create**. Raw bug reports, incoming feature requests, an external pull request that arrived unannounced — work that landed in the tracker from outside, in whatever shape the reporter left it. [Tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) that [to-tickets](https://aihero.dev/skills-to-tickets) produced are already agent-ready by construction, and running `triage` over them is wasted work at best. The rule is flat: `/triage` is only for incoming issues, not for issues you created yourself.
-
 The second thing that separates it from labelling by hand: it recommends and waits. It tells you its category and state call with reasoning, plus what it found in the codebase, and applies nothing until you direct it.
+
+Before repository verification or review, triage resolves one project-contract route. A configured DOX repository gets one triage task with known or changed paths. Without DOX, it loads the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries before inspecting source.
 
 ## When to reach for it
 
@@ -22,9 +23,9 @@ You invoke this by typing `/triage` and then describing what you want in plain l
 
 `triage` reads and writes your issue tracker, so [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) has to have configured that tracker and its label vocabulary first. The role names below are **canonical**; the label strings in your tracker may differ, and the mapping is what setup provides. If your tracker already uses the canonical names exactly, there is nothing to map and nothing to set up.
 
-The tracker config also decides whether external pull requests count as a request surface, and who counts as external. That flag defaults to off and is no longer a setup question, so change it in `docs/agents/issue-tracker.md` if you want PRs in scope.
+The tracker config also decides whether external pull requests count as a request surface, and who counts as external. That flag defaults to off and is no longer a setup question, so change it through the configured issue-tracker workflow if you want PRs in scope.
 
-When triage explores a request, it also reads the applicable domain contract. In an AGENTS-based repository, that means every `AGENTS.md` from the root to the nearest owner, including inherited **Ubiquitous Language** and **Architectural Decisions**. In a configured DOX project, `/dox` resolves the applicable records before exploration.
+When triage explores or verifies a request, it first takes one project-contract route. In a configured DOX repository, `/dox` resolves one triage task with every known relevant or changed path. Otherwise triage reads the root-to-nearest `AGENTS.md` chain when contract context is needed. The DOX route is a direct cutover, so it does not also inspect `AGENTS.md` or enumerate records.
 
 ## The state machine
 
@@ -98,4 +99,4 @@ Yes — the tracker is config, not a hard-coded assumption, and people run it ag
 
 ## Where it fits
 
-`triage` is an **on-ramp**, not a step in the main chain. The main flow begins with an idea you had, while `triage` is the parallel lane for incoming work. Both meet at an issue labelled `ready-for-agent` with a durable brief, which [implement](https://aihero.dev/skills-implement) picks up like a ticket from [to-tickets](https://aihero.dev/skills-to-tickets). When a request needs sharpening, `triage` runs [grilling](https://aihero.dev/skills-grilling) and [domain-modeling](https://aihero.dev/skills-domain-modeling) together. Terms and durable decisions land at the nearest owning scope, inheriting the root-to-nearest AGENTS contract; decision bodies graduate to a co-located `DECISIONS.md` when needed. In a configured DOX project, `/dox` resolves records and `domain-modeling` owns semantic updates. [Ask-matt](https://aihero.dev/skills-ask-matt) routes the lanes.
+`triage` is an **on-ramp**, not a step in the main chain. The main flow begins with an idea you had, while `triage` is the parallel lane for incoming work. Both meet at an issue labelled `ready-for-agent` with a durable brief, which [implement](https://aihero.dev/skills-implement) picks up like a ticket from [to-tickets](https://aihero.dev/skills-to-tickets). When a request needs sharpening, `triage` runs [grilling](https://aihero.dev/skills-grilling) and [domain-modeling](https://aihero.dev/skills-domain-modeling) together. Terms and durable decisions land through the project's one contract route: configured DOX records, or, without DOX, the nearest owning AGENTS contract and a co-located `DECISIONS.md` when needed. [Ask-matt](https://aihero.dev/skills-ask-matt) routes the lanes.

@@ -125,6 +125,59 @@ async function markdownFiles(directory: string, root: string): Promise<string[]>
   return files;
 }
 
+export type BrokenContractReference = {
+  record: DoxRecord;
+  relation: "contract_refs" | "depends_on" | "enforced_by" | "depended_on_by";
+  contract: string;
+  message: string;
+};
+
+export function contractDeclarations(record: DoxRecord): string[] {
+  const declarations = [
+    ...(record.kind === "contract" ? [record.id, ...record.aliases] : []),
+    ...record.contracts,
+    ...record.terms
+      .filter((term) => term.startsWith("contract:") && term.length > "contract:".length)
+      .map((term) => term.slice("contract:".length)),
+  ];
+  return [...new Set(declarations)];
+}
+
+export type DuplicateContractDeclaration = {
+  record: DoxRecord;
+  first: DoxRecord;
+  contract: string;
+  message: string;
+};
+
+export function duplicateContractDeclarations(records: readonly DoxRecord[]): DuplicateContractDeclaration[] {
+  const firstByContract = new Map<string, DoxRecord>();
+  const duplicates: DuplicateContractDeclaration[] = [];
+  for (const record of records) for (const contract of contractDeclarations(record)) {
+    const first = firstByContract.get(contract);
+    if (first && first !== record) {
+      duplicates.push({ record, first, contract, message: `duplicate contract declaration: ${contract}` });
+    } else if (!first) firstByContract.set(contract, record);
+  }
+  return duplicates;
+}
+
+export function brokenContractReferences(records: readonly DoxRecord[]): BrokenContractReference[] {
+  const declared = new Set(records.flatMap(contractDeclarations));
+  const broken: BrokenContractReference[] = [];
+  for (const record of records) {
+    for (const contract of record.contract_refs) if (!declared.has(contract)) {
+      broken.push({ record, relation: "contract_refs", contract, message: `broken contract reference: ${contract}` });
+    }
+    for (const relation of ["depends_on", "enforced_by", "depended_on_by"] as const) {
+      for (const edge of record[relation]) if (edge.contract && !declared.has(edge.contract)) {
+        broken.push({ record, relation, contract: edge.contract, message: `broken ${relation} contract: ${edge.contract}` });
+      }
+    }
+  }
+  return broken;
+}
+
 export async function loadRecords(root: string, config: Config, tolerateMalformed = false): Promise<{ records: DoxRecord[]; diagnostics: Diagnostic[] }> {
   const rootReal = await realpath(root);
   const recordsDirectory = resolve(root, config.records_dir);
@@ -144,23 +197,20 @@ export async function loadRecords(root: string, config: Config, tolerateMalforme
   if (!tolerateMalformed) {
     const ids = new Set<string>();
     const adrs = new Set<string>();
-    const contracts = new Set<string>();
-    const byId = new Map<string, DoxRecord>();
     for (const record of records) {
       if (ids.has(record.id)) throw new DoxError(`duplicate id: ${record.id}`);
       ids.add(record.id);
-      byId.set(record.id, record);
-      record.contracts.forEach((contract) => contracts.add(contract));
-      record.terms.filter((term) => term.startsWith("contract:")).forEach((term) => contracts.add(term.slice("contract:".length)));
       if (record.adr) {
+        if (record.kind !== "decision") throw new DoxError(`ADR requires kind decision: ${record.adr}`);
         if (adrs.has(record.adr)) throw new DoxError(`duplicate ADR record: ${record.adr}`);
         adrs.add(record.adr);
       }
     }
+    const duplicateContracts = duplicateContractDeclarations(records);
+    if (duplicateContracts.length) throw new DoxError(duplicateContracts[0].message);
     for (const record of records) for (const ref of record.adr_refs) if (!adrs.has(ref)) throw new DoxError(`broken ADR reference: ${ref}`);
-    for (const record of records) for (const edge of record.depended_on_by) {
-      if (edge.contract && !contracts.has(edge.contract) && byId.get(edge.contract)?.kind !== "contract") throw new DoxError(`broken invariant dependency contract: ${edge.contract}`);
-    }
+    const brokenContracts = brokenContractReferences(records);
+    if (brokenContracts.length) throw new DoxError(brokenContracts[0].message);
   }
   return { records: records.sort((a, b) => a.id.localeCompare(b.id)), diagnostics };
 }

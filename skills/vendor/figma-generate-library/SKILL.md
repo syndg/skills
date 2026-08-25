@@ -61,6 +61,8 @@ Work through the phases in order. Do not move to the next phase until the curren
 
 ### Phase 0: DISCOVERY (always first — no `use_figma` writes yet)
 
+Before codebase analysis, check the target repository for `dox.config.json`. When present, invoke `/dox` with one design-system discovery task and every known token or component path, then use its compact resolved items for targeted analysis. This is a direct cutover: do not enumerate records or also read `AGENTS.md`. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. Another worktree resolves locally and treats supplied compact items only as hints.
+
 - [ ] 0a. Analyze codebase → extract tokens, components, naming conventions
 - [ ] 0b. Inspect Figma file → pages, variables, components, styles, existing conventions
 - [ ] 0c. Search subscribed libraries → use `search_design_system` for reusable assets

@@ -2,7 +2,7 @@
 
 `unslop` removes common AI tells from prose and restores a specific human voice. It cuts filler, puffery, vague claims, canned transitions, decorative formatting, abstract jargon, and sentences that sound polished without saying anything.
 
-Its defining constraint is that meaning, evidence, and project language come first. It preserves exact symbols, facts, quotations, and the Ubiquitous Language resolved from the applicable project contract. The pattern catalog is a set of editing heuristics, not a reason to replace a precise term.
+Its defining constraint is that meaning, evidence, and project language come first. It preserves exact symbols, facts, quotations, and the Ubiquitous Language from compact DOX items when `dox.config.json` exists, or from the applicable root-to-nearest `AGENTS.md` chain only in the unconfigured fallback. The pattern catalog is a set of editing heuristics, not a reason to replace a precise term.
 
 ## When to reach for it
 
@@ -12,7 +12,7 @@ Reach for it directly when text feels generic, padded, promotional, formulaic, t
 
 ## Prerequisites
 
-If the repository defines a Ubiquitous Language in `AGENTS.md` or a configured DOX contract, resolve those terms before replacing words from the pattern catalog. No runtime or external service is required.
+If the repository defines a Ubiquitous Language, load it before replacing words from the pattern catalog. Read the applicable `AGENTS.md` chain in an unconfigured project; in a configured DOX project, use the compact items returned by `dox resolve`. No runtime or external service is required.
 
 ## The editing pass
 

@@ -29,6 +29,10 @@ Then after the skill is done (but again, the order is flexible), you can also ru
 
 Cool? Cool.
 
+## Repository grounding
+
+Before reading, writing, snapshotting, or evaluating skill files in a target repository, check it for `dox.config.json`. When present, invoke `/dox` with one skill-creation or skill-improvement task and every known skill and eval path, then use its compact resolved items for targeted work. This is a direct cutover: do not enumerate records or also read `AGENTS.md`. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. A subagent in another worktree resolves locally and treats supplied compact items only as hints.
+
 ## Communicating with the user
 
 The skill creator is liable to be used by people across a wide range of familiarity with coding jargon. If you haven't heard (and how could you, it's only very recently that it started), there's a trend now where the power of Claude is inspiring plumbers to open up their terminals, parents and grandparents to google "how to install npm". On the other hand, the bulk of users are probably fairly computer-literate.

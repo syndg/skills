@@ -31,7 +31,9 @@ Three of the five options at a phase boundary preserve different things: `/compa
 
 The document carries the live thread — what's in flight, why, and what's next — plus a **suggested skills** section naming what the next agent should reach for. Secrets are redacted before it's written.
 
-What it deliberately does not carry is anything already written down. Specs, plans, issues, commits, diffs, `AGENTS.md` contracts, co-located `DECISIONS.md` entries, and DOX records are referenced by path, record ID, decision number, or URL, never copied. That keeps the file small, and it keeps the settled detail in one place instead of two that drift.
+What it deliberately does not carry is anything already written down. Specs, plans, issues, commits, and diffs stay behind paths or URLs. In an unconfigured project, the same rule applies to `AGENTS.md` contracts and co-located `DECISIONS.md` entries.
+
+A configured DOX project needs a different move. The handoff carries the target task and known paths, then tells the destination worktree to run `dox resolve` again. A receipt is only a local manifest; it does not contain the loaded contract prose and is not a portable substitute for resolution. The handoff never sends the next agent straight to a DOX record path. If the destination cannot reach the repository, it can instead carry the few relevant compact items from the current resolution envelope, labelled explicitly as hints rather than authority.
 
 ## Common questions
 
@@ -53,16 +55,17 @@ Open the fresh session and point it at the path: read this file, then continue. 
 **Is this the same as `/branch`, `--fork-session`, or the built-in `/handoff`?**
 Analogous, not identical, and `/branch` isn't a shipped skill here — `/handoff` is the canonical name. A fork inherits an exact copy of the context; this skill produces a *targeted* compression aimed at a stated next task, in a file. Where a fork will do — same machine, same harness, same directory — a fork is less work. The file wins the moment the destination is somewhere the fork can't go.
 
-**When does something belong in `AGENTS.md` instead?**
-Ask whether it is true next month. `AGENTS.md` is standing context about the project, inherited by every applicable session whether the current task needs it or not. A handoff is about one piece of work in flight and is dead once that work lands. Facts that keep getting re-explained are an `AGENTS.md`, `DECISIONS.md`, or DOX contract problem; a half-finished task is a handoff.
+**When does something belong in the project contract instead?**
+Ask whether it is true next month. In an unconfigured project, standing context belongs in the applicable `AGENTS.md` hierarchy or its indexed `DECISIONS.md`. In a configured DOX project, durable contracts and decisions belong in DOX and are loaded through `dox resolve`. A handoff is about one piece of work in flight and is dead once that work lands.
 
 **It captures the what, not the why.**
-A fair and repeated criticism. Two things help. Pass the argument — tell it what the next session is for — so the reasoning that bears on *that* is kept rather than flattened. And watch for confident claims the session never actually verified: "X isn't built", "Y is done". The next agent treats the document as a contract and will not re-check it, so a belief written as a fact becomes a false premise for everything that follows. Read the document before you hand it over, and downgrade anything you only assumed.
+A fair and repeated criticism. Two things help. Pass the argument, telling it what the next session is for, so the reasoning that bears on *that* is kept rather than flattened. Then watch for confident claims the session never verified, such as "X isn't built" or "Y is done". The next agent may treat the document as a contract and skip the check. Read the document before you hand it over, and downgrade anything you only assumed.
 
 ## It's working if
 
 - The document is a small fraction of the conversation, and the specs, issues and diffs appear in it as paths and URLs rather than as copied text.
 - You can read it cold, without the original session open, and know what to do next.
+- In a configured DOX project, the destination reruns resolution in its own worktree. If repository access is impossible, any necessary compact items are labelled as hints, not authority.
 - The fresh agent starts working instead of asking you to re-explain the setup.
 - In the fork case, your original session is still sitting there untouched when you come back to it.
 - The suggested-skills section names the skill you'd have reached for yourself.

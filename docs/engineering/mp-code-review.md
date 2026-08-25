@@ -4,6 +4,8 @@
 
 The two axes are never merged and never re-ranked. The report ends with a worst issue *per axis* and refuses to name a single winner across them, because a change can pass one axis and fail the other: code that follows every convention while implementing the wrong thing passes Standards and fails Spec; code that does exactly what the [ticket](https://www.aihero.dev/ai-coding-dictionary/ticket) asked while breaking the repo's conventions does the reverse. A blended verdict lets the passing axis hide the failing one.
 
+Once you name the fixed point, contract resolution precedes full diff inspection. In a configured DOX repository, the review's first repository operation resolves one task using changed-path and base semantics, then gives each independent review the compact resolved items it needs. A bare receipt is only a local expansion handle, so it is not passed off as contract content. Without DOX, the review discovers changed path names, loads their root-to-nearest `AGENTS.md` chains and indexed co-located `DECISIONS.md` entries, and only then reads the full diff and commit log.
+
 ## When to reach for it
 
 Type `/mp-code-review`, or the agent reaches for it automatically when you ask to review a branch, a PR, work in progress, or anything "since X".
@@ -17,31 +19,31 @@ Type `/mp-code-review`, or the agent reaches for it automatically when you ask t
 | The whole codebase has drifted, not one diff | [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) |
 | Something is broken and you do not know why | [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs) |
 
-You must supply the fixed point. If you do not, the skill asks for one rather than guessing; it then checks the ref resolves and the diff is non-empty before spawning anything, so a mistyped branch name fails in front of you instead of inside two subagents.
+You must supply the fixed point. If you do not, the skill asks for one rather than guessing. In configured DOX repositories, resolution using that base is the first repository operation; the skill then verifies the ref explicitly and confirms the diff is non-empty before spawning anything, so a mistyped branch name still fails in front of you instead of inside two subagents.
 
 ## Prerequisites
 
-The Standards axis needs nothing. It reads whatever the repo documents (`CODING_STANDARDS.md`, `CONTRIBUTING.md`, and the like) and falls back on a built-in baseline when the repo documents nothing.
+The Standards axis needs a non-empty diff and project context resolved through the selected storage branch. It reads targeted standards sources such as `CODING_STANDARDS.md` and `CONTRIBUTING.md`; in repositories without DOX, applicable `AGENTS.md` files may also supply standards. The built-in smell baseline remains available when the repository documents nothing.
 
 The Spec axis needs a spec to exist and be findable. It looks in this order:
 
-1. Issue references in the commit messages (`#123`, `Closes #45`, a GitLab `!67`), fetched through `docs/agents/issue-tracker.md`.
+1. Issue references in the commit messages (`#123`, `Closes #45`, a GitLab `!67`), fetched through the configured issue-tracker workflow.
 2. A path you pass in as an argument.
 3. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch or feature name.
 4. Asking you.
 
-Step 1 depends on `docs/agents/issue-tracker.md`, which [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) writes. Without it the axis still works if you hand it a path. With no spec at all, the Spec sub-agent is skipped and the report says "no spec available" rather than inventing requirements.
+[setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) provides that issue-tracker workflow. Without it the axis still works if you hand it a path. With no spec at all, the Spec review is skipped and the report says "no spec available" rather than inventing requirements.
 
 ## The two axes
 
 | | Standards | Spec |
 | --- | --- | --- |
 | Question | Is it built right? | Is it the right thing? |
-| Reads | The repo's documented standards, plus the smell baseline | The originating issue or spec |
+| Reads | Resolved project contract items, targeted standards documents, and the smell baseline | The originating issue or spec, plus resolved terms and binding constraints for the changed paths |
 | Reports | Documented breaches (can be hard), and smells (always judgement calls) | Missing or partial requirements, scope creep, requirements implemented wrongly |
 | Every finding cites | The standards file and the rule, or the named smell plus the hunk | The line of the spec |
 
-A generic review skill that does not know your standards is the thing this design is trying to avoid — it flags what is deliberate in your codebase and misses the invariants your codebase actually depends on. So the repo's own documentation is the [primary source](https://www.aihero.dev/ai-coding-dictionary/primary-source) on the Standards axis, and **the repo always overrides**.
+A generic review skill that does not know your standards flags what is deliberate in your codebase and misses the invariants it depends on. The resolved project contract and targeted repository documentation are the [primary sources](https://www.aihero.dev/ai-coding-dictionary/primary-source) on the Standards axis, and **the repo always overrides**. The Spec axis receives the same compact contract context only to understand terms and binding constraints; it cannot turn those items into requirements the spec never stated.
 
 The **smell baseline** is the floor underneath it: twelve Fowler code smells from _Refactoring_ ch.3 — Mysterious Name, Duplicated Code, Feature Envy, Data Clumps, Primitive Obsession, Repeated Switches, Shotgun Surgery, Divergent Change, Speculative Generality, Message Chains, Middle Man, Refused Bequest. Each is a labelled heuristic ("possible Feature Envy"), never a hard violation, and each is stated as *what it is* → *how to fix*, so a finding arrives with a move attached rather than a complaint. Anything your linter already enforces is skipped by both axes.
 

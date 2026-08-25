@@ -3,6 +3,7 @@
 `research` answers a question by reading the sources that own the answer, then leaves a cited Markdown file in the repo. It works only from **[primary sources](https://www.aihero.dev/ai-coding-dictionary/primary-source)** — official docs, source code, specs, first-party APIs — and follows every claim back to the source that owns it, so it will not repeat a blog post's account of an API when the API's own docs are reachable.
 
 It does not answer you in the conversation. The output is a file, written where the repo already keeps such notes, with a link on each claim. That is the point: a document you can react to, hand to another agent, or throw away, rather than an answer that vanishes when the [session](https://www.aihero.dev/ai-coding-dictionary/session) ends.
+Repository contract resolution is conditional. Research that examines repository code, plans, or conventions resolves one task with the known paths through DOX when configured, or uses the root-to-nearest `AGENTS.md` chain when needed. External-only research does neither. Compact context may travel to delegated research in the same worktree; another worktree resolves locally and treats supplied items only as hints. DOX records are not swept and `AGENTS.md` is not read as a second source.
 
 ## When to reach for it
 
@@ -14,11 +15,11 @@ Reach for it when the next step is *finding something out* from outside the work
 | --- | --- |
 | An external fact a decision is waiting on | `research` |
 | A decision made *with* you, by interview | [grilling](https://aihero.dev/skills-grilling) |
-| A durable architecture decision, owned by the applicable AGENTS/DOX contract | [grill-with-docs](https://aihero.dev/skills-grill-with-docs) |
+| A durable architecture decision, owned by the applicable project contract | [grill-with-docs](https://aihero.dev/skills-grill-with-docs) |
 | To find out whether an approach works in your codebase | [prototype](https://aihero.dev/skills-prototype) |
 | A plan too big to hold in one session | [wayfinder](https://aihero.dev/skills-wayfinder) |
 
-The line between `research` and `grill-with-docs` is the **shelf life of what comes back**. Research produces short-lived assets, such as how a library's authentication works this week. A hard-to-reverse trade-off belongs in the nearest owning **Architectural Decisions**, inline while small and later in its co-located `DECISIONS.md`, or in the applicable DOX decision record. If you are producing a decision rather than a fact, you are [grilling](https://www.aihero.dev/ai-coding-dictionary/grilling), not researching.
+The line between `research` and `grill-with-docs` is the **shelf life of what comes back**. Research produces short-lived assets, such as how a library's authentication works this week. A hard-to-reverse trade-off belongs in the configured DOX decision record, or, without DOX, in the nearest owning **Architectural Decisions** and its co-located `DECISIONS.md` when that section grows. If you are producing a decision rather than a fact, you are [grilling](https://www.aihero.dev/ai-coding-dictionary/grilling), not researching.
 
 ## Delegated legwork
 
@@ -38,7 +39,7 @@ The opposite failure exists as well: if your own global instructions forbid an a
 
 **Where should the file live — and should I commit it?**
 
-The skill follows the repository's existing notes convention and has no opinion beyond that. A useful distinction is settled architecture versus time-sensitive findings. Durable decisions belong to the nearest owning `AGENTS.md`, graduating to its co-located `DECISIONS.md` when needed, or to configured DOX records. Research files often do not belong in git because they record what was true on the day they were written. Archive or delete them after use, or keep them in a separate knowledge system. A stale research file can poison later repository reads.
+The skill follows the repository's existing notes convention and has no opinion beyond that. A useful distinction is settled architecture versus time-sensitive findings. Durable decisions belong in configured DOX records, or, without DOX, in the nearest owning `AGENTS.md` and its co-located `DECISIONS.md` when needed. Research files often do not belong in git because they record what was true on the day they were written. Archive or delete them after use, or keep them in a separate knowledge system. A stale research file can poison later repository reads.
 
 **What counts as a "high-trust" primary source, and who decides?**
 
@@ -58,7 +59,7 @@ There is no stopping criterion in the skill, and this shows up as two complaints
 
 **`/wayfinder` created research tickets — do I resolve those myself?**
 
-No, it now fires them for you. In the unreleased changes since v1.1, a charting session spawns a `/research` subagent per research ticket and burns them down in parallel, capturing findings on a throwaway `research/<name>` branch with a [context pointer](https://www.aihero.dev/ai-coding-dictionary/context-pointer) from the ticket. Research tickets are the one exception to wayfinder's one-ticket-per-session rule, because they are [AFK](https://www.aihero.dev/ai-coding-dictionary/afk) — nothing waits on you. Two known snags with those branches: the subagent has been seen opening a draft PR from a branch that is never meant to merge ([issue #576](https://github.com/mattpocock/skills/issues/576)), and deleting the branch later breaks the context pointers the tickets hold.
+No, it now fires them for you. In the unreleased changes since v1.1, a charting session spawns a `/research` subagent per research ticket and burns them down in parallel, capturing findings on a throwaway `research/<name>` branch with a [context pointer](https://www.aihero.dev/ai-coding-dictionary/context-pointer) from the ticket. A subagent in another worktree resolves configured DOX context locally; compact items supplied by the charting session are hints only. Research tickets are the one exception to wayfinder's one-ticket-per-session rule, because they are [AFK](https://www.aihero.dev/ai-coding-dictionary/afk) — nothing waits on you. Two known snags with those branches: the subagent has been seen opening a draft PR from a branch that is never meant to merge ([issue #576](https://github.com/mattpocock/skills/issues/576)), and deleting the branch later breaks the context pointers the tickets hold.
 
 ## It's working if
 

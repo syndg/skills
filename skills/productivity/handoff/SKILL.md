@@ -9,7 +9,9 @@ Write a handoff document summarising the current conversation so a fresh agent c
 
 Include a "suggested skills" section that names each skill the next agent should explicitly invoke using `/skill`-style prose.
 
-Do not duplicate content already captured in other artifacts or contracts (specs, plans, inline ADRs in the applicable `AGENTS.md` chain, issues, commits, diffs). Reference them by path, ADR number, or URL instead.
+Keep settled material at its source. In an unconfigured project, reference specs, plans, issues, commits, diffs, and the applicable root-to-nearest `AGENTS.md` chain or its indexed co-located `DECISIONS.md` entries by path, decision number, or URL instead of copying them.
+
+When `dox.config.json` exists, include the target task and known paths, then instruct the target to rerun `dox resolve` from its destination worktree. A receipt is a local manifest, not loaded contract prose, so do not pass one as the contract or direct the target to read DOX record paths. If the destination cannot access the source repository and portability requires project language, include only the relevant compact items from the current resolution envelope and label them explicitly as hints, not authority.
 
 Redact any sensitive information, such as API keys, passwords, or personally identifiable information.
 

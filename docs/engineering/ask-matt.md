@@ -32,6 +32,8 @@ The main idea-to-ship flow is:
 grill-with-docs → to-spec → to-tickets → implement → mp-code-review
 ```
 
+At the head of that flow, `grill-with-docs` writes settled project context to one canonical store. The trigger is `dox.config.json`: when present, it uses configured DOX records; when absent, it uses the root-to-nearest `AGENTS.md` and `DECISIONS.md` fallback.
+
 Two branches matter inside it:
 
 - If a design question needs runnable evidence, bridge into [prototype](https://aihero.dev/skills-prototype) with [handoff](https://aihero.dev/skills-handoff). The prototype stays as a primary source on a `prototype/<name>` branch outside main, and the implementation issue points to it.
@@ -47,8 +49,8 @@ Three on-ramps join that flow:
 
 Three model-invoked layers run beneath the flows:
 
-- [dox](https://aihero.dev/skills-dox) is the DOX-first contract retrieval and structural-validation layer for configured repositories. It resolves one task plus known paths or changed files into a compact, receipt-backed bundle before repository research or code work.
-- [domain-modeling](https://aihero.dev/skills-domain-modeling) adjudicates the project's language and durable decisions. It updates the applicable `AGENTS.md` and `DECISIONS.md` storage, or the canonical DOX records in a configured DOX project.
+- [dox](https://aihero.dev/skills-dox) is the contract retrieval and structural-validation layer triggered by `dox.config.json`. It resolves one task plus known paths or changed files before repository research or code work.
+- [domain-modeling](https://aihero.dev/skills-domain-modeling) adjudicates project language and durable decisions. It updates canonical DOX records and runs `/dox` validation when configured; otherwise it updates the `AGENTS.md` and `DECISIONS.md` fallback.
 - [codebase-design](https://aihero.dev/skills-codebase-design) supplies the deep-module vocabulary for module shape, interfaces, seams, leverage, and locality.
 
 ## The phase boundary
@@ -85,7 +87,7 @@ This personalized fork adds routes that do not belong to the promoted product-de
 - `/cmux` controls local cmux windows, workspaces, panes, focus, and routing; `/synclaw-server` runs commands and edits files directly on the Synclaw server.
 - The `/wiki-*` family handles the personal knowledge wiki. `/wiki-import-readwise` dispatches Readwise imports, `/wiki-ingest` and its source-specific variants capture material, `/wiki-digest` propagates claims, and `/wiki-lint` checks and repairs the graph.
 - `/youtube-history-db` answers evidence-backed questions from the local YouTube history database.
-- `/pi-update` maintains the Syn Pi fork. `/skills-fork-update` integrates upstream skills changes while preserving this fork's AGENTS/DOX conventions, personal and vendor inventory, and `/mp-code-review` rename.
+- `/pi-update` maintains the Syn Pi fork. `/skills-fork-update` integrates upstream skills changes while preserving DOX direct cutover, the AGENTS fallback, personal and vendor inventory, and the `/mp-code-review` rename.
 
 ## Common questions
 
@@ -111,7 +113,7 @@ Check the changelog before assuming a skill disappeared. `writing-great-skills` 
 - The route mentions where to continue, clear, hand off, delegate, or compact, not just a list of names.
 - Where two skills are close, it says which one fits and why the other does not.
 - A claim about another skill's behaviour is grounded in that skill's `SKILL.md` when the choice depends on it.
-- The route respects the repository's AGENTS/DOX contract storage and this fork's renamed or personal routes.
+- The route names `dox.config.json` when contract storage affects the flow, and never combines DOX with the AGENTS fallback.
 
 ## Where it fits
 

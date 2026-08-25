@@ -7,6 +7,10 @@ description: Build a throwaway prototype to answer a design question. Use when t
 
 A prototype is **throwaway code that answers a question**. The question decides the shape.
 
+## Resolve the project contract first
+
+Before reading surrounding code or starting the prototype, check for `dox.config.json`. When present, invoke `/dox` with the prototype question and known paths, then use only the compact resolved items as contract context. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes before repository work. Do not initialize DOX as part of prototyping.
+
 ## Pick a branch
 
 Identify which question is being answered — from the user's prompt, the surrounding code, or by asking if the user is around:
@@ -23,4 +27,4 @@ The two branches produce very different artifacts — getting this wrong wastes 
 3. **No persistence by default.** State lives in memory. Persistence is the thing the prototype is _checking_, not something it should depend on. If the question explicitly involves a database, hit a scratch DB or a local file with a clear "PROTOTYPE — wipe me" name.
 4. **Skip the polish.** No tests, no error handling beyond what makes the prototype _runnable_, no abstractions. The point is to learn something fast.
 5. **Surface the state.** After every action (logic) or on every variant switch (UI), print or render the full relevant state so the user can see what changed.
-6. **Capture it when done.** Fold any validated decision into the real code, then capture the prototype itself as a **primary source**: commit it to a throwaway branch, out of main, and leave a context pointer to that branch on the implementation issue. Capture the answer too — the verdict and the question it settled — in the issue or commit. If it establishes durable domain language or an architectural decision, use `/domain-modeling` to record it in the applicable DOX or `AGENTS.md`/`DECISIONS.md` contract. The main branch keeps only the validated decision.
+6. **Capture it when done.** Fold any validated decision into the real code, then preserve the prototype as a **primary source** on a throwaway branch outside main and link that branch from the implementation issue. Capture the verdict and the question it settled in the issue or commit. If it establishes durable domain language or an architectural decision, use `/domain-modeling`: write canonical DOX records when `dox.config.json` is present and run `/dox` validation; use the applicable `AGENTS.md`/`DECISIONS.md` fallback only when the config is absent. Main keeps only the validated decision.

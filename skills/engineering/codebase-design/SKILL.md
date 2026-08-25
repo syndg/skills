@@ -7,6 +7,8 @@ description: Shared vocabulary for designing deep modules. Use when the user wan
 
 Design **deep modules**: a lot of behaviour behind a small interface, placed at a clean seam, testable through that interface. Use this language and these principles wherever code is being designed or restructured. The aim is leverage for callers, locality for maintainers, and testability for everyone.
 
+When applying this vocabulary to repository code, check for `dox.config.json` before inspecting source. When present, invoke `/dox` with one module-design task and every known relevant path, then use its compact resolved items for targeted design work. This is a direct cutover: do not enumerate records or also read `AGENTS.md`. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes. Another worktree resolves locally and treats supplied compact items only as hints. A vocabulary-only question that does not inspect a repository needs neither route.
+
 ## Glossary
 
 Use these terms exactly — don't substitute "component," "service," "API," or "boundary." Consistent language is the whole point.

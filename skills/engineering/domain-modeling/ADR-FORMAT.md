@@ -1,6 +1,8 @@
-# AGENTS.md Architectural Decision Format
+# Fallback AGENTS.md architectural decision format
 
-This is the architectural-decision storage reference for the `domain-modeling` skill. Decisions live inline in the **Architectural Decisions** section of the nearest owning `AGENTS.md` while that section is small; a section that has grown to dominate the file graduates to a co-located `DECISIONS.md` (see "When the section outgrows the hot path"). Never create a file per decision or a central `docs/adr/` directory.
+Use this reference only when `dox.config.json` is absent. A configured DOX repository stores decisions in canonical DOX records and keeps no parallel `AGENTS.md` or `DECISIONS.md` decision ledger.
+
+In the unconfigured fallback, decisions live in the **Architectural Decisions** section of the nearest owning `AGENTS.md` while the section is small. A section that dominates the file may graduate to a co-located `DECISIONS.md`. Never create a file per decision or a central `docs/adr/` directory.
 
 ## Entry shape
 
@@ -21,11 +23,11 @@ A thinner document may use a single bullet:
 
 The value is in recording that a decision was made and why, not in filling out a template. Add **Consequences** only when they are non-obvious. Add considered alternatives only when remembering their rejection will prevent the same trade-off from being reopened without new evidence.
 
-## Global, immutable numbering
+## Global, immutable fallback numbering
 
-`ADR-NNNN` numbers are global across the repository and immutable. They are stable cross-reference anchors, not a per-document sequence.
+In the unconfigured fallback, `ADR-NNNN` numbers are global across the repository and immutable. They are stable cross-reference anchors, not a per-document sequence.
 
-Before adding a decision, scan `ADR-` labels across the entire `AGENTS.md` tree, find the highest number, and allocate the next one. For example:
+Before adding a fallback decision, confirm `dox.config.json` is absent. Then scan `ADR-` labels across the `AGENTS.md` tree, find the highest number, and allocate the next one. For example:
 
 ```sh
 rg -o --glob 'AGENTS.md' 'ADR-[0-9]{4}' .
@@ -37,15 +39,15 @@ rg -o --glob 'AGENTS.md' 'ADR-[0-9]{4}' .
 - When a decision is superseded, retain its entry and note the replacement, such as `Superseded by ADR-0024`.
 - Cross-reference inherited decisions by number rather than copying their text into child documents.
 
-## Placement and change protocol
+## Fallback placement and change protocol
 
-Put the decision in the narrowest `AGENTS.md` whose subtree it governs:
+Put the decision in the narrowest fallback `AGENTS.md` whose subtree it governs:
 
 - Repository-wide decisions go in the root document.
 - App- or package-wide decisions go in that app or package's document.
 - Subtree-specific decisions go in the relevant child document.
 
-Before writing, read every `AGENTS.md` from the repository root to the target scope and check for inherited decisions that already settle or constrain the choice. Follow the owning document's **Change Protocol**. If the correct scope requires a new child document, create it lazily and keep the parent's **Child DOX Index** current.
+Before writing, confirm `dox.config.json` is absent, read each `AGENTS.md` from the repository root to the target scope and any relevant co-located `DECISIONS.md` entries the chain indexes, then check for inherited decisions that already settle or constrain the choice. Follow the owner's **Change Protocol**. If the scope needs a new child document, create it lazily and keep the parent's **Child DOX Index** current.
 
 ## When the section outgrows the hot path
 

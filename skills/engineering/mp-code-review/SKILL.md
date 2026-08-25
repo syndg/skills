@@ -10,30 +10,42 @@ Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
 
 Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
 
-The issue tracker should have been provided to you. If `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`.
+The issue-tracker workflow should have been provided through project context. If it is unavailable when resolving an issue reference, tell the user to run `/setup-matt-pocock-skills`.
 
 ## Process
 
-### 1. Pin the fixed point
+### 1. Select the fixed point
 
-Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. If they didn't specify one, ask for it.
+Whatever the user named is the fixed point: a commit SHA, branch name, tag, `main`, `HEAD~5`, and so on. If they did not specify one, ask. Selecting the ref is not permission to inspect the repository yet.
 
-Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
+### 2. Resolve project contract context, then inspect the diff
 
-Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here — not inside two parallel sub-agents.
+Check for `dox.config.json`. If it exists, make the configured resolver the first repository operation: invoke `/dox` with one review task using changed-path and base semantics equivalent to `dox resolve "review changes since <fixed-point>" --changed --base <fixed-point>`. Use the compact resolved items as contract content. Do not enumerate DOX records, read `AGENTS.md` as a second contract source, or pass only the receipt onward; a receipt is a local expansion handle, not portable contract content.
 
-### 2. Identify the spec source
+Select one branch before reading the full diff:
+
+- **Configured DOX:** after resolution, confirm the fixed point with `git rev-parse <fixed-point>`, then capture the changed paths with `git diff --name-only <fixed-point>...HEAD`.
+- **Unconfigured fallback:** confirm the fixed point, capture only the changed path names, then read each changed file's applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries that chain indexes. Do not inspect the full diff or commit log before this contract context is loaded.
+
+A bad ref or an empty changed-path set fails here. After the selected contract branch is complete, capture each remaining input once:
+
+- Diff: `git diff <fixed-point>...HEAD`
+- Commits: `git log <fixed-point>..HEAD --oneline`
+
+An empty diff also fails before either review begins.
+
+### 3. Identify the spec source
 
 Look for the originating spec, in this order:
 
-1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `docs/agents/issue-tracker.md`.
+1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the configured issue-tracker workflow.
 2. A path the user passed as an argument.
 3. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
-4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
+4. If nothing is found, ask the user where the spec is. If there is none, skip the **Spec** review and report "no spec available".
 
-### 3. Identify the standards sources
+### 4. Identify the standards sources
 
-Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`.
+Use standards documents discovered through the resolved project context or targeted repository inspection, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`. In a non-DOX project, include applicable standards from the root-to-nearest `AGENTS.md` chains.
 
 On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below — a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
 
@@ -55,25 +67,27 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 - **Middle Man** — a class or function that mostly just delegates onward. → cut it, call the real target direct.
 - **Refused Bequest** — a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
 
-### 4. Spawn both sub-agents in parallel
+### 5. Run both reviews independently
 
-Spawn both sub-agents in parallel using the harness's available subagent mechanism.
+Delegate both reviews in parallel when independent execution is available. Otherwise, run them in sequence with separate contexts.
 
-**Standards sub-agent prompt** — include:
+**Standards review input** — include:
 
-- The full diff command and commit list.
-- The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full — the sub-agent has no other access to it.
-- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
+- The full diff command, commit list, and changed paths.
+- The compact resolved contract items relevant to standards and invariants, not a bare receipt.
+- The list of standards-source files you found in step 4, **plus the smell baseline from step 4** pasted in full.
+- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Keep this axis independent from spec compliance. Under 400 words."
 
-**Spec sub-agent prompt** — include:
+**Spec review input** — include:
 
-- The diff command and commit list.
+- The diff command, commit list, and changed paths.
 - The path or fetched contents of the spec.
-- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
+- The compact resolved contract items relevant to the changed paths, not a bare receipt. Use them to understand project terms and binding constraints, not to invent requirements absent from the spec.
+- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Keep this axis independent from standards compliance. Under 400 words."
 
-If the spec is missing, skip the Spec sub-agent and note this in the final report.
+If the spec is missing, skip the Spec review and note this in the final report.
 
-### 5. Aggregate
+### 6. Aggregate
 
 Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
 

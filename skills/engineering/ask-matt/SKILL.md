@@ -14,7 +14,7 @@ A **flow** is a path through the skills. Most paths run along one **main flow**,
 
 The route most work travels. You have an idea and want it built.
 
-1. **`/grill-with-docs`** — sharpen the idea by interview. Start here when you **have a codebase**: it's stateful, retaining what it learns in the applicable `AGENTS.md` chain's Ubiquitous Language and Architectural Decisions. (No codebase? Use `/grill-me` — see Standalone. Both run the same `/grilling` primitive; `grill-with-docs` is the one that leaves a paper trail.)
+1. **`/grill-with-docs`** — sharpen the idea by interview. Start here when you **have a codebase**. It leaves a paper trail in the repository's canonical contract: configured DOX records when `dox.config.json` is present, otherwise the applicable root-to-nearest `AGENTS.md` fallback and co-located `DECISIONS.md` when needed. (No codebase? Use `/grill-me` in Standalone. Both run `/grilling`; only `grill-with-docs` keeps durable project context.)
 2. **Branch — can you settle every question in conversation?** If a question needs a runnable answer (state, business logic, a UI you have to see), detour through a prototype, bridged by **`/handoff`** in both directions (see Crossing sessions):
    - **`/handoff`** out, then open a fresh session against that file,
    - **`/prototype`** to answer the question with throwaway code,
@@ -53,8 +53,8 @@ Not feature work — upkeep.
 
 Three model-invoked layers run *beneath* the other skills. They retrieve or maintain the contracts that make a flow coherent. Reach for them directly when the contract, words, or module shape is the problem; or let the skills above pull them in.
 
-- **`/dox`** — the automatic **DOX-first contract-retrieval and structural-validation** layer for a project with DOX records. It runs before repository research or code work, including read-only tasks. Give it one task plus known paths or changed files; it returns a compact, budgeted, receipt-backed contract bundle with complete binding invariants and defers full bodies to explicit receipt-backed expansion.
-- **`/domain-modeling`** — the semantic-adjudication layer for the project's *domain* language: challenge a fuzzy term, resolve an overloaded word ("account" doing three jobs), and decide whether a hard-to-reverse choice deserves a durable decision record. In a DOX project it records settled terminology and decisions as DOX records; it owns the meaning, while `/dox` owns retrieval and structural validation.
+- **`/dox`** — the automatic contract-retrieval and structural-validation layer when `dox.config.json` is present. It runs before repository research or code work, including read-only tasks. Give it one task plus known paths or changed files; it returns compact resolved items and a local receipt for explicit full-body expansion.
+- **`/domain-modeling`** — the semantic-adjudication layer for the project's domain language. It challenges fuzzy terms and decides whether a hard-to-reverse choice deserves a durable record. With `dox.config.json`, it updates canonical DOX records and runs `/dox` validation. Without that file, it uses the root-to-nearest `AGENTS.md` and `DECISIONS.md` fallback.
 - **`/codebase-design`** — the deep-module vocabulary (module, interface, depth, seam, adapter, leverage, locality) for designing a module's *shape*: a lot of behaviour behind a small interface at a clean seam. `/tdd` and `/improve-codebase-architecture` both speak it.
 
 ## Crossing sessions
@@ -80,7 +80,7 @@ Off the main flow entirely.
 ## Fork maintenance
 
 - **`/pi-update`** — maintain the personalized Syn Pi fork. Use it to merge official Pi updates into `syn-pi`, preserve the focused downstream behavior, validate and build it, keep the official `pi` launcher separate, and push the verified non-force update unless local-only work was requested.
-- **`/skills-fork-update`** — maintain this personalized fork of Matt's skills. Use it to check `mattpocock/skills` for upstream changes or merge them into `~/skills` while preserving the AGENTS/DOX conventions, personal/vendor inventory, teaching kit, and `mp-code-review` rename. It validates locally and deliberately does not push.
+- **`/skills-fork-update`** — maintain this personalized skills fork. Use it to integrate `mattpocock/skills` changes while preserving DOX direct cutover, the AGENTS fallback, personal/vendor inventory, the teaching kit, and the `mp-code-review` rename. It validates locally and does not push.
 
 ## Personal tools
 
@@ -90,4 +90,4 @@ Off the main flow entirely.
 
 ## Precondition
 
-**`/setup-matt-pocock-skills`** — run before your first engineering flow to configure the issue tracker, triage labels, and AGENTS/DOX domain contract the other skills assume. Custom issue trackers also work.
+**`/setup-matt-pocock-skills`** — run before your first engineering flow to configure the issue tracker, triage labels, and contract lookup. An existing `dox.config.json` selects canonical DOX records; its absence selects the AGENTS fallback. Custom issue trackers also work.

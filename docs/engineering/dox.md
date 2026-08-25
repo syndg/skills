@@ -1,6 +1,6 @@
 ## What it does
 
-`dox` is the **DOX-first** context seam for repositories that keep engineering contracts as structured records. Before an agent researches or changes the repository—even for a read-only question—it resolves the applicable ownership, decisions, contracts, binding invariants, and dependencies, then uses that receipt to guide targeted source inspection.
+`dox` is the **DOX-first** context seam for repositories that keep engineering contracts as structured records. Before an agent researches or changes the repository—even for a read-only question—it resolves the applicable ownership, decisions, contracts, binding invariants, and dependencies, then uses those compact items to guide targeted source inspection.
 
 Its defining constraint is structural: `dox` retrieves and validates records, but it does not adjudicate what a term, relationship, or decision means. Use [domain-modeling](https://aihero.dev/skills-domain-modeling) for that semantic work.
 
@@ -22,19 +22,19 @@ dox resolve "review changed authorization behavior" --changed --base origin/main
 dox resolve --from <receipt-id> --expand <record-id>
 ```
 
-Normal retrieval returns canonical compact JSON under a 16,384-byte default budget. Capsules include a summary, a bounded task-relevant excerpt, evidence, provenance, and body digest. Accepted and enforced invariants include their complete binding tuple. Optional records that do not fit are named in `receipt.deferred`; mandatory context is atomic, so an undersized budget fails instead of truncating a binding.
+Normal retrieval returns a canonical compact resolution envelope under a 16,384-byte default budget. Every item includes a summary, evidence, and body digest; optional capsules may also include a bounded task-relevant excerpt and provenance. Accepted and enforced invariants include their complete binding tuple. Optional records that do not fit are named in `receipt.deferred`; mandatory context is atomic, so an undersized budget fails instead of truncating a binding.
 
 Full bodies stay behind receipt-backed expansion. Expansion returns only newly requested bodies and a child receipt. Unknown record IDs, repeated expansion, stale corpus receipts, unsafe receipt-cache paths, and outputs that exceed the expansion budget fail closed.
 
 ## The contract layer
 
-`dox` is the automatic **contract-retrieval and structural-validation** layer underneath engineering flows. DOX-first keeps structured-record discovery inside the CLI, returns a receipt-backed context bundle, and directs the agent toward only the source paths and symbols needed to verify behavior.
+`dox` is the automatic **contract-retrieval and structural-validation** layer underneath engineering flows. DOX-first keeps structured-record discovery inside the CLI, returns compact resolved items plus a receipt for controlled expansion, and directs the agent toward only the source paths and symbols needed to verify behavior.
 
 Resolution also surfaces optional source path, heading, and digest metadata, so migrated records remain traceable to the exact frozen source section without reading a second runtime source.
 
 Records use a versioned, closed schema. Each record has one owner and a Markdown body; unknown fields and incomplete binding records fail closed. Invariants capture enforcement targets, dependent consumers, verification, failure modes, impact, criticality, and lifecycle state. Proposed invariants are nonbinding until accepted or enforced.
 
-Architectural decisions are full `decision` records identified by a globally unique four-digit ADR number. A DOX project uses those records directly rather than keeping a parallel decision source. `dox lint` blocks broken ADR or contract references, stale symbols, uncovered configured paths, incomplete invariants, and parallel decision files.
+Architectural decisions are full `decision` records identified by a globally unique four-digit ADR number. A DOX project uses those records directly rather than keeping a parallel decision source. `dox lint` rejects `DECISIONS.md` files and actual ADR entries in tracked `AGENTS.md` files, while allowing prose and pointers that direct readers to DOX. Contract relations must resolve to a declared contract rather than any record ID. Lint also blocks broken ADR references, stale symbols, uncovered configured paths, and incomplete invariants.
 
 ## Common questions
 
@@ -52,10 +52,10 @@ Resolve the task again against the current corpus. Expansion fails closed when t
 
 ## It's working if
 
-- A compact DOX receipt appears before broad source inspection, including on read-only tasks.
+- A compact DOX resolution envelope appears before broad source inspection, including on read-only tasks.
 - The agent makes one task-oriented resolution with known paths or changed files instead of enumerating records or sweeping synonyms.
 - Optional detail is visibly deferred, while every returned binding invariant is complete.
-- Full bodies are expanded only by discovered ID and only when the compact excerpt is insufficient.
+- Full bodies are expanded only by discovered ID and only when the compact item is insufficient.
 - The resulting plan or answer accounts for the applicable owners, decisions, contracts, invariants, and dependencies, then uses targeted code reads to verify behavior.
 
 ## Where it fits

@@ -8,6 +8,7 @@ import type {
   ResolveRequest,
   RetrievalEvidence,
 } from "./types.ts";
+import { contractDeclarations } from "./records.ts";
 import { DoxError, globMatches, globSpecificity, ownerScopeMatches, safeRelative } from "./safe.ts";
 
 const RESOLVER_VERSION = 2;
@@ -179,11 +180,7 @@ type GraphLink = { record: DoxRecord; relation: "reference" | "dependent"; sourc
 function referencedRecords(record: DoxRecord, records: readonly DoxRecord[]): GraphLink[] {
   const byAdr = new Map(records.filter((item) => item.adr).map((item) => [item.adr as string, item]));
   const byContract = new Map<string, DoxRecord>();
-  for (const item of records) {
-    if (item.kind === "contract") byContract.set(item.id, item);
-    for (const contract of item.contracts) byContract.set(contract, item);
-    for (const term of item.terms) if (term.startsWith("contract:")) byContract.set(term.slice("contract:".length), item);
-  }
+  for (const item of records) for (const contract of contractDeclarations(item)) byContract.set(contract, item);
   const out = new Map<string, GraphLink>();
   const add = (target: DoxRecord | undefined, relation: GraphLink["relation"], source: GraphLink["source"], edge: string) => {
     if (!target) return;
@@ -198,7 +195,7 @@ function referencedRecords(record: DoxRecord, records: readonly DoxRecord[]): Gr
     if (binding.intent) for (const target of records) if (target.intents.includes(binding.intent)) add(target, "reference", "graph", `depends_on:${binding.intent}`);
     if (binding.path) for (const target of records) if (target.paths.includes(binding.path)) add(target, "reference", "graph", `depends_on:${binding.path}`);
   }
-  const declaredContracts = new Set([...(record.kind === "contract" ? [record.id] : []), ...record.contracts, ...record.terms.filter((term) => term.startsWith("contract:")).map((term) => term.slice("contract:".length))]);
+  const declaredContracts = new Set(contractDeclarations(record));
   if (declaredContracts.size) for (const target of records) if (bindingInvariant(target)) {
     for (const binding of target.depended_on_by) if (binding.contract && declaredContracts.has(binding.contract)) {
       add(target, "dependent", "binding", `dependency:${binding.contract}`);
