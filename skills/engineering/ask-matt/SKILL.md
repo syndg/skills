@@ -25,11 +25,9 @@ The route most work travels. You have an idea and want it built.
 
    Either way, **`/implement`** builds each issue by driving **`/tdd`** internally — one red-green slice at a time — then closes out by running **`/mp-code-review`**, a two-axis review (Standards + Spec) of the diff, before committing. Reach for **`/tdd`** on its own when you just want to build a concrete behaviour test-first without a full spec, and **`/mp-code-review`** on its own whenever you want to review a branch or PR against a fixed point.
 
-### Context hygiene
+### Phase boundaries
 
-Keep steps 1–3 in **one unbroken context window** — don't compact or clear until after `/to-tickets` — so the grilling, spec, and tickets all build on the same thinking. Each `/implement` then starts fresh, working from the ticket.
-
-The limit on this is the **[smart zone](https://www.aihero.dev/ai-coding-dictionary/smart-zone)**: the window (~120k tokens on state-of-the-art models) within which the model still reasons sharply. If a session approaches it before `/to-tickets`, don't push on degraded — `/handoff` and continue in a fresh thread.
+Keep steps 1–3 in one session whenever the next phase needs the current conversation as a primary source. At every genuine phase boundary, use the ordered decision tree in [PHASE-BOUNDARIES.md](./PHASE-BOUNDARIES.md): continue when the reasoning still matters and there is room; `/clear` when it does not; `/handoff` only when the context must travel; use a subagent for scoped AFK work; otherwise `/compact` with an instruction for the next phase. Do not compact mid-phase.
 
 ## On-ramps
 
@@ -39,7 +37,7 @@ A starting situation that generates work, then merges onto the main flow.
 
   Triage is only for issues **you didn't create** — bug reports, incoming feature requests, anything that arrives raw. Tickets that `/to-tickets` produced are already agent-ready, so **don't triage them**.
 
-- **Something's broken** → **`/diagnosing-bugs`**. For the hard ones: the bug that resists a first glance, the intermittent flake, the regression that crept in between two known-good states. It refuses to theorise until it has a **tight feedback loop** — one command that already goes red on *this* bug — then fixes with a regression test. Its post-mortem hands off to **`/improve-codebase-architecture`** when the real finding is that there's no good seam to lock the bug down.
+- **Something's broken** → **`/diagnosing-bugs`**. For the hard ones: the bug that resists a first glance, the intermittent flake, the regression that crept in between two known-good states. It refuses to theorise until it has a **tight feedback loop** — one command that already goes red on *this* bug — then fixes with a regression test. After the fix, recommend **`/improve-codebase-architecture`** when the real finding is that there is no good seam to lock the bug down.
 
 - **A huge, foggy effort — a greenfield project or a huge feature build, too big for one session** → **`/wayfinder`**, the most cognitively demanding flow here. When the way from here to the destination isn't visible yet, it charts a **shared map** of **decision tickets** on the issue tracker and resolves them one at a time — producing **decisions, not deliverables** — until the fog is pushed back and the way is clear. Where **`/grill-with-docs`** sharpens an idea you can hold in one session, wayfinder is for the idea you can't — and it's slower and denser, so save it for exactly that, never a well-scoped feature.
 
@@ -61,23 +59,34 @@ Three model-invoked layers run *beneath* the other skills. They retrieve or main
 
 ## Crossing sessions
 
-- **`/handoff`** — when a thread is full or you need to branch off (e.g. into a `/prototype` session), this compacts the conversation into a markdown file. You don't continue in place — you **open a new session and reference that file** to carry the context across. It's the bridge between context windows, in either direction. Use it when you want a **fresh session** but need the **current conversation preserved**.
-- **`/compact`** (built-in) — stay in the **same conversation**, letting the earlier turns be summarized. Use it at **intentional breaks between phases**, when you don't mind losing the verbatim history. Don't compact mid-phase — the agent can lose its way. `/handoff` forks; `/compact` continues.
+- **`/handoff`** — create a portable Markdown context when the work must move to a new harness, directory, repository, colleague, or a side task found mid-phase. Portability is the reason to use it; a merely full context window normally lands on `/compact`.
+- **`/compact`** (built-in) — stay in the same conversation while replacing earlier turns with a lossy summary. Use it at an intentional phase boundary only after Continue, `/clear`, `/handoff`, and a scoped subagent have been ruled out.
 
 ## Standalone
 
 Off the main flow entirely.
 
-- **`/grill-me`** — the same relentless interview as `/grill-with-docs`, but for when you have **no codebase**. Stateless: it saves nothing locally, builds no `AGENTS.md`. Reach for it to sharpen any plan or design that doesn't live in a repo.
-- **`/prototype`** — a small, throwaway program that answers one design question: does this state model feel right, or what should this UI look like. Throwaway from day one — keep the answer, delete the code. It's the detour in step 2 of the main flow, but reach for it any time a design question is hard to settle on paper.
-- **`/research`** — delegate reading legwork to a **background agent**: it investigates a question against **primary sources**, then leaves a cited Markdown file in the repo. Keep working while it reads. The file it produces is something to take *into* the main flow at `/grill-with-docs` — research feeds the thinking, it doesn't replace it.
+- **`/grill-me`** — the same relentless interview as `/grill-with-docs`, but for when you have **no codebase**. Stateless: it saves nothing locally and builds no durable project contract.
+- **`/prototype`** — throwaway code that answers one design question. Logic/state prototypes are self-contained HTML demos; UI prototypes expose several visual directions. Preserve the prototype on a throwaway branch as a primary source, keep only the validated decision on main, and link the branch from the implementation issue.
+- **`/research`** — delegate reading legwork to a **background agent**: it investigates a question against **primary sources**, then leaves a cited Markdown file in the repo. Keep working while it reads. The file it produces feeds the main flow at `/grill-with-docs`; research does not replace the decision work.
+- **`/wizard`** — generate an interactive shell guide when a setup, migration, or operational transition contains human-only steps such as opening URLs, capturing values, or placing secrets.
+- **`/to-questionnaire`** — turn a decision that needs someone else's input into an asynchronous Markdown questionnaire, after clarifying who will answer and what decision their answers unblock.
+- **`/wait-what`** — re-pitch the last message in plain language and the project's Ubiquitous Language when it did not land.
 - **`/teach`** — learn a concept over multiple sessions, using the current directory as a stateful workspace.
-- **`/writing-great-skills`** — reference for writing and editing skills well.
+- **`/writing-for-agents`** — reference for writing and pruning any document an agent consumes, including skills, steering files, plans, and project contracts.
+- **`/unslop`** — clean AI tells from any prose while preserving meaning, evidence, project vocabulary, and the author's intended voice. It is the cleanup layer beneath `/writing-for-agents` and every other flow that emits text.
+- **`/resolving-merge-conflicts`** — resolve an in-progress merge or rebase conflict by tracing both sides to their intent and completing the operation without discarding either side.
 
 ## Fork maintenance
 
 - **`/pi-update`** — maintain the personalized Syn Pi fork. Use it to merge official Pi updates into `syn-pi`, preserve the focused downstream behavior, validate and build it, keep the official `pi` launcher separate, and push the verified non-force update unless local-only work was requested.
 - **`/skills-fork-update`** — maintain this personalized fork of Matt's skills. Use it to check `mattpocock/skills` for upstream changes or merge them into `~/skills` while preserving the AGENTS/DOX conventions, personal/vendor inventory, teaching kit, and `mp-code-review` rename. It validates locally and deliberately does not push.
+
+## Personal tools
+
+- **`/cmux`** controls local cmux windows, workspaces, panes, focus, and routing; **`/synclaw-server`** runs commands and edits files directly on the Synclaw server.
+- The **`/wiki-*`** family imports, ingests, propagates, and health-checks the personal knowledge wiki. Use the source-specific ingest skill when one fits; `/wiki-ingest` is the general entry, `/wiki-digest` propagates claims, and `/wiki-lint` repairs the graph.
+- **`/youtube-history-db`** answers evidence-backed questions from the local YouTube history database.
 
 ## Precondition
 

@@ -1,13 +1,13 @@
 ---
 name: domain-modeling
-description: Build and sharpen a project's domain model. Use when the user wants to pin down domain terminology or a ubiquitous language, resolve ambiguous or overloaded terms, record an architectural decision, or when another skill needs semantic adjudication for the project's domain contract.
+description: Build and sharpen a project's domain model. Use when discussing codebase terminology or ubiquitous language, resolving ambiguous or overloaded terms, writing or editing a domain contract or architectural decision, or when another skill needs semantic adjudication for the project's contract.
 ---
 
 # Domain Modeling
 
 Actively build and sharpen the project's domain model as you design. This is the active discipline: challenge terms, invent edge-case scenarios, resolve ambiguity, and write the resulting language and decisions down as soon as they crystallise. Merely reading the existing domain model is a normal codebase habit; use this skill when the model itself may change.
 
-## Storage contract
+## Storage contract: AGENTS/DOX
 
 > **When `dox.config.json` is present:** run `/dox` to retrieve the applicable contract records before adjudicating a change. Store settled terminology and durable decision semantics as DOX records, following the project's configured record structure. `/domain-modeling` decides what the terms and decisions mean; `/dox` retrieves them and validates their structure.
 

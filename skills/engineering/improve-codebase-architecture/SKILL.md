@@ -22,9 +22,9 @@ This command is _informed_ by the project's domain model and built on a shared d
 - If the user named a direction — a module, a subsystem, a pain point — take it, and skip the inference below.
 - Otherwise, walk back a good stretch of the commit history (`git log --oneline`) to find the codebase's hot spots — the files and areas that keep coming up — and let those paths pull your attention first. If the changes are scattered with no clear hot spot, widen the net.
 
-Read the applicable `AGENTS.md` chain from the repo root to the nearest owning document, including its domain language and architectural decisions, first.
+Resolve the applicable project contract first. When `dox.config.json` exists, run `/dox` for the task and candidate paths; otherwise read the `AGENTS.md` chain from the repo root to the nearest owning document, including its domain language and architectural decisions.
 
-Then use the Agent tool with `subagent_type=Explore` to walk the codebase. Don't follow rigid heuristics — explore organically and note where you experience friction:
+Then spawn an exploration subagent using the harness's available mechanism to walk the codebase. Don't follow rigid heuristics — explore organically and note where you experience friction:
 
 - Where does understanding one concept require bouncing between many small modules?
 - Where are modules **shallow** — interface nearly as complex as the implementation?
@@ -51,7 +51,7 @@ For each candidate, render a card with:
 
 End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
 
-**Use the applicable `AGENTS.md` chain's Ubiquitous Language for the domain, and the `/codebase-design` vocabulary for the architecture.** If the chain defines "Order," talk about "the Order intake module" — not "the FooBarHandler," and not "the Order service."
+**Use the resolved contract's Ubiquitous Language for the domain, and the `/codebase-design` vocabulary for the architecture.** If the contract defines "Order," talk about "the Order intake module" — not "the FooBarHandler," and not "the Order service."
 
 **ADR conflicts**: if a candidate contradicts an existing ADR, only surface it when the friction is real enough to warrant revisiting the ADR. Mark it clearly in the card (e.g. a warning callout: _"contradicts ADR-0007 — but worth reopening because…"_). Don't list every theoretical refactor an ADR forbids.
 
@@ -65,7 +65,7 @@ Once the user picks a candidate, run the `/grilling` skill to walk the decision 
 
 Side effects happen inline as decisions crystallize — run the `/domain-modeling` skill to keep the domain model current as you go:
 
-- **Naming a deepened module after a concept not in the applicable `AGENTS.md` chain?** Add the term to the nearest owning document's `## Ubiquitous Language` section. Create the section lazily if it doesn't exist.
-- **Sharpening a fuzzy term during the conversation?** Update the nearest owning `AGENTS.md` right there.
-- **User rejects the candidate with a load-bearing reason?** Offer an inline ADR, framed as: _"Want me to record this as an ADR in the nearest owning `AGENTS.md` so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing — skip ephemeral reasons ("not worth it right now") and self-evident ones.
+- **Naming a deepened module after a concept absent from the resolved contract?** Record the canonical term at its owning scope.
+- **Sharpening a fuzzy term during the conversation?** Update the owning DOX or `AGENTS.md` contract right there.
+- **User rejects the candidate with a load-bearing reason?** Offer a durable architectural decision in the project's configured record format so future reviews do not re-suggest it. Skip ephemeral reasons ("not worth it right now") and self-evident ones.
 - **Want to explore alternative interfaces for the deepened module?** Run the `/codebase-design` skill and use its design-it-twice parallel sub-agent pattern.

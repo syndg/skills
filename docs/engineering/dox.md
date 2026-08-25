@@ -1,15 +1,3 @@
-Quickstart:
-
-```bash
-npx skills add mattpocock/skills --skill=dox
-```
-
-```bash
-npx skills update dox
-```
-
-[Source](https://github.com/mattpocock/skills/tree/main/skills/engineering/dox)
-
 ## What it does
 
 `dox` is the **DOX-first** context seam for repositories that keep engineering contracts as structured records. Before an agent researches or changes the repository—even for a read-only question—it resolves the applicable ownership, decisions, contracts, binding invariants, and dependencies, then uses that receipt to guide targeted source inspection.
@@ -47,6 +35,20 @@ Resolution also surfaces optional source path, heading, and digest metadata, so 
 Records use a versioned, closed schema. Each record has one owner and a Markdown body; unknown fields and incomplete binding records fail closed. Invariants capture enforcement targets, dependent consumers, verification, failure modes, impact, criticality, and lifecycle state. Proposed invariants are nonbinding until accepted or enforced.
 
 Architectural decisions are full `decision` records identified by a globally unique four-digit ADR number. A DOX project uses those records directly rather than keeping a parallel decision source. `dox lint` blocks broken ADR or contract references, stale symbols, uncovered configured paths, incomplete invariants, and parallel decision files.
+
+## Common questions
+
+**Does DOX replace every `AGENTS.md` file?**
+
+No. It is the contract resolver for repositories that opt in with `dox.config.json`. Unconfigured repositories continue to use their existing `AGENTS.md` hierarchy. A configured project keeps canonical structured records and avoids a second, parallel decision ledger.
+
+**Will installing or invoking the skill initialize my repository?**
+
+No. Initialization is an explicit project mutation. Inspect `dox init` first and run `dox init --apply` only when you intend to create the project-local configuration and records.
+
+**What should I do with a stale receipt?**
+
+Resolve the task again against the current corpus. Expansion fails closed when the receipt no longer matches, so stale context is never silently treated as current.
 
 ## It's working if
 

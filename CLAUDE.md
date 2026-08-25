@@ -20,3 +20,30 @@ Every `SKILL.md` is either user-invoked (`disable-model-invocation: true` plus `
 [`ask-matt`](./skills/engineering/ask-matt/SKILL.md) is the router that maps every user-reachable skill and how they relate. The same trigger that re-syncs a docs page applies to it: whenever you add, rename, remove, or change how a user-reachable skill fits the flows, re-read `ask-matt`'s `SKILL.md` and update it so the map stays accurate — a new skill it never mentions, or a stale one it still routes to, is a router that lies.
 
 To (re)link every skill into the local harness skill directories (`~/.claude/skills`, `~/.agents/skills`, `~/.codex/skills`), run `scripts/link-skills-syndg.sh`. Each entry is a symlink into this repo, so a `git pull` keeps installed skills current; re-run the script after adding, removing, or renaming a skill.
+
+## Ubiquitous Language
+
+**Issue tracker**:
+The tool that hosts a repository's issues, such as GitHub Issues, Linear, or a local `.scratch/` Markdown convention. Skills such as `to-tickets`, `to-spec`, and `triage` read from and write to it.
+_Avoid_: backlog manager, backlog backend, issue host
+
+**Issue**:
+A single tracked unit of work inside an **Issue tracker**, such as a bug, task, spec, or slice produced by `to-tickets`.
+_Avoid_: ticket, except when quoting an external system or referring to a **Decision ticket**
+
+**Decision ticket**:
+A `wayfinder` child **Issue** that holds a question whose resolution is a decision, not a build slice to execute. `wayfinder` introduces the qualified term before using the shorter "ticket."
+
+**Triage role**:
+A canonical state-machine label applied to an **Issue** during triage, such as `needs-triage` or `ready-for-afk`. Each role maps to a label string in the **Issue tracker** through `docs/agents/triage-labels.md`.
+
+### Relationships
+
+- An **Issue tracker** holds many **Issues**.
+- An **Issue** carries one **Triage role** at a time.
+- A **Decision ticket** is an **Issue** and a child of a `wayfinder:map`.
+
+### Flagged ambiguities
+
+- "Backlog" previously meant both the tool hosting issues and the body of work inside it. Use **Issue tracker** for the tool; "backlog" is not a domain term.
+- "Backlog backend" and "backlog manager" are former aliases for **Issue tracker**.

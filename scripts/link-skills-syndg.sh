@@ -18,7 +18,7 @@ REPO="$(cd "$(dirname "$0")/.." && pwd)"
 DESTS=("$HOME/.claude/skills" "$HOME/.agents/skills" "$HOME/.codex/skills")
 BUCKETS=(engineering productivity personal vendor)
 # Experimental skills are opt-in so the whole in-progress bucket stays hidden.
-ALLOWLIST=(in-progress/batch-grill-me)
+ALLOWLIST=()
 # Collect skills from the linked buckets.
 names=()
 srcs=()
@@ -41,7 +41,7 @@ for relative_skill in "${ALLOWLIST[@]}"; do
   srcs+=("$src")
 done
 
-echo "Linking ${#names[@]} skills from ${BUCKETS[*]} plus allowlisted ${ALLOWLIST[*]}"
+echo "Linking ${#names[@]} skills from ${BUCKETS[*]} plus ${#ALLOWLIST[@]} allowlisted"
 
 for DEST in "${DESTS[@]}"; do
   # Older setups pointed the whole directory at a skills repo. Replace any

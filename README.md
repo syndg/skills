@@ -38,9 +38,9 @@ The installer works with Claude Code, Codex, and other supported agents. It writ
 
 In your agent, run it once per repo. It will:
 
-- Ask you which issue tracker you want to use (GitHub, Linear, or local files)
-- Ask you what labels you apply to tickets when you triage them (`/triage` uses labels)
-- Ask you where you want to save any docs we create
+- Ask which issue tracker you use
+- Configure the triage label vocabulary
+- Establish the repository's AGENTS/DOX domain contract
 
 ### 3. Bam - you're ready to go.
 
@@ -166,14 +166,15 @@ Skills I use daily for code work.
 
 **Model-invoked**
 
-- **[prototype](./skills/engineering/prototype/SKILL.md)** — Build a throwaway prototype to answer a design question — a runnable terminal app for state/logic questions, or several radically different UI variations toggleable from one route.
+- **[prototype](./skills/engineering/prototype/SKILL.md)** — Build throwaway code to answer a design question: a shareable HTML state/logic demo, or several radically different UI variations toggleable from one route.
+- **[wizard](./skills/engineering/wizard/SKILL.md)** — Generate an interactive shell guide for setup, migration, or operational procedures that contain human-only steps.
 - **[diagnosing-bugs](./skills/engineering/diagnosing-bugs/SKILL.md)** — Disciplined diagnosis loop for hard bugs and performance regressions: reproduce → minimise → hypothesise → instrument → fix → regression-test.
 - **[research](./skills/engineering/research/SKILL.md)** — Investigate a question against high-trust primary sources and capture the findings as a cited Markdown file in the repo, run as a background agent.
 - **[tdd](./skills/engineering/tdd/SKILL.md)** — Test-driven development with a red-green-refactor loop. Builds features or fixes bugs one vertical slice at a time.
 - **[domain-modeling](./skills/engineering/domain-modeling/SKILL.md)** — Actively build and sharpen a project's domain model — challenge terms against the inherited language, stress-test with edge-case scenarios, and adjudicate durable terminology and decisions in the project contract.
 - **[dox](./skills/engineering/dox/SKILL.md)** — Automatic contract retrieval and structural validation for projects that use DOX records.
 - **[codebase-design](./skills/engineering/codebase-design/SKILL.md)** — Shared discipline and vocabulary for designing deep modules: a lot of behaviour behind a small interface, placed at a clean seam, testable through that interface.
-- **[mp-code-review](./skills/engineering/mp-code-review/SKILL.md)** — Two-axis review of the diff since a fixed point: **Standards** (does it follow the repo's coding standards, plus a Fowler smell baseline?) and **Spec** (does it faithfully implement the originating issue/PRD?), run as parallel sub-agents so neither pollutes the other.
+- **[mp-code-review](./skills/engineering/mp-code-review/SKILL.md)** — Two-axis review of the diff since a fixed point: **Standards** (does it follow the repo's coding standards, plus a Fowler smell baseline?) and **Spec** (does it faithfully implement the originating issue/spec?), run as parallel sub-agents so neither pollutes the other.
 - **[resolving-merge-conflicts](./skills/engineering/resolving-merge-conflicts/SKILL.md)** — Work through an in-progress git merge or rebase conflict hunk by hunk, resolving by intent traced to each side's primary source, then finish the operation — never `--abort`.
 
 ### Productivity
@@ -182,11 +183,14 @@ General workflow tools, not code-specific.
 
 **User-invoked**
 
-- **[grill-me](./skills/productivity/grill-me/SKILL.md)** — Get relentlessly interviewed about a plan or design until every branch of the decision tree is resolved.
-- **[handoff](./skills/productivity/handoff/SKILL.md)** — Compact the current conversation into a handoff document so another agent can continue the work.
+- **[grill-me](./skills/productivity/grill-me/SKILL.md)** — Get relentlessly interviewed about a plan or design in dependency-aware rounds until every branch of the decision tree is resolved.
+- **[handoff](./skills/productivity/handoff/SKILL.md)** — Compact the current conversation into a portable handoff document so another agent can continue the work.
 - **[teach](./skills/productivity/teach/SKILL.md)** — Teach the user a new skill or concept over multiple sessions, using the current directory as a stateful teaching workspace.
-- **[writing-great-skills](./skills/productivity/writing-great-skills/SKILL.md)** — Reference for writing and editing skills well: the vocabulary and principles that make a skill predictable.
+- **[to-questionnaire](./skills/productivity/to-questionnaire/SKILL.md)** — Turn a decision you cannot answer alone into a Markdown questionnaire for the person who can.
+- **[wait-what](./skills/productivity/wait-what/SKILL.md)** — Re-pitch the last message with the missing context, plain language, and the project's applicable Ubiquitous Language.
 
 **Model-invoked**
 
-- **[grilling](./skills/productivity/grilling/SKILL.md)** — Interview the user relentlessly about a plan, decision, or idea until every branch of the decision tree is resolved. The reusable loop behind `grill-me` and `grill-with-docs`.
+- **[grilling](./skills/productivity/grilling/SKILL.md)** — Interview the user in dependency-aware rounds until every branch of the design tree is resolved. The reusable loop behind `grill-me` and `grill-with-docs`.
+- **[unslop](./skills/productivity/unslop/SKILL.md)** — Remove AI tells from any prose while preserving facts, exact symbols, quotations, author voice, and the project's canonical language.
+- **[writing-for-agents](./skills/productivity/writing-for-agents/SKILL.md)** — Write and prune documents for agents: skills, steering files, plans, project contracts, and any document reached through a context pointer.

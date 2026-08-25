@@ -1,5 +1,40 @@
 # mattpocock-skills
 
+## 1.2.3
+
+### Patch Changes
+
+- Make `diagnosing-bugs` redact secrets before showing commands, outputs, or captured artifacts. Keep credentials in environment variables and quote only signal-bearing lines.
+- Remove harness-specific tool and agent-type names from `mp-code-review`, `codebase-design`, and `improve-codebase-architecture`.
+- Remove wizard time estimates. Progress is counted in stages instead.
+
+## 1.2.2
+
+### Patch Changes
+
+- Make `writing-for-agents` model-invokable in Codex again and update its display metadata after the rename from `writing-great-skills`.
+
+## 1.2.0
+
+### Minor Changes
+
+- Add `agents/openai.yaml` metadata beside promoted skills and synchronize user-only invocation policy across harnesses.
+- Promote `to-questionnaire` into Productivity as a user-invoked skill.
+- Promote `wizard` into Engineering and make it model-invoked.
+- Reshape `prototype` around self-contained HTML logic demos and preserved `prototype/<name>` evidence branches.
+- Add `wait-what`, which re-pitches a message with plain language and the Ubiquitous Language from the applicable `AGENTS.md` hierarchy or DOX receipt.
+- Rename `writing-great-skills` to `writing-for-agents` and broaden it to every document an agent consumes.
+- Add a YAGNI scope filter to `improve-codebase-architecture`, biased toward actively changed paths.
+
+### Patch Changes
+
+- Expand `ask-matt` with phase-boundary guidance across Continue, `/clear`, `/handoff`, subagents, and `/compact`.
+- Align tracker setup and local Markdown tickets with the current spec flow while keeping AGENTS/DOX as this fork's project-contract storage.
+- Migrate repository-wide issue-tracker language from legacy `CONTEXT.md` storage into the root `AGENTS.md` contract.
+- Rework `grilling` into numbered dependency-ready frontier rounds, with facts delegated and decisions left to the human.
+- Retire `ubiquitous-language`, `design-an-interface`, `qa`, and `request-refactor-plan` after their behavior moved into promoted skills. Keep this fork's personal and vendor buckets unchanged.
+- Finish the `to-prd` to `to-spec` rename, including `mp-code-review` and tracker templates.
+
 ## 1.1.0
 
 ### Minor Changes
