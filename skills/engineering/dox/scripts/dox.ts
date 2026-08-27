@@ -9,7 +9,7 @@ import { expandContext, resolveContext } from "./lib/resolve.ts";
 import { DoxError, globMatches, ownerScopeMatches } from "./lib/safe.ts";
 import type { ReceiptManifest, ResolveRequest } from "./lib/types.ts";
 
-const VERSION = "0.2.0";
+const VERSION = "0.2.1";
 const DEFAULT_BUDGET = 16_384;
 const DEFAULT_EXPANSION_BUDGET = 65_536;
 const HELP = `DOX ${VERSION}\n\nUsage:\n  dox init [--apply]\n  dox resolve <task> [--path <path>]... [--changed] [--base <revision>] [--max-bytes <bytes>]\n  dox resolve --from <receipt> --expand <record-id>... [--max-bytes <bytes>]\n  dox lint [--json]\n\nresolve emits canonical compact JSON. Full record bodies require receipt-backed expansion.`;
