@@ -22,9 +22,15 @@ dox resolve "review changed authorization behavior" --changed --base origin/main
 dox resolve --from <receipt-id> --expand <record-id>
 ```
 
-Normal retrieval returns a canonical compact resolution envelope under a 16,384-byte default budget. Every item includes a summary, evidence, and body digest; optional capsules may also include a bounded task-relevant excerpt and provenance. Accepted and enforced invariants include their complete binding tuple. Optional records that do not fit are named in `receipt.deferred`; mandatory context is atomic, so an undersized budget fails instead of truncating a binding.
+The task string preserves the requested output and constraints, including ambiguity or clarification needs. Plans and reviews include applicable testing and verification obligations. When no source path is known, omit `--path`; do not use `--path .` as a substitute for a narrow applicability cue. A review scoped to named paths resolves those paths without `--changed` and inspects the path-limited Git diff separately. Combine changed-path and explicit-path retrieval only when the task intentionally covers both sets.
+
+Normal retrieval returns canonical compact JSON under a 16,384-byte default budget. Every capsule includes a summary, evidence, and body digest. Eligible optional capsules also include a bounded task-relevant excerpt selected by exact metadata, and migrated records include source provenance. Accepted and enforced invariants include their complete binding tuple. Optional records that do not fit are named in `receipt.deferred`; mandatory context is atomic, so an undersized budget fails instead of truncating a binding.
 
 Full bodies stay behind receipt-backed expansion. Expansion returns only newly requested bodies and a child receipt. Unknown record IDs, repeated expansion, stale corpus receipts, unsafe receipt-cache paths, and outputs that exceed the expansion budget fail closed.
+
+If compact retrieval has no useful capsule, discover a relevant source path outside the record directory and run one new task-plus-path resolution. Do not perform synonym sweeps or repeated overlapping calls. When several discovered bodies are necessary, request them in one expansion command. Start another expansion round only when the first expansion establishes a new conflict or dependency.
+
+A returned binding invariant is required knowledge as a complete tuple, not only as a headline. Applicable failure modes, enforcement, dependencies, and verification must be reflected in the resulting plan or answer. Preserve each distinct applicable obligation and prohibited behavior. Do not combine an enumerated requirement if the combination removes one of its fields. If a failure mode names information that must be clarified before work proceeds, ask for every named field explicitly rather than summarizing the checklist into one broad question.
 
 ## The contract layer
 

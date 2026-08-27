@@ -32,6 +32,8 @@ dox resolve "review the authorization changes" --changed
 dox resolve "review changes since the release branch" --changed --base origin/main
 ```
 
+Preserve the user's requested deliverables and constraints in the task string, not only the code subject. Include ambiguity or clarification needs when requested. For plans and reviews, include applicable testing and verification obligations. If no source path is known, omit `--path`; never use `--path .`, because the repository root is not a narrow applicability cue. For a review scoped to named paths, resolve those paths without `--changed`; inspect the path-limited Git diff separately. Combine `--changed` with explicit paths only when the task intentionally covers both the named paths and every repository change since the selected base.
+
 The normal result is canonical compact JSON. It contains ranked record capsules, bounded relevant excerpts, complete accepted or enforced invariant bindings, evidence edges, deferred record IDs, and a deterministic receipt. The default 16,384-byte budget removes optional capsules before mandatory knowledge. If complete mandatory context cannot fit, resolution fails with `DOX_BUDGET_TOO_SMALL`; it never returns a partial invariant binding.
 
 Use the returned paths and symbols for targeted source inspection. If you need a full body, expand only a discovered ID from its receipt:
@@ -44,9 +46,11 @@ Expansion returns only newly requested bodies and a child receipt. Stale receipt
 
 Keep structured-record retrieval inside `dox resolve`. Do not enumerate, grep, or bulk-read the configured record directory. After resolution identifies a specific record, direct access may write that file for an approved semantic edit, but any full-body read must first use `dox resolve --from <receipt-id> --expand <record-id>`. Direct record reads are reserved for maintaining DOX itself.
 
-If the result has no useful capsule, discover a relevant source path outside the configured record directory, then run one new task-plus-path resolution. Do not perform synonym sweeps or repeated overlapping calls. Treat `receipt.deferred` as an explicit signal that optional details remain available, not as silent truncation.
+If the result has no useful capsule, discover a relevant source path outside the configured record directory, then run one new task-plus-path resolution. Do not perform synonym sweeps or repeated overlapping calls. Treat `receipt.deferred` as an explicit signal that optional details remain available, not as silent truncation. When several discovered bodies are necessary, request their IDs in one expansion command. Start another expansion round only when the first expansion establishes a new conflict or dependency.
 
 Read each capsule's `evidence`: `source` identifies task, path, changed-path, binding, or graph evidence; `edge` identifies the matched field or relationship. A path that hits invariant enforcement returns the complete binding tuple. A dependent path returns the same invariant with dependent relation evidence.
+
+Treat every field in a returned binding invariant as required knowledge. Carry its failure modes, enforcement, dependencies, and verification into the plan or answer when they affect the task; do not reduce the invariant to its statement. Preserve each distinct applicable obligation and prohibited behavior in the final answer. Do not combine an enumerated requirement when the combination removes one of its fields. When a failure mode names information that must be clarified before work proceeds, ask for every named field explicitly as a checklist rather than collapsing the fields into one broad question.
 
 ## Record shape
 

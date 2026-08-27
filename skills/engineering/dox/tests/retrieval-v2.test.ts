@@ -150,6 +150,102 @@ describe("DOX retrieval v2 public CLI", () => {
     expect(ids.indexOf("rate-limit")).toBeLessThan(ids.indexOf("architecture"));
   });
 
+  test("distinguishes weak task binding metadata from strong exact symbols", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "weak-binding.md"), `---\nid: weak-binding\nkind: invariant\nowner: deployment\nstatement: Deployment evidence remains durable.\nsymbols: [test]\nterms: [test]\nstate: enforced\nenforcement: [test]\nenforced_by:\n  - intent: test\ndepended_on_by:\n  - path: src/deployment/**\nverification: [bun test]\nfailure_modes: [deployment-drift]\nimpact: deployment\ncriticality: high\n---\n# Deployment evidence\n`);
+    await writeFile(join(root, "dox", "records", "strong-binding.md"), `---\nid: strong-binding\nkind: invariant\nowner: deployment\nstatement: Deployment writes remain guarded.\nstate: enforced\nenforcement: [chokepoint]\nenforced_by:\n  - symbol: GuardedDeploymentWriter\ndepended_on_by:\n  - path: src/deployment/**\nverification: [bun test]\nfailure_modes: [unguarded-write]\nimpact: deployment\ncriticality: high\n---\n# Guarded deployment writes\n`);
+    await writeFile(join(root, "dox", "records", "generic-binding.md"), `---\nid: generic-binding\nkind: invariant\nowner: evaluation\nstatement: Candidate evidence remains canonical.\nterms: [evaluation]\nstate: enforced\nenforcement: [test]\nenforced_by:\n  - path: src/unrelated/**\ndepended_on_by:\n  - path: src/unrelated-consumer/**\nverification: [bun test]\nfailure_modes: [evidence-drift]\nimpact: unrelated\ncriticality: high\n---\n# Evidence policy\n`);
+    await writeFile(join(root, "dox", "records", "oauth-symbol.md"), `---\nid: oauth-symbol\nkind: contract\nowner: auth\nsymbols: [OAuth]\n---\n# OAuth symbol\n`);
+    await writeFile(join(root, "dox", "records", "deploy-intent.md"), `---\nid: deploy-intent\nkind: contract\nowner: deployment\nintents: [deploy]\n---\n# Deploy intent\n`);
+
+    const weak = await run(root, "resolve", "test tooltip");
+    expect(weak.code).toBe(0);
+    expect(JSON.parse(weak.stdout).items.map((item: { id: string }) => item.id)).not.toContain("weak-binding");
+    const strong = await run(root, "resolve", "inspect GuardedDeploymentWriter");
+    expect(strong.code).toBe(0);
+    expect(JSON.parse(strong.stdout).items.map((item: { id: string }) => item.id)).toContain("strong-binding");
+    const generic = await run(root, "resolve", "inspect candidate evaluation evidence");
+    expect(generic.code).toBe(0);
+    expect(JSON.parse(generic.stdout).items.map((item: { id: string }) => item.id)).not.toContain("generic-binding");
+    const exactSingletons = await run(root, "resolve", "inspect OAuth behavior and deploy changes in this longer implementation task");
+    expect(exactSingletons.code).toBe(0);
+    const exactSingletonIds = JSON.parse(exactSingletons.stdout).items.map((item: { id: string }) => item.id);
+    expect(exactSingletonIds).toContain("oauth-symbol");
+    expect(exactSingletonIds).toContain("deploy-intent");
+  });
+
+  test("keeps weak lexical invariant matches out of mandatory task-only context", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "playground-invariant.md"), `---\nid: playground-invariant\nkind: invariant\nowner: playground\nstatement: Every GenQ Playground run has one causally fenced outcome.\nterms: [GenQ Playground]\nstate: enforced\nenforcement: [test]\nenforced_by:\n  - path: src/playground/**\ndepended_on_by:\n  - path: src/evaluation/**\nverification: [bun test]\nfailure_modes: [duplicate-outcome]\nimpact: playground\ncriticality: high\n---\n# Playground outcome\n`);
+    for (let index = 0; index < 20; index += 1) {
+      await writeFile(join(root, "dox", "records", `weak-${index}.md`), `---\nid: weak-${index}\nkind: invariant\nowner: unrelated\nstatement: Candidate workflow evidence remains canonical for subsystem ${index}.\nstate: accepted\nenforcement: [test]\nenforced_by:\n  - path: src/unrelated/${index}/**\ndepended_on_by:\n  - path: src/unrelated-consumer/${index}/**\nverification: [bun test]\nfailure_modes: [evidence-drift]\nimpact: unrelated\ncriticality: high\n---\n# Candidate workflow evidence\n\nCandidate evaluation evidence remains durable and canonical.\n`);
+    }
+
+    const result = await run(root, "resolve", "explain GenQ Playground candidate overlays submission evaluation and recruiter evidence", "--max-bytes", "3000");
+    expect(result.code).toBe(0);
+    const ids = JSON.parse(result.stdout).items.map((item: { id: string }) => item.id);
+    expect(ids).toContain("playground-invariant");
+    expect(ids.some((id: string) => id.startsWith("weak-"))).toBe(false);
+  });
+
+  test("ranks task-relevant broad path policy before unrelated narrow owner records", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "frontend-testing.md"), `---\nid: frontend-testing\nkind: contract\nowner: platform\nstatement: Frontend testing\npaths: "**"\ncriticality: high\n---\n# Frontend testing\n\nFor tooltip copy, test observable behavior and accessibility instead of utility classes.\n`);
+    for (let index = 0; index < 20; index += 1) {
+      await writeFile(join(root, "dox", "records", `local-${index}.md`), `---\nid: local-${index}\nkind: contract\nowner: src/auth\n---\n# Local ${index}\n\nUnrelated local guidance.\n`);
+    }
+
+    const result = await run(root, "resolve", "plan clarifying tooltip copy", "--path", "src/auth/login.ts", "--max-bytes", "3000");
+    expect(result.code).toBe(0);
+    const ids = JSON.parse(result.stdout).items.map((item: { id: string }) => item.id);
+    expect(ids).toContain("frontend-testing");
+  });
+
+  test("does not treat long task boilerplate as binding invariant evidence", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "implementation-policy.md"), `---\nid: implementation-policy\nkind: contract\nowner: platform\nstatement: Frontend testing\npaths: "**"\nintents: [implementation-plan]\n---\n# Frontend testing\n\nTest observable behavior and accessibility instead of utility classes.\n`);
+    for (let index = 0; index < 10; index += 1) {
+      await writeFile(join(root, "dox", "records", `boilerplate-${index}.md`), `---\nid: boilerplate-${index}\nkind: invariant\nowner: apps/unrelated/src/services\nstatement: Review run files remain verified for subsystem ${index}.\nstate: enforced\nenforcement: [test]\nenforced_by:\n  - path: src/unrelated/${index}/**\ndepended_on_by:\n  - path: src/unrelated-consumer/${index}/**\nverification: [bun test]\nfailure_modes: [unrelated-drift]\nimpact: unrelated\ncriticality: high\n---\n# Review run files\n\nExpected owner, applicable decisions and invariants, relevant symbols and files, obligations, prohibited behavior, read-only verification, clarification, and implementation remain recorded.\n`);
+    }
+
+    const task = "After-run seeded-edit review: produce an implementation plan only for clarifying tooltip copy in apps/resumatch/src/components/InfoIcon.tsx. Identify expected owner, applicable decisions and invariants, relevant symbols and files, obligations, prohibited behavior, read-only verification commands, needed clarification, and do not implement or modify files.";
+    const result = await run(root, "resolve", task, "--path", "src/components/InfoIcon.tsx");
+    expect(result.code).toBe(0);
+    const ids = JSON.parse(result.stdout).items.map((item: { id: string }) => item.id);
+    expect(ids).toEqual(["implementation-policy"]);
+  });
+
+  test("does not promote graph invariants from an unselected lower exact tier", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "relevant-decision.md"), `---\nid: relevant-decision\nkind: decision\nowner: platform\nadr: ADR-0002\n---\n# Relevant decision\n`);
+    await writeFile(join(root, "dox", "records", "exact-source.md"), `---\nid: exact-source\nkind: contract\nowner: platform\nintents: [implementation-plan]\nadr_refs: [ADR-0002]\n---\n# Exact policy\n`);
+    await writeFile(join(root, "dox", "records", "lower-source.md"), `---\nid: lower-source\nkind: contract\nowner: unrelated\nterms: [tooltip copy]\n---\n# Lower source\n`);
+    await writeFile(join(root, "dox", "records", "unrelated-invariant.md"), `---\nid: unrelated-invariant\nkind: invariant\nowner: unrelated\nstatement: Lower-source effects remain fenced.\nstate: enforced\nenforcement: [test]\nenforced_by:\n  - path: src/unrelated/**\ndepended_on_by:\n  - contract: lower-source\nverification: [bun test]\nfailure_modes: [unrelated-drift]\nimpact: unrelated\ncriticality: high\n---\n# Unrelated invariant\n`);
+
+    const result = await run(root, "resolve", "produce an implementation plan for tooltip copy", "--max-bytes", "8192");
+    expect(result.code).toBe(0);
+    const data = JSON.parse(result.stdout);
+    expect(data.items.map((item: { id: string }) => item.id)).toEqual(["exact-source", "relevant-decision"]);
+    expect(data.receipt.deferred).toContain("lower-source");
+    expect(data.receipt.deferred).toContain("unrelated-invariant");
+  });
+
+  test("keeps binding graph closure for an authoritative path when an unrelated exact source exists", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "exact-symbol.md"), `---\nid: exact-symbol\nkind: contract\nowner: platform\nsymbols: [OAuth]\n---\n# OAuth\n`);
+    for (let index = 0; index < 80; index += 1) {
+      await writeFile(join(root, "dox", "records", `a-exact-${index}.md`), `---\nid: a-exact-${index}\nkind: contract\nowner: unrelated\nsymbols: [OAuth]\n---\n# Exact noise ${index}\n`);
+    }
+    await writeFile(join(root, "dox", "records", "path-contract.md"), `---\nid: path-contract\nkind: contract\nowner: src/auth\npaths: src/auth/**\n---\n# Auth path contract\n`);
+    await writeFile(join(root, "dox", "records", "path-invariant.md"), `---\nid: path-invariant\nkind: invariant\nowner: auth\nstatement: Auth path effects remain fenced.\nstate: enforced\nenforcement: [test]\nenforced_by:\n  - path: src/enforcement/**\ndepended_on_by:\n  - contract: path-contract\nverification: [bun test]\nfailure_modes: [unfenced-auth-effect]\nimpact: auth\ncriticality: high\n---\n# Auth path invariant\n`);
+    const result = await run(root, "resolve", "inspect OAuth", "--path", "src/auth/login.ts");
+    expect(result.code).toBe(0);
+    const data = JSON.parse(result.stdout);
+    expect(data.items.map((item: { id: string }) => item.id)).toContain("path-invariant");
+    expect(data.items.find((item: { id: string }) => item.id === "path-invariant").relation).toBe("dependent");
+    expect(data.receipt.binding_complete).toBe(true);
+  });
+
   test("treats the root of a recursive path scope as covered", async () => {
     const root = await project();
     await writeFile(join(root, "dox", "records", "auth-scope.md"), `---\nid: auth-scope\nkind: contract\nowner: src/auth\n---\n# Auth scope\n`);
@@ -163,7 +259,8 @@ describe("DOX retrieval v2 public CLI", () => {
   test("delivers explicit decision references before unrelated lexical matches", async () => {
     const root = await project();
     await writeFile(join(root, "dox", "records", "decision-0002.md"), `---\nid: decision-0002\nkind: decision\nowner: platform\nadr: ADR-0002\n---\n# Decision\n\nChosen architecture for outage policy.\n`);
-    await writeFile(join(root, "dox", "records", "rate-contract.md"), `---\nid: rate-contract\nkind: contract\nowner: platform\nterms: [distributed rate limit]\nadr_refs: [ADR-0002]\n---\n# Rate contract\n\nThe shared package validates pseudonymous keys.\n`);
+    await writeFile(join(root, "dox", "records", "decision-0003.md"), `---\nid: decision-0003\nkind: decision\nowner: platform\nadr: ADR-0003\n---\n# Decision\n\nChosen architecture for pseudonymous keys.\n`);
+    await writeFile(join(root, "dox", "records", "rate-contract.md"), `---\nid: rate-contract\nkind: contract\nowner: platform\nterms: [distributed rate limit]\nadr_refs: [ADR-0002, ADR-0003]\n---\n# Rate contract\n\nThe shared package validates pseudonymous keys.\n`);
     for (let index = 0; index < 8; index += 1) {
       await writeFile(join(root, "dox", "records", `distractor-${index}.md`), `---\nid: distractor-${index}\nkind: contract\nowner: platform\nterms: [rate limit]\n---\n# Distractor\n\n${"Unrelated rate limit detail. ".repeat(30)}\n`);
     }
@@ -172,7 +269,28 @@ describe("DOX retrieval v2 public CLI", () => {
     expect(result.code).toBe(0);
     const data = JSON.parse(result.stdout);
     expect(data.items.map((item: { id: string }) => item.id)).toContain("decision-0002");
+    expect(data.items.map((item: { id: string }) => item.id)).toContain("decision-0003");
+    expect(data.items.map((item: { id: string }) => item.id).indexOf("rate-contract")).toBeLessThan(data.items.map((item: { id: string }) => item.id).indexOf("decision-0002"));
+    const firstDistractor = data.items.findIndex((item: { id: string }) => item.id.startsWith("distractor-"));
+    expect(firstDistractor === -1 || data.items.findIndex((item: { id: string }) => item.id === "decision-0002") < firstDistractor).toBe(true);
+    expect(firstDistractor === -1 || data.items.findIndex((item: { id: string }) => item.id === "decision-0003") < firstDistractor).toBe(true);
     expect(data.items.find((item: { id: string }) => item.id === "decision-0002").relation).toBe("reference");
+  });
+
+  test("keeps an exact one-token symbol and its graph references ahead of generic terms", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "decision-0002.md"), `---\nid: decision-0002\nkind: decision\nowner: platform\nadr: ADR-0002\n---\n# Decision 2\n`);
+    await writeFile(join(root, "dox", "records", "decision-0003.md"), `---\nid: decision-0003\nkind: decision\nowner: platform\nadr: ADR-0003\n---\n# Decision 3\n`);
+    await writeFile(join(root, "dox", "records", "authorization-source.md"), `---\nid: authorization-source\nkind: contract\nowner: platform\npaths: "**"\nsymbols: [authorize]\nadr_refs: [ADR-0002, ADR-0003]\n---\n# Authorization source\n`);
+    await writeFile(join(root, "dox", "records", "generic-distractor.md"), `---\nid: generic-distractor\nkind: contract\nowner: platform\nterms: [rate limit]\n---\n# Generic rate limit\n`);
+
+    const result = await run(root, "resolve", "authorize generic rate limit for a longer implementation review", "--max-bytes", "3000");
+    expect(result.code).toBe(0);
+    const ids = JSON.parse(result.stdout).items.map((item: { id: string }) => item.id);
+    expect(ids).toContain("decision-0002");
+    expect(ids).toContain("decision-0003");
+    expect(ids.indexOf("authorization-source")).toBeLessThan(ids.indexOf("decision-0002"));
+    expect(ids).not.toContain("generic-distractor");
   });
 
   test("rejects stale receipts and undiscovered expansion ids", async () => {
@@ -254,14 +372,45 @@ describe("DOX retrieval v2 public CLI", () => {
 
   test("keeps every explicit graph reference discoverable", async () => {
     const root = await project();
-    await writeFile(join(root, "dox", "records", "referencing.md"), `---\nid: referencing\nkind: contract\nowner: src/references\npaths: src/references/**\nadr_refs: [ADR-0002, ADR-0003]\n---\n# Referencing contract\n`);
-    for (const number of [2, 3]) await writeFile(join(root, "dox", "records", `decision-${number}.md`), `---\nid: decision-${number}\nkind: decision\nowner: platform\nadr: ADR-000${number}\n---\n# Decision ${number}\n`);
-    const result = await run(root, "resolve", "inspect this scope", "--path", "src/references/file.ts", "--max-bytes", "2048");
+    const references = Array.from({ length: 70 }, (_, index) => index + 2);
+    const adrRefs = references.map((number) => `ADR-${String(number).padStart(4, "0")}`).join(", ");
+    await writeFile(join(root, "dox", "records", "referencing.md"), `---\nid: referencing\nkind: contract\nowner: src/references\npaths: src/references/**\nadr_refs: [${adrRefs}]\n---\n# Referencing contract\n`);
+    for (const number of references) await writeFile(join(root, "dox", "records", `decision-${number}.md`), `---\nid: decision-${number}\nkind: decision\nowner: platform\nadr: ADR-${String(number).padStart(4, "0")}\n---\n# Decision ${number}\n`);
+    for (let index = 0; index < 80; index += 1) {
+      await writeFile(join(root, "dox", "records", `reference-noise-${index}.md`), `---\nid: reference-noise-${index}\nkind: contract\nowner: src/references\npaths: src/references/**\n---\n# Scope guidance ${index}\n`);
+    }
+    const result = await run(root, "resolve", "inspect this scope", "--path", "src/references/file.ts", "--max-bytes", "4096");
     expect(result.code).toBe(0);
     const data = JSON.parse(result.stdout);
     const discovered = new Set([...data.items.map((item: { id: string }) => item.id), ...data.receipt.deferred]);
-    expect(discovered.has("decision-2")).toBe(true);
-    expect(discovered.has("decision-3")).toBe(true);
+    expect(references.every((number) => discovered.has(`decision-${number}`))).toBe(true);
+    expect([...discovered].some((id) => id.startsWith("reference-noise-"))).toBe(true);
+    expect(data.receipt.deferred.some((id: string) => id.startsWith("decision-"))).toBe(true);
+    expect(data.items.some((item: { id: string }) => item.id.startsWith("reference-noise-"))).toBe(false);
+  });
+
+  test("uses task-relevant exact metadata to select a compact supporting excerpt", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "source.md"), `---\nid: source\nkind: contract\nowner: platform\nsymbols: [PlaygroundRuntime]\ncontract_refs: [supporting]\n---\n# Source\n`);
+    await writeFile(join(root, "dox", "records", "supporting.md"), `---\nid: supporting\nkind: contract\nowner: platform\nterms: [GenQ Playground]\n---\n# Supporting contract\n\nRuntime provisioning for GenQ remains documented.\n\nGenQ Playground initializes the mutable run-state revisions to zero.\n`);
+    const result = await run(root, "resolve", "explain PlaygroundRuntime and GenQ Playground runtime provisioning", "--max-bytes", "8192");
+    expect(result.code).toBe(0);
+    const item = JSON.parse(result.stdout).items.find((candidate: { id: string }) => candidate.id === "supporting");
+    expect(item.excerpt).toContain("revisions to zero");
+  });
+
+  test("keeps an explicit graph reference discoverable when it also has direct evidence beyond the cap", async () => {
+    const root = await project();
+    await writeFile(join(root, "dox", "records", "exact-source.md"), `---\nid: exact-source\nkind: contract\nowner: platform\nterms: [contracts, invariants, verification]\ncontract_refs: [z-supporting-contract]\n---\n# Exact source\n`);
+    await writeFile(join(root, "dox", "records", "z-supporting-contract.md"), `---\nid: z-supporting-contract\nkind: contract\nowner: platform\nterms: [runtime]\n---\n# Supporting contract\n\nReview contracts, invariants, and verification for runtime. Initialize the mutable run-state revisions to zero.\n`);
+    for (let index = 0; index < 80; index += 1) {
+      await writeFile(join(root, "dox", "records", `a-direct-noise-${String(index).padStart(2, "0")}.md`), `---\nid: a-direct-noise-${String(index).padStart(2, "0")}\nkind: contract\nowner: platform\nterms: [runtime, provisioning, workflow]\n---\n# Direct noise ${index}\n`);
+    }
+    const result = await run(root, "resolve", "review contracts invariants verification for runtime provisioning workflow", "--max-bytes", "4096");
+    expect(result.code).toBe(0);
+    const data = JSON.parse(result.stdout);
+    const discovered = new Set([...data.items.map((item: { id: string }) => item.id), ...data.receipt.deferred]);
+    expect(discovered).toContain("z-supporting-contract");
   });
 
   test("replaces receipt files atomically without changing hardlink targets", async () => {
