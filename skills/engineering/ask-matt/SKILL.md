@@ -53,7 +53,7 @@ Not feature work — upkeep.
 
 Three model-invoked layers run *beneath* the other skills. They retrieve or maintain the contracts that make a flow coherent. Reach for them directly when the contract, words, or module shape is the problem; or let the skills above pull them in.
 
-- **`/dox`** — the automatic contract-retrieval and structural-validation layer when `dox.config.json` is present. It runs before repository research or code work, including read-only tasks. Give it one task plus known paths or changed files; it returns compact resolved items and a local receipt for explicit full-body expansion.
+- **`/dox`** — the automatic contract-retrieval and structural-validation layer when `dox.config.json` is present. It runs before repository research or code work, including read-only tasks. Give it one task plus known paths or changed files; it returns compact resolved items and a local receipt for explicit full-body expansion. It establishes governing context, then the agent uses source, tests, scripts, runbooks, configuration, or runtime inspection for facts the capsules do not state.
 - **`/domain-modeling`** — the semantic-adjudication layer for the project's domain language. It challenges fuzzy terms and decides whether a hard-to-reverse choice deserves a durable record. With `dox.config.json`, it updates canonical DOX records and runs `/dox` validation. Without that file, it uses the root-to-nearest `AGENTS.md` and `DECISIONS.md` fallback.
 - **`/codebase-design`** — the deep-module vocabulary (module, interface, depth, seam, adapter, leverage, locality) for designing a module's *shape*: a lot of behaviour behind a small interface at a clean seam. `/tdd` and `/improve-codebase-architecture` both speak it.
 

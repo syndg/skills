@@ -48,6 +48,10 @@ Architectural decisions are full `decision` records identified by a globally uni
 
 No. It is the contract resolver for repositories that opt in with `dox.config.json`. Unconfigured repositories continue to use their existing `AGENTS.md` hierarchy. A configured project keeps canonical structured records and avoids a second, parallel decision ledger.
 
+**Does DOX answer every repository question?**
+
+No. DOX retrieves the structured record context that governs the work: ownership, decisions, contracts, binding invariants, dependencies, and change impact. That context constrains the task, but it does not replace current repository truth. Records can name implementation constraints or verification commands; when they do not state the needed fact, the agent checks the source and tests, package scripts and runbooks, configuration, or current runtime.
+
 **Will installing or invoking the skill initialize my repository?**
 
 No. Initialization is an explicit project mutation. Inspect `dox init` first and run `dox init --apply` only when you intend to create the project-local configuration and records.

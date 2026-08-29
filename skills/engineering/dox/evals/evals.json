@@ -24,6 +24,20 @@
       "prompt": "Read-only: explain how authentication works in this DOX-enabled repository and identify the governing decisions and invariants. Do not edit anything.",
       "expected_output": "DOX is queried before broad source inspection; record retrieval stays inside one task-oriented CLI resolution; the compact receipt exposes applicable owners, decisions, contracts, complete invariant bindings, dependencies, and deferred IDs; full bodies are expanded only by discovered ID when needed; the answer does not enumerate the record directory or perform overlapping synonym calls.",
       "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "This repository uses DOX. Start the LiveKit frontend locally through Portless without disturbing the service already using port 3000. Find the correct startup command, required local configuration, and working URL, then verify that it responds.",
+      "expected_output": "The agent begins with one task-oriented DOX resolution to establish applicable governing context, uses receipt expansion or the single task-plus-path retry only when needed, then gets operational facts from package scripts, runbooks, configuration, source, and runtime inspection. It launches LiveKit through a named Portless .localhost URL, verifies that URL, and confirms that port 3000 remains untouched without issuing overlapping or synonym-based DOX resolutions for startup details.",
+      "files": [],
+      "expectations": [
+        "Begins with one task-oriented DOX resolution before repository research because the repository is configured.",
+        "Treats the resolved records as governing context and constraints rather than expecting them to supply every operational fact.",
+        "Inspects package scripts, runbooks, configuration, source, or runtime state to determine the startup command and local settings.",
+        "Uses Portless to expose LiveKit through a named .localhost URL rather than reporting only a raw application port.",
+        "Does not issue overlapping or synonym-based DOX resolutions to force the record corpus to answer startup details.",
+        "Verifies the named Portless URL and confirms that the existing listener on port 3000 remains untouched."
+      ]
     }
   ]
 }

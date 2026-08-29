@@ -36,6 +36,14 @@ Preserve the user's requested deliverables and constraints in the task string, n
 
 The normal result is canonical compact JSON. It contains ranked record capsules, bounded relevant excerpts, complete accepted or enforced invariant bindings, evidence edges, deferred record IDs, and a deterministic receipt. The default 16,384-byte budget removes optional capsules before mandatory knowledge. If complete mandatory context cannot fit, resolution fails with `DOX_BUDGET_TOO_SMALL`; it never returns a partial invariant binding.
 
+## Retrieval boundary
+
+DOX answers the questions its record corpus is built to hold: applicable ownership, decisions, contracts, binding invariants, dependencies, and change impact. DOX-first means establishing that governing context before repository work. It does not mean routing every repository question through the resolver.
+
+Treat the resolution as constraints on the task, not as a substitute for current repository truth. Records may deliberately name enforcement symbols, verification commands, or operational constraints; carry those forward. For a needed fact that the capsules do not state, use the source that owns it: source and tests for behavior, package scripts and runbooks for procedures, configuration for declared settings, and runtime inspection for current state.
+
+The single task-plus-path retry below establishes whether records apply after source discovery. Once governing context is established, continue with targeted repository work.
+
 Use the returned paths and symbols for targeted source inspection. If you need a full body, expand only a discovered ID from its receipt:
 
 ```bash
