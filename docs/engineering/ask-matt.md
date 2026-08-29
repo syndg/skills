@@ -49,7 +49,7 @@ Three on-ramps join that flow:
 
 Three model-invoked layers run beneath the flows:
 
-- [dox](https://aihero.dev/skills-dox) is the contract retrieval and structural-validation layer triggered by `dox.config.json`. It resolves one task plus known paths or changed files before repository research or code work.
+- [dox](https://aihero.dev/skills-dox) is the contract retrieval and structural-validation layer triggered by `dox.config.json`. It resolves once when repository work may be governed by recorded context outside the immediate path, then runs one intent-preserving changed-file impact review after substantive content changes. It does not run for external tooling, runtime connectivity checks, Git-only actions, or ordinary follow-ups within the same resolved task.
 - [domain-modeling](https://aihero.dev/skills-domain-modeling) adjudicates project language and durable decisions. It updates canonical DOX records and runs `/dox` validation when configured; otherwise it updates the `AGENTS.md` and `DECISIONS.md` fallback.
 - [codebase-design](https://aihero.dev/skills-codebase-design) supplies the deep-module vocabulary for module shape, interfaces, seams, leverage, and locality.
 

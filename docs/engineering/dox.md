@@ -1,14 +1,14 @@
 ## What it does
 
-`dox` is the **DOX-first** context seam for repositories that keep engineering contracts as structured records. Before an agent researches or changes the repository—even for a read-only question—it resolves the applicable ownership, decisions, contracts, binding invariants, and dependencies, then uses those compact items to guide targeted source inspection.
+`dox` is the structured contract seam for repositories that keep engineering contracts as records. An agent resolves when ownership, decisions, contracts, binding invariants, dependencies, or change impact may govern repository research or code changes. The compact result guides targeted inspection and can reveal constraints outside the source path in view.
 
-Its defining constraint is structural: `dox` retrieves and validates records, but it does not adjudicate what a term, relationship, or decision means. Use [domain-modeling](https://aihero.dev/skills-domain-modeling) for that semantic work.
+Its defining constraint is structural. `dox` retrieves and validates records, but it does not adjudicate what a term, relationship, or decision means. Use [domain-modeling](https://aihero.dev/skills-domain-modeling) for that semantic work.
 
 ## When to reach for it
 
-Type `/dox`, or the agent reaches for it automatically whenever it works in a repository with `dox.config.json`.
+Type `/dox`, or the agent reaches for it automatically when recorded context may govern a task in a repository with `dox.config.json`.
 
-In a configured repository, reach for it before research, planning, debugging, review, or implementation. Give `dox resolve` one natural-language task plus any known paths or changed-file cues. The CLI performs normalization, ranking, relationship closure, deduplication, and budgeting; agents do not enumerate the record directory or make overlapping synonym queries. For ambiguous terminology or deciding whether a trade-off deserves a durable decision, use [domain-modeling](https://aihero.dev/skills-domain-modeling) instead.
+Reach for it before planning, debugging, review, implementation, or read-only investigation of repository behavior when records may affect the answer. After substantive repository content changes, it runs one changed-file impact review using the original task and verification obligations. It does not open another pre-work resolution for external tooling, runtime connectivity checks, Git-only actions, or ordinary follow-ups within an already-resolved task. For ambiguous terminology or deciding whether a trade-off deserves a durable decision, use [domain-modeling](https://aihero.dev/skills-domain-modeling) instead.
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ Resolution requires a project-local `dox.config.json` and its configured records
 
 ```bash
 dox resolve "change login authorization without bypassing policy" --path src/auth/login.ts
-dox resolve "review changed authorization behavior" --changed --base origin/main
+dox resolve "review the login authorization change and its required tests" --changed --base origin/main
 dox resolve --from <receipt-id> --expand <record-id>
 ```
 
@@ -52,6 +52,10 @@ No. It is the contract resolver for repositories that opt in with `dox.config.js
 
 No. DOX retrieves the structured record context that governs the work: ownership, decisions, contracts, binding invariants, dependencies, and change impact. That context constrains the task, but it does not replace current repository truth. Records can name implementation constraints or verification commands; when they do not state the needed fact, the agent checks the source and tests, package scripts and runbooks, configuration, or current runtime.
 
+**Does a configured repository resolve before every command?**
+
+No. Resolve once when repository work may be governed by recorded constraints outside the immediate path. External tooling, runtime connectivity checks, Git-only actions, and ordinary later prompts within the same resolved task use their owning source or tool directly. A later prompt that changes repository content receives the single impact review. Staging or committing an unchanged diff does not trigger another resolution.
+
 **Will installing or invoking the skill initialize my repository?**
 
 No. Initialization is an explicit project mutation. Inspect `dox init` first and run `dox init --apply` only when you intend to create the project-local configuration and records.
@@ -62,12 +66,14 @@ Resolve the task again against the current corpus. Expansion fails closed when t
 
 ## It's working if
 
-- A compact DOX resolution envelope appears before broad source inspection, including on read-only tasks.
+- A compact DOX resolution appears before repository work that may be governed by recorded constraints outside the immediate path.
+- External tooling, runtime checks, Git-only actions, and ordinary follow-ups within the same task do not produce redundant resolutions.
 - The agent makes one task-oriented resolution with known paths or changed files instead of enumerating records or sweeping synonyms.
+- Substantive repository changes receive one changed-file impact review that preserves the original task and verification obligations.
 - Optional detail is visibly deferred, while every returned binding invariant is complete.
 - Full bodies are expanded only by discovered ID and only when the compact item is insufficient.
-- The resulting plan or answer accounts for the applicable owners, decisions, contracts, invariants, and dependencies, then uses targeted code reads to verify behavior.
+- The resulting plan or answer accounts for applicable owners, decisions, contracts, invariants, and dependencies, then uses targeted code reads to verify behavior.
 
 ## Where it fits
 
-`dox` is a **reach-for-it-anytime standalone** that most often runs beneath another flow. Its closest neighbor is [domain-modeling](https://aihero.dev/skills-domain-modeling), because that skill supplies the semantic adjudication for terminology and durable decisions; [ask-matt](https://aihero.dev/skills-ask-matt) maps both layers into the larger engineering flows.
+`dox` is a model-invoked contract layer that most often runs beneath another engineering flow. Its closest neighbor is [domain-modeling](https://aihero.dev/skills-domain-modeling), because that skill supplies the semantic adjudication for terminology and durable decisions; [ask-matt](https://aihero.dev/skills-ask-matt) maps both layers into the larger engineering flows.

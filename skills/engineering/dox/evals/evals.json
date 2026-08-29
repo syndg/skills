@@ -38,6 +38,29 @@
         "Does not issue overlapping or synonym-based DOX resolutions to force the record corpus to answer startup details.",
         "Verifies the named Portless URL and confirms that the existing listener on port 3000 remains untouched."
       ]
+    },
+    {
+      "id": 6,
+      "prompt": "Supabase MCP is already configured for this repository. Without changing repository files, call its read-only list_extensions tool to confirm OAuth still works, then report whether the connection succeeded.",
+      "expected_output": "The agent does not invoke DOX for an external-tool runtime connectivity check. It calls the read-only MCP operation directly, reports the result, and does not turn the follow-up into a repository-context query.",
+      "files": [],
+      "expectations": [
+        "Does not run dox resolve for the MCP connectivity check.",
+        "Uses the read-only Supabase operation rather than mutating project data.",
+        "Reports connectivity and authentication status from runtime evidence."
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "The governing DOX context for my login authorization task was already resolved before implementation. I have now finished changing src/auth/login.ts and its tests. Review the finished changes and prepare them for commit.",
+      "expected_output": "The agent does not repeat the pre-work resolution. It runs one changed-file impact resolution whose task string preserves the login authorization intent and test obligations, then uses the resulting constraints for review. Staging or committing the unchanged diff does not trigger another resolution.",
+      "files": [],
+      "expectations": [
+        "Runs exactly one dox resolve --changed review for the finished repository content changes.",
+        "Preserves the original login authorization task and verification obligations in the changed-review task string.",
+        "Does not run a second generic pre-commit resolution after the unchanged diff has been reviewed.",
+        "Treats Git staging or commit preparation as part of the already-resolved task rather than a new DOX task."
+      ]
     }
   ]
 }

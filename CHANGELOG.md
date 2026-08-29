@@ -7,6 +7,7 @@
 - Make `diagnosing-bugs` redact secrets before showing commands, outputs, or captured artifacts. Keep credentials in environment variables and quote only signal-bearing lines.
 - Remove harness-specific tool and agent-type names from `mp-code-review`, `codebase-design`, and `improve-codebase-architecture`.
 - Remove wizard time estimates. Progress is counted in stages instead.
+- Scope `dox` to repository work that may be governed by recorded contracts. Skip redundant calls for external tools, runtime connectivity checks, Git-only actions, and follow-ups that do not change repository content. Run one intent-preserving changed-file impact review after substantive content changes.
 
 ## 1.2.2
 

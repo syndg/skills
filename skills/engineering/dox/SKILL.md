@@ -1,6 +1,6 @@
 ---
 name: dox
-description: DOX-first repository context retrieval and maintenance. Use whenever working in a repository with dox.config.json, or when the user asks to initialize, migrate, query, lint, or capture a decision, contract, or invariant in DOX. In a configured repository, invoke it before repository research or code work—including read-only questions, planning, debugging, review, and implementation—so decisions, contracts, invariants, ownership, and change impact come through the resolver rather than broad record-store inspection.
+description: DOX repository contract retrieval and maintenance. Use in a repository with dox.config.json when nonlocal decisions, contracts, invariants, ownership, dependencies, or change impact may govern repository research or code work, and once after substantive repository content changes. Also use when the user asks to initialize, migrate, query, lint, or capture a decision, contract, or invariant in DOX. Skip external tooling, runtime connectivity checks, Git-only actions, and ordinary follow-ups within an already-resolved task.
 ---
 
 # DOX
@@ -21,9 +21,13 @@ dox init --apply
 
 `init` is read-only. Only `--apply` writes the config, record directory, migration manifest, and an ignored cache directory. It does not invent an invariant ledger.
 
-## DOX-first
+## Establish governing context
 
-In a configured repository, query DOX before repository research or code work, including read-only tasks. Give the resolver one natural-language task and any known paths:
+In a configured repository, resolve once before work that may be governed by ownership, decisions, contracts, binding invariants, dependencies, or change impact. Typical cases are planning, debugging, review, implementation, and read-only investigation of repository behavior. The purpose is to surface constraints outside the source immediately in view.
+
+Do not open a new pre-work resolution for external tooling, runtime connectivity or status checks, Git-only actions, or an ordinary follow-up within a task whose governing context is already established. A follow-up that changes repository content receives only the change-impact review below. For facts owned by source, tests, configuration, scripts, runbooks, or current runtime state, inspect that owner directly. Resolve first only when recorded contract context may govern the task.
+
+Give the resolver one natural-language task and any known paths:
 
 ```bash
 dox resolve "authorize a charge without bypassing payment policy" --path src/payments/charge.ts
@@ -38,7 +42,7 @@ The normal result is canonical compact JSON. It contains ranked record capsules,
 
 ## Retrieval boundary
 
-DOX answers the questions its record corpus is built to hold: applicable ownership, decisions, contracts, binding invariants, dependencies, and change impact. DOX-first means establishing that governing context before repository work. It does not mean routing every repository question through the resolver.
+DOX answers the questions its record corpus is built to hold: applicable ownership, decisions, contracts, binding invariants, dependencies, and change impact. Its job is to surface governing context that may live outside the source path immediately in view. Establish that context once per task, not once per prompt.
 
 Treat the resolution as constraints on the task, not as a substitute for current repository truth. Records may deliberately name enforcement symbols, verification commands, or operational constraints; carry those forward. For a needed fact that the capsules do not state, use the source that owns it: source and tests for behavior, package scripts and runbooks for procedures, configuration for declared settings, and runtime inspection for current state.
 
@@ -59,6 +63,16 @@ If the result has no useful capsule, discover a relevant source path outside the
 Read each capsule's `evidence`: `source` identifies task, path, changed-path, binding, or graph evidence; `edge` identifies the matched field or relationship. A path that hits invariant enforcement returns the complete binding tuple. A dependent path returns the same invariant with dependent relation evidence.
 
 Treat every field in a returned binding invariant as required knowledge. Carry its failure modes, enforcement, dependencies, and verification into the plan or answer when they affect the task; do not reduce the invariant to its statement. Preserve each distinct applicable obligation and prohibited behavior in the final answer. Do not combine an enumerated requirement when the combination removes one of its fields. When a failure mode names information that must be clarified before work proceeds, ask for every named field explicitly as a checklist rather than collapsing the fields into one broad question.
+
+## Review substantive changes
+
+After substantive repository content changes, run one change-impact resolution from the target worktree. Reuse the original task and its verification obligations so ranking retains the work's intent. For example:
+
+```bash
+dox resolve "review the login authorization change and its required tests" --changed
+```
+
+Use `--base <revision>` when the requested review covers a branch or another fixed point. This pass replaces another generic pre-commit resolution; it does not add one. Skip it when no repository file content changed, when the action was Git-only, or when the same unchanged diff has already been reviewed. After DOX record changes, also run `dox lint`.
 
 ## Record shape
 
