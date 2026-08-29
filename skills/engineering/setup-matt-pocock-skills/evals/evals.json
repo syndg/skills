@@ -1,0 +1,30 @@
+{
+  "skill_name": "setup-matt-pocock-skills",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Set up the engineering skills in this repository. It already has dox.config.json, a root AGENTS.md with unrelated instructions, and a root CLAUDE.md. The issue tracker and default triage labels are approved. Show the proposed instruction changes, then apply them without initializing DOX or copying record content into instruction files.",
+      "expected_output": "Setup preserves configured DOX as the canonical store, adds exactly one minimal DOX activation pointer to root AGENTS.md, keeps the Agent skills block in the selected root instruction file, and leaves all resolution and change-impact procedure in the installed dox skill.",
+      "files": [],
+      "expectations": [
+        "Root AGENTS.md contains exactly one sentence directing agents to the installed dox skill for repository contract retrieval and change-impact review.",
+        "The existing unrelated AGENTS.md instructions remain intact.",
+        "The configured branch does not create an AGENTS domain hierarchy or DECISIONS.md.",
+        "The generated domain.md points to the installed dox skill instead of copying its invocation procedure.",
+        "Setup does not run dox init --apply."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Set up the engineering skills in this repository. There is no dox.config.json and no existing AGENTS.md. Use GitHub Issues and the default triage labels. Show the draft, then apply the approved unconfigured setup.",
+      "expected_output": "Setup creates the existing root-to-nearest AGENTS fallback and does not add the configured-DOX activation pointer.",
+      "files": [],
+      "expectations": [
+        "Creates a minimal root AGENTS fallback for the unconfigured repository.",
+        "Does not add the configured-DOX activation sentence.",
+        "Does not initialize DOX.",
+        "Creates the issue-tracker and domain documentation for the unconfigured branch."
+      ]
+    }
+  ]
+}

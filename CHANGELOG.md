@@ -8,6 +8,7 @@
 - Remove harness-specific tool and agent-type names from `mp-code-review`, `codebase-design`, and `improve-codebase-architecture`.
 - Remove wizard time estimates. Progress is counted in stages instead.
 - Scope `dox` to repository work that may be governed by recorded contracts. Skip redundant calls for external tools, runtime connectivity checks, Git-only actions, and follow-ups that do not change repository content. Run one intent-preserving changed-file impact review after substantive content changes.
+- Make `setup-matt-pocock-skills` place a minimal DOX activation pointer in root `AGENTS.md` for configured repositories while leaving retrieval and change-impact procedure in the installed `dox` skill.
 
 ## 1.2.2
 

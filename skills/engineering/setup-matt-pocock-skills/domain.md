@@ -4,14 +4,11 @@ Before repository exploration, check for `dox.config.json`. Its presence selects
 
 ## Configured DOX branch
 
-Use this branch when `dox.config.json` is present.
+Use this branch when `dox.config.json` is present. Root `AGENTS.md` carries the minimal activation pointer to the installed `dox` skill.
 
-1. Invoke `/dox` with the current task and any known paths before reading repository source, history, or instruction-file domain sections.
-2. Use the resolver's compact items as the canonical contract context. Expand only record IDs discovered by that resolution.
-3. Use the resolved language, decisions, invariants, and ownership in the work.
-4. After a semantic record edit through `/domain-modeling`, run `/dox` validation with `dox lint`. Treat lint errors as blockers.
+The installed `dox` skill owns when and how resolution, expansion, change-impact review, and lint run. This file does not repeat that procedure. Configured records remain canonical; do not enumerate the record directory, fall back to an AGENTS domain hierarchy, mirror records into instruction files, or keep a parallel `DECISIONS.md`.
 
-DOX is a direct-cutover store. Do not enumerate its record directory, fall back to an `AGENTS.md` domain hierarchy, mirror records into instruction files, or keep a parallel `DECISIONS.md`. DOX initialization is separate setup: preview `dox init`, then run `dox init --apply` only after explicit human approval.
+DOX initialization is separate setup. Preview `dox init`, then run `dox init --apply` only after explicit human approval.
 
 ## Unconfigured AGENTS fallback
 

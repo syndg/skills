@@ -1,6 +1,6 @@
 ## What it does
 
-`setup-matt-pocock-skills` answers three repository-level questions: where issues live, what the triage labels are called, and how engineering skills find the canonical domain contract. It writes the answers under `docs/agents/` and adds a small pointer block to the repository's root instruction file.
+`setup-matt-pocock-skills` answers three repository-level questions: where issues live, what the triage labels are called, and how engineering skills find the canonical domain contract. It writes the answers under `docs/agents/` and adds a small pointer block to the repository's root instruction file. In a configured DOX repository, it also places one minimal activation pointer in root `AGENTS.md`.
 
 The first contract check happens before repository exploration. If `dox.config.json` exists, configured DOX records stay canonical. If it does not, setup may create or preserve a root-to-nearest `AGENTS.md` fallback. It never initializes DOX implicitly.
 
@@ -20,6 +20,7 @@ It writes into the repository you run it in:
 | `domain.md` | `docs/agents/` |
 | `triage-labels.md` | `docs/agents/`, only when `triage` is available |
 | An `## Agent skills` block | an existing root instruction file; if none exists, setup asks which file the harness reads |
+| A minimal DOX activation pointer | root `AGENTS.md`, only when `dox.config.json` exists |
 | A minimal root contract anchor | root `AGENTS.md`, only in the unconfigured fallback |
 
 All of it is committed Markdown. There is no user-level or global mode. If `dox.config.json` exists, the configured DOX records remain the source of truth. Setup does not run `dox init`. When initialization is wanted, [dox](https://aihero.dev/skills-dox) previews `dox init`; `dox init --apply` runs only after the human explicitly approves that proposal.
@@ -49,10 +50,10 @@ The domain-doc branches are mutually exclusive:
 
 | Trigger | Canonical store | What setup may add |
 | --- | --- | --- |
-| `dox.config.json` exists | records returned through `/dox` | consumer pointers only; no AGENTS domain hierarchy, mirrored decisions, or `DECISIONS.md` |
+| `dox.config.json` exists | records returned through `/dox` | the minimal root `AGENTS.md` activation pointer and consumer pointers; no AGENTS domain hierarchy, mirrored decisions, or `DECISIONS.md` |
 | `dox.config.json` is absent | root-to-nearest `AGENTS.md` fallback | a root-only default, plus children only at durable ownership boundaries |
 
-In the fallback branch, parents pass down Ubiquitous Language and Architectural Decisions, direct children appear in **Child DOX Index**, and large inline decision sections may graduate to co-located `DECISIONS.md`. In the configured branch, `/dox` resolves and validates records and [domain-modeling](https://aihero.dev/skills-domain-modeling) owns semantic changes.
+In the fallback branch, parents pass down Ubiquitous Language and Architectural Decisions, direct children appear in **Child DOX Index**, and large inline decision sections may graduate to co-located `DECISIONS.md`. In the configured branch, root `AGENTS.md` activates the installed [dox](https://aihero.dev/skills-dox) skill, which owns retrieval and change-impact behavior; [domain-modeling](https://aihero.dev/skills-domain-modeling) owns semantic changes.
 
 ## Common questions
 
@@ -62,8 +63,8 @@ No. GitHub, GitLab, and local Markdown under `.scratch/` have built-in templates
 **Do I need to rerun it after the skill set changes?**
 Usually only when the generated configuration no longer matches the skills that read it, when you switch trackers, or when you want to start over. The seed templates can evolve, so rerunning is a cheap recovery if a downstream skill behaves differently from the checked-in docs. Review the proposed edits before accepting them.
 
-**It wrote the pointer block to `CLAUDE.md`, but my harness reads `AGENTS.md`.**
-The selection rule prefers an existing `CLAUDE.md`, then an existing root `AGENTS.md`; if neither exists, setup asks which file the harness reads. Move the pointer block to the active instruction file. Only an unconfigured AGENTS-based repository needs a root `AGENTS.md` domain anchor. In a configured DOX repository, an `AGENTS.md` may carry the pointer without becoming a parallel domain store.
+**Why did setup write to both `CLAUDE.md` and `AGENTS.md`?**
+The `## Agent skills` block goes in the root instruction file selected for the active harness: existing `CLAUDE.md`, then existing `AGENTS.md`, or a file the user chooses when neither exists. In a configured repository, the minimal DOX activation pointer always lives in root `AGENTS.md`. It contains no retrieval procedure or domain ledger; the installed `dox` skill owns that behavior.
 
 **It did not create my triage labels.**
 It is not meant to. `docs/agents/triage-labels.md` maps the five canonical roles to label strings that already exist in your tracker; it does not call a label-creation command. Create missing state and category labels once through the tracker. Wayfinder-specific labels are separate and are not created here either.
@@ -75,7 +76,7 @@ No. It configures tracker operations, label vocabulary, and domain-doc discovery
 Not today. There is no user-level mode. Every repository carries its own `docs/agents/` files so teammates and agents can inspect the same operational contract.
 
 **What happens if this is already a configured DOX project?**
-Setup preserves that direct-cutover contract. It records that `/dox` resolves configured records and `domain-modeling` owns semantic updates. It creates no `DECISIONS.md`, duplicates no records into `AGENTS.md`, and initializes no store. DOX initialization remains an explicit `/dox` task whose apply step needs human approval.
+Setup preserves that direct-cutover contract. It ensures root `AGENTS.md` contains one sentence pointing at the installed `dox` skill, while configured records remain canonical. It creates no `DECISIONS.md`, duplicates no records or DOX workflow into instruction files, and initializes no store. DOX initialization remains an explicit `/dox` task whose apply step needs human approval.
 
 **Is it strange to have one skill configure the others?**
 The trade-off is real. Without setup, tracker instructions would be duplicated in every skill that touches issues. The mitigation is that the output is ordinary inspectable Markdown. Day-to-day corrections are direct edits to `docs/agents/*.md` and the owning instruction file, not opaque runtime state.
@@ -87,7 +88,7 @@ The trade-off is real. Without setup, tracker instructions would be duplicated i
 - The proposed tracker matches the real remote, and mapped label strings already exist in that tracker.
 - With no `dox.config.json`, the repository has a root fallback, root-to-nearest inheritance, and no speculative child contracts.
 - Every fallback child `AGENTS.md` appears in its parent's **Child DOX Index**.
-- With `dox.config.json`, records still resolve through `/dox`, no parallel decision store exists, and setup did not enumerate an AGENTS domain hierarchy.
+- With `dox.config.json`, root `AGENTS.md` contains the minimal activation pointer, records still resolve through `/dox`, and no parallel procedure or decision store exists.
 - Afterwards, `/to-tickets` publishes without asking where issues live and `/triage` applies configured labels rather than inventing them.
 - No `SKILL.md` changed as a side effect of setup.
 

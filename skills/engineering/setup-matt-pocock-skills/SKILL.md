@@ -20,7 +20,7 @@ This is prompt-driven setup. Discover the repository, present a draft, get confi
 
 Check for `dox.config.json` before reading source, history, or repository instructions. Its presence selects one of two mutually exclusive branches.
 
-**Configured DOX branch.** Invoke `/dox` for this setup task before further repository exploration. Treat the configured records as canonical. Use the compact resolved items to understand ownership and existing contract pointers. Do not enumerate the configured record directory or every `AGENTS.md`, build an AGENTS domain hierarchy, mirror records into `AGENTS.md`, or create `DECISIONS.md`.
+**Configured DOX branch.** Follow the installed `/dox` skill for this setup task. Treat the configured records as canonical and use any applicable compact items to understand ownership and existing contract pointers. Do not enumerate the configured record directory or every `AGENTS.md`, build an AGENTS domain hierarchy, mirror records into `AGENTS.md`, or create `DECISIONS.md`.
 
 **Unconfigured AGENTS fallback.** When `dox.config.json` is absent, inspect the root instruction files, the existing root-to-nearest `AGENTS.md` paths for likely work areas, and any relevant co-located `DECISIONS.md` entries those chains index. This branch may scaffold a root-only fallback or preserve durable child boundaries already present.
 
@@ -31,7 +31,7 @@ This skill never initializes DOX implicitly. Do not run `dox init --apply` unles
 Inspect the rest of the repository's setup without crossing the storage boundary:
 
 - `git remote -v` and `.git/config`: identify the issue tracker host.
-- Root `AGENTS.md` and `CLAUDE.md`: find an existing `## Agent skills` pointer block. In the configured branch, read these only as root instruction files, not as a parallel domain store.
+- Root `AGENTS.md` and `CLAUDE.md`: find an existing `## Agent skills` block. In the configured branch, also check root `AGENTS.md` for the minimal DOX pointer. Read these only as instruction files, not as a parallel domain store.
 - `docs/agents/`: find prior setup output.
 - `.scratch/`: detect an existing local Markdown issue tracker convention.
 - The installed skills: run the triage-label section only when `triage` is installed.
@@ -62,12 +62,13 @@ The defaults are `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-hum
 
 **Section C: domain docs.** Present only the selected branch.
 
-- **Configured DOX**: confirm that `dox.config.json` selects direct-cutover retrieval through `/dox`. Preserve the configured records and ownership. Setup adds consumer pointers only; it creates no AGENTS domain hierarchy or duplicate decision ledger.
+- **Configured DOX**: confirm that `dox.config.json` selects the installed `/dox` skill. Preserve the configured records and ownership. Ensure root `AGENTS.md` has the minimal DOX pointer defined below. Setup adds no DOX procedure, AGENTS domain hierarchy, or duplicate decision ledger.
 - **Unconfigured AGENTS fallback**: confirm the root-to-nearest hierarchy. Default to a root-only `AGENTS.md`. Add child documents only for durable subtree ownership, and list them in the parent's `## Child DOX Index`. Keep domain language under `## Ubiquitous Language`; keep globally numbered decisions under `## Architectural Decisions`, with co-located `DECISIONS.md` only after that section outgrows the hot path.
 
 Show the user a draft of:
 
 - the `## Agent skills` block;
+- in the configured branch, the minimal root `AGENTS.md` DOX pointer;
 - `docs/agents/issue-tracker.md` and `docs/agents/domain.md`;
 - `docs/agents/triage-labels.md` when Section B ran;
 - only in the unconfigured branch, any minimal fallback `AGENTS.md` changes.
@@ -80,7 +81,17 @@ Pick the root instruction file for the `## Agent skills` block:
 
 - Prefer an existing `CLAUDE.md`.
 - Otherwise use an existing root `AGENTS.md`.
-- If neither exists, ask which instruction file the active harness reads before creating one. In the configured branch, a new `AGENTS.md` may hold the pointer block only; it does not become a domain hierarchy.
+- If neither exists, ask which instruction file the active harness reads before creating the `## Agent skills` block. The configured branch separately creates root `AGENTS.md` for the DOX pointer; when the active harness also uses `AGENTS.md`, keep both sections in that file.
+
+In the configured branch, ensure root `AGENTS.md` contains exactly one minimal DOX pointer. If the file is absent or empty, create:
+
+```markdown
+# DOX
+
+This repository uses DOX. Follow the installed `dox` skill for repository contract retrieval and change-impact review.
+```
+
+When root `AGENTS.md` already has content, update an existing `# DOX` or `## DOX` section; otherwise add a `## DOX` section with the same sentence. Preserve surrounding instructions. The pointer activates the installed skill; it does not copy the skill's invocation rules or create a parallel contract store.
 
 In the unconfigured branch, ensure the root fallback `AGENTS.md` exists. Preserve current instructions and follow its `## Change Protocol`. Use the `/domain-modeling` skill's [AGENTS-FORMAT.md](../domain-modeling/AGENTS-FORMAT.md) and [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md). Create domain sections and children only when they have useful content.
 
@@ -101,7 +112,7 @@ Use this shape:
 
 ### Domain docs
 
-[one-line summary: configured DOX direct cutover, or unconfigured root-to-nearest AGENTS fallback]. See `docs/agents/domain.md`.
+[configured: repository contract retrieval follows the root `AGENTS.md` DOX pointer; unconfigured: contracts use the root-to-nearest AGENTS fallback]. See `docs/agents/domain.md`.
 ```
 
 Include the triage sub-block and file only when Section B ran.
@@ -118,4 +129,4 @@ For another issue tracker, write `docs/agents/issue-tracker.md` from the user's 
 
 ### 5. Finish
 
-Report the chosen issue tracker, label mapping, and contract branch. In a configured repository, name `/dox` and the configured records as canonical. In an unconfigured repository, name the applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` fallback. Re-run setup only to change these repository-level choices.
+Report the chosen issue tracker, label mapping, and contract branch. In a configured repository, name the root `AGENTS.md` pointer, installed `/dox` skill, and configured records as the retrieval path. In an unconfigured repository, name the applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` fallback. Re-run setup only to change these repository-level choices.
