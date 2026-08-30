@@ -80,6 +80,7 @@ Off the main flow entirely.
 ## Fork maintenance
 
 - **`/pi-update`** — maintain the personalized Syn Pi fork. Use it to merge official Pi updates into `syn-pi`, preserve the focused downstream behavior, validate and build it, keep the official `pi` launcher separate, and push the verified non-force update unless local-only work was requested.
+- **`/synp-update`** — maintain the personalized Synp fork. Use it to merge upstream Oh My Pi into `main`, preserve the custom fullscreen and smooth-scrolling contract, rebuild the local binary, keep official `omp` separate, retain the `synp` command, and push the verified non-force update unless local-only work was requested.
 - **`/skills-fork-update`** — maintain this personalized skills fork. Use it to integrate `mattpocock/skills` changes while preserving DOX direct cutover, the AGENTS fallback, personal/vendor inventory, the teaching kit, and the `mp-code-review` rename. It validates locally and does not push.
 
 ## Personal tools
