@@ -32,9 +32,11 @@ Preserve the fullscreen contract, not stale line-level patches.
 - Mouse-wheel and configurable keyboard scrolling, jump-to-bottom, mouse selection, clipboard copy, and OSC 8 link activation.
 - Correct selection coordinates, resize behavior, startup handoff, history flush, and fullscreen exit output.
 - Differential alternate-screen painting with safe full-repaint fallbacks for forced frames, geometry changes, images, and OSC 66 rows.
+- Fullscreen shell handoff balances the alternate- and main-screen keyboard enhancement stacks before releasing raw input, so vi-mode shells resume in insert mode.
 - One-row wheel granularity and latency-sensitive 60 fps scheduling.
 - A stable interactive frame deadline under continuous trackpad input. Later reports coalesce into the pending frame instead of postponing it.
-- Hybrid inertial scrolling: synchronized row repaint for isolated one-row tail movement and bounded terminal-region scrolling for coalesced multi-row movement.
+- Slow-scroll isolation: the jump-to-bottom control occupies a dedicated fixed row outside the transcript. Unchanged fixed rows normally emit no repaint bytes; the control row explicitly clears and repaints while a background-styled transcript row enters, occupies, or leaves its neighbor. Isolated one-row reports use synchronized logical repaint, coalesced movement uses bounded terminal scrolling, clamped input at either boundary emits no hint or render, and horizontal SGR wheel reports (`66`/`67`) never change the vertical offset. Only overlay transitions explicitly erase other vacated rows.
+- The default status line shows Codex weekly quota remaining at the bottom right only while an `openai-codex` model with weekly usage data is active.
 - Focused behavioral coverage using the real Kitty VT test engine.
 - The `synp` launcher name. Do not recreate a `syn-p` compatibility alias.
 
