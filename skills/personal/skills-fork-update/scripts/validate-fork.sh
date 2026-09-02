@@ -220,6 +220,7 @@ for path in \
   impeccable \
   pdf \
   playwright-cli \
+  ponytail \
   react-doctor \
   skill-creator \
   vercel-composition-patterns \

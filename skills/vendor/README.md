@@ -20,6 +20,7 @@ Third-party skills vendored from elsewhere (Anthropic, Vercel, etc.). Not promot
 - [impeccable](./impeccable/SKILL.md) — design, critique, and polish frontend interfaces.
 - [pdf](./pdf/SKILL.md) — read, create, and manipulate PDF files (Anthropic).
 - [playwright-cli](./playwright-cli/SKILL.md) — browser automation for testing, forms, screenshots, extraction.
+- [ponytail](./ponytail/SKILL.md) — find the smallest complete implementation for every coding task (Dietrich Gebert, adapted).
 - [react-doctor](./react-doctor/SKILL.md) — scan and triage React diagnostics (lint, a11y, bundle, architecture).
 - [skill-creator](./skill-creator/SKILL.md) — create, improve, and evaluate skills (Anthropic).
 - [vercel-composition-patterns](./vercel-composition-patterns/SKILL.md) — React composition patterns that scale (Vercel).

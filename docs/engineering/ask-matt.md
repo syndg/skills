@@ -2,7 +2,7 @@
 
 `ask-matt` is the router over the skills in this repo. You describe the situation you are in, such as an idea you cannot start, incoming bug reports, or a [session](https://www.aihero.dev/ai-coding-dictionary/session) that has run long. It names the skill or sequence that fits and shows where the human decisions in that sequence sit.
 
-It recommends and stops. It does not grill, write a [spec](https://www.aihero.dev/ai-coding-dictionary/spec), retrieve a contract, open a file, or invoke the skill it just named. What you get back is the next thing to type, and you type it. It maps the promoted set plus this fork's maintenance routes, while also pointing at model-invoked contract layers such as `/dox`, `/domain-modeling`, and `/codebase-design`.
+It recommends and stops. It does not grill, write a [spec](https://www.aihero.dev/ai-coding-dictionary/spec), retrieve a contract, open a file, or invoke the skill it just named. What you get back is the next thing to type, and you type it. It maps the promoted set plus this fork's maintenance routes and Ponytail coding discipline, while also pointing at model-invoked contract layers such as `/dox`, `/domain-modeling`, and `/codebase-design`.
 
 ## When to reach for it
 
@@ -44,6 +44,10 @@ Three on-ramps join that flow:
 - [triage](https://aihero.dev/skills-triage) turns work that arrived from other people into agent-ready issues.
 - [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs) builds a tight red feedback loop before it theorises about a hard bug.
 - [wayfinder](https://aihero.dev/skills-wayfinder) charts a multi-session, foggy effort as decision tickets, then merges back at [to-spec](https://aihero.dev/skills-to-spec) when the map clears.
+
+## Implementation discipline
+
+`/ponytail` is a model-invoked layer for coding work. It looks for the smallest complete solution after scope and acceptance criteria are settled: reuse existing code, prefer standard-library and native platform features, and add abstractions only when the current behavior needs them. Before editing and before delivery, it checks every added file, layer, dependency, configuration option, helper, and test abstraction against a current requirement or existing convention. It changes implementation shape without weakening the spec, project contract, TDD loop, or review gates.
 
 ## Contract layers underneath
 

@@ -49,6 +49,10 @@ Not feature work — upkeep.
 
 - **`/improve-codebase-architecture`** — run whenever you have a spare moment to keep the codebase good for agents to operate in. It surfaces **deepening opportunities**; picking one _generates an idea_ you can take into the main flow at `/grill-with-docs`. It's the survey that finds the candidates; **`/codebase-design`** (below) is the bench you design the chosen one on.
 
+## Implementation discipline
+
+**`/ponytail`** is the model-invoked simplicity layer for coding work. It runs when a task designs, implements, fixes, or refactors code, then finds the smallest complete solution within the settled scope: reuse first, standard library and native platform before custom machinery, and no speculative layers. A strict complexity gate runs before the first edit and before delivery; every added file, layer, dependency, configuration option, helper, and test abstraction must serve a current requirement or existing convention. Ponytail changes the implementation shape, not the accepted requirements, project contract, TDD loop, or review gates.
+
 ## Contract layers underneath
 
 Three model-invoked layers run *beneath* the other skills. They retrieve or maintain the contracts that make a flow coherent. Reach for them directly when the contract, words, or module shape is the problem; or let the skills above pull them in.
