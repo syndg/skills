@@ -43,6 +43,8 @@ The default output is readable wrapped text. `--json` provides the structured fo
 
 The default ceilings are 128 KiB for briefs, 16 KiB for named retrieval, and 64 KiB for expansion. A brief does not fill spare budget with supplementary path-matched records.
 
+Tool rendering is a separate boundary. A complete CLI result can still be clipped by the agent harness. The skill requires recovery of the full-output artifact or continuation before that context is used; a successful receipt does not prove every field was visible.
+
 The installed skill owns invocation, reuse, and maintenance policy. Other skills and project pointers route to it rather than carrying their own copy of the procedure.
 
 ## Common questions
@@ -53,11 +55,11 @@ No. Startup commands and current runtime behavior come from scripts, configurati
 
 **Why did it load a brief again during review?**
 
-Standing meaning can be reused, but the finished work may touch enforcement or dependent paths that were not known earlier. The review checks those actual paths. Unrelated worktree edits and incidental branch history should not enter a path-limited review.
+Standing meaning can be reused, but the finished work may touch enforcement or dependent paths that were not known earlier. Review checks those actual paths; it does not require a second CLI call when their context is already loaded and current. Unrelated worktree edits and incidental branch history should not enter a path-limited review.
 
 **Does `binding_complete` mean nothing important was missed?**
 
-No. It means the selected applicable binding set was delivered under the recorded evidence. Missing paths, scope membership, or dependency edges can still hide a real obligation. Source evidence that exposes such a gap belongs in the maintenance review.
+No. It means DOX assembled the selected applicable binding set under the recorded evidence, not that a tool renderer displayed every field. Missing paths, scope membership, or dependency edges can also hide a real obligation. Source evidence that exposes such a gap belongs in the maintenance review.
 
 **What if the code and the record disagree?**
 

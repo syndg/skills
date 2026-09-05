@@ -37,6 +37,8 @@ Default output is readable wrapped text. Use `--json` only when structured outpu
 
 The default ceiling is 128 KiB for a brief, 16 KiB for named retrieval, and 64 KiB for expansion. A brief emits only its curated bodies, applicable bindings, and decision index; spare budget does not pull in supplementary excerpts.
 
+Check the tool response for clipping before using the brief. CLI budget success and receipt completeness describe DOX's serialized output, not what the harness displayed. If the tool supplies a full-output artifact or continuation, read every omitted range through that reference before designing, editing, or completing the maintenance review. Recover the existing output rather than rerunning the brief or projecting away fields. An unrecoverable required body blocks governed work.
+
 ## Reuse context and retrieve only what is missing
 
 Within the same task and worktree, reuse the standing meaning already loaded for the same scope. A follow-up, another skill, or another file within that scope does not require a fresh generic brief. Check newly touched paths for their own applicable bindings when necessary; load only new scope context when the work crosses a material domain, dependency, or ownership boundary. Refresh affected context when its records change or a receipt is stale.
@@ -68,6 +70,8 @@ When implementation and DOX disagree, state both the observed behavior and the i
 ## Review and maintain the actual work
 
 After substantive repository content changes, review their impact once against the loaded meaning and current applicable bindings. Select the paths changed by this task, not incidental edits elsewhere in the worktree or unrelated commits on the branch:
+
+This is a meaning review, not a mandatory second CLI call. Reuse context when its records and the actual paths' bindings are already loaded and current. The following command is for changed paths that introduce context or obligations not yet loaded:
 
 ```bash
 dox brief --path src/auth/login.ts --path src/auth/login.test.ts
