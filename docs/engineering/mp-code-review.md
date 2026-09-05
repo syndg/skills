@@ -1,10 +1,12 @@
 ## What it does
 
-`mp-code-review` reviews the diff between `HEAD` and a fixed point you name (a commit, a branch, a tag, `main`, `HEAD~5`) along two axes. **Standards** asks whether the code follows how this repo writes code. **Spec** asks whether the code does what the originating issue or [spec](https://www.aihero.dev/ai-coding-dictionary/spec) asked for. Each axis runs in its own [subagent](https://www.aihero.dev/ai-coding-dictionary/subagent) so neither sees the other's reasoning.
+`mp-code-review` reviews the diff between `HEAD` and a fixed point you name (a commit, a branch, a tag, `main`, `HEAD~5`) along two axes. **Standards** checks repository conventions, architectural burden, and test value. **Spec** checks the originating issue or [spec](https://www.aihero.dev/ai-coding-dictionary/spec), distinguishing requirements from unconfirmed plan assumptions. Each axis runs in its own [subagent](https://www.aihero.dev/ai-coding-dictionary/subagent) so neither sees the other's reasoning.
 
 The two axes are never merged and never re-ranked. The report ends with a worst issue *per axis* and refuses to name a single winner across them, because a change can pass one axis and fail the other: code that follows every convention while implementing the wrong thing passes Standards and fails Spec; code that does exactly what the [ticket](https://www.aihero.dev/ai-coding-dictionary/ticket) asked while breaking the repo's conventions does the reverse. A blended verdict lets the passing axis hide the failing one.
 
 The review confirms the fixed point and identifies the actual review paths first. Configured repositories follow [dox](https://aihero.dev/skills-dox)'s retrieval and reuse policy, including context passed to the independent reviewers. Path limits stay intact rather than pulling in incidental branch changes. Without DOX, reviewers load the changed paths' root-to-nearest `AGENTS.md` chains and indexed co-located `DECISIONS.md` entries before the full diff and commit log.
+
+The simplicity check is part of every Standards review, not a separate command. It asks whether the same required behavior can be maintained with fewer concepts and less machinery. The review recommends changes; it does not authorize edits or test deletion.
 
 ## When to reach for it
 
@@ -23,7 +25,7 @@ You must supply the fixed point. If you do not, the skill asks rather than guess
 
 ## Prerequisites
 
-The Standards axis needs a non-empty diff and project context resolved through the selected storage branch. It reads targeted standards sources such as `CODING_STANDARDS.md` and `CONTRIBUTING.md`; in repositories without DOX, applicable `AGENTS.md` files may also supply standards. The built-in smell baseline remains available when the repository documents nothing.
+The Standards axis needs a non-empty diff and project context resolved through the selected storage branch. It reads targeted standards sources such as `CODING_STANDARDS.md` and `CONTRIBUTING.md`; in repositories without DOX, applicable `AGENTS.md` files may also supply standards. The built-in smell baseline and simplicity check still run when the repository documents nothing. The check uses the installed `ponytail` skill's smallest-complete-solution principles.
 
 The Spec axis needs a spec to exist and be findable. It looks in this order:
 
@@ -39,13 +41,23 @@ The Spec axis needs a spec to exist and be findable. It looks in this order:
 | | Standards | Spec |
 | --- | --- | --- |
 | Question | Is it built right? | Is it the right thing? |
-| Reads | Resolved project contract items, targeted standards documents, and the smell baseline | The originating issue or spec, plus resolved terms and binding constraints for the changed paths |
-| Reports | Documented breaches (can be hard), and smells (always judgement calls) | Missing or partial requirements, scope creep, requirements implemented wrongly |
-| Every finding cites | The standards file and the rule, or the named smell plus the hunk | The line of the spec |
+| Reads | Resolved contracts, standards documents, smell baseline, simplicity check, and explicit preservation constraints | The originating issue or spec, its provenance, and resolved binding constraints |
+| Reports | Documented breaches, possible smells, and justified simplifications with targeted verification | Missing or partial requirements, scope creep, incorrect implementations, and separately labelled unconfirmed assumptions |
+| Every finding cites | The rule or named concern and the file/hunk; simplifications also explain cost, alternative, and preserved behavior | The authoritative source; unconfirmed assumptions are not compliance failures |
 
 A generic review skill that does not know your standards flags what is deliberate in your codebase and misses the invariants it depends on. The resolved project contract and targeted repository documentation are the [primary sources](https://www.aihero.dev/ai-coding-dictionary/primary-source) on the Standards axis, and **the repo always overrides**. The Spec axis receives the same compact contract context only to understand terms and binding constraints; it cannot turn those items into requirements the spec never stated.
 
 The **smell baseline** is the floor underneath it: twelve Fowler code smells from _Refactoring_ ch.3 — Mysterious Name, Duplicated Code, Feature Envy, Data Clumps, Primitive Obsession, Repeated Switches, Shotgun Surgery, Divergent Change, Speculative Generality, Message Chains, Middle Man, Refused Bequest. Each is a labelled heuristic ("possible Feature Envy"), never a hard violation, and each is stated as *what it is* → *how to fix*, so a finding arrives with a move attached rather than a complaint. Anything your linter already enforces is skipped by both axes.
+
+## Simplicity and test value
+
+Expect a `Simplicity and test value` subsection under Standards. It examines duplicate owners, forwarding layers, speculative frameworks, unnecessary persistence or recovery work, unreliable defensive heuristics, and low-value tests. A recommendation must explain what burden it removes, what remains protected, and how to verify the change.
+
+The check preserves required capabilities and meaningful safety guarantees. Multiple required providers are not speculative generality. Durable writes may need fencing that pure reads do not. A test that catches an authorization or recovery failure earns its place; a test that only repeats a mock response usually does not. Exact wording or bytes can still be legitimate protocol requirements.
+
+A generated plan is reviewed as well as followed. Its implementation prescriptions do not automatically become user requirements, but a settled contract cannot be discarded merely because an agent wrote it. The report identifies any contract decision or documentation correction a proposed simplification needs.
+
+The reviewed behavior may depend on owning code or linked changes outside one PR. The reviewer follows those dependencies as needed while respecting your explicit scope limits. This is not an invitation to clean up the whole repository.
 
 ## Common questions
 
@@ -77,9 +89,10 @@ No. It diffs `<fixed-point>...HEAD`, three-dot, which is measured from the merge
 
 - It refuses to start on a bad ref or an empty diff, before any sub-agent is spawned.
 - The report arrives as two separate blocks under `## Standards` and `## Spec`, not one merged list.
-- Every Standards finding names either a rule in one of your repo's files or one of the twelve smells, with the hunk quoted; every Spec finding quotes a line of the spec.
+- Standards findings cite rules, named smells, or evidenced simplicity concerns. Simplicity findings include an alternative, preserved behavior, and a verification scenario; Spec failures quote an authoritative requirement.
 - The closing summary gives a worst issue per axis and declines to pick an overall winner.
 - With no spec available, the Spec block says so instead of listing requirements it inferred from the code.
+- The simplicity subsection can say no justified simplification was found. It preserves required complexity instead of manufacturing deletions.
 
 ## Where it fits
 
@@ -87,6 +100,6 @@ No. It diffs `<fixed-point>...HEAD`, three-dot, which is measured from the merge
 
 - [implement](https://aihero.dev/skills-implement) is the closest neighbour: it drives the build and calls this skill as its own closing review before committing.
 - [to-spec](https://aihero.dev/skills-to-spec) and [to-tickets](https://aihero.dev/skills-to-tickets) produce the document the Spec axis checks against; a vague spec makes that axis vague.
-- [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) is the whole-codebase counterpart — this skill only ever looks at one diff.
+- [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) is the whole-codebase counterpart. This skill remains anchored to the requested changes while tracing the dependencies needed to judge them.
 
 [ask-matt](https://aihero.dev/skills-ask-matt) routes across the whole set when you are unsure which skill the situation wants.

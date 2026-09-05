@@ -28,5 +28,5 @@ Model- or user-reachable (rich trigger phrasing so the model can reach for them)
 - **[domain-modeling](./domain-modeling/SKILL.md)** — Actively build and sharpen a project's domain model — challenge terms, stress-test with scenarios, and adjudicate durable terminology and decisions in the project contract.
 - **[dox](./dox/SKILL.md)** — Curated repository meaning, applicable binding obligations, and canonical contract maintenance.
 - **[codebase-design](./codebase-design/SKILL.md)** — Shared discipline and vocabulary for designing deep modules: small interfaces, clean seams, testable through the interface.
-- **[mp-code-review](./mp-code-review/SKILL.md)** — Two-axis review of the diff since a fixed point: **Standards** (does it follow the repo's coding standards, plus a Fowler smell baseline?) and **Spec** (does it faithfully implement the originating issue/spec?), run as parallel sub-agents.
+- **[mp-code-review](./mp-code-review/SKILL.md)** reviews changes since a fixed point for Standards and Spec compliance, including required simplicity and test-value checks.
 - **[resolving-merge-conflicts](./resolving-merge-conflicts/SKILL.md)** — Work through an in-progress git merge or rebase conflict hunk by hunk, resolving by intent traced to each side's primary source, then finish the operation — never `--abort`.

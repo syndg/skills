@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add a required simplicity and test-value check to `mp-code-review`. Review architectural burden and unconfirmed plan assumptions with evidence, concrete alternatives, preserved guarantees, and targeted verification; keep the existing two-axis, read-only workflow.
 - Add curated DOX scope briefs with full standing meaning, applicable binding obligations, and on-demand ADR rationale. Keep retrieval eligibility, context reuse, and maintenance in the installed skill; source facts and runtime commands bypass retrieval. Reviews cover the actual work, and maintenance captures newly settled durable meaning as well as correcting stale records.
 - Recover harness-clipped DOX output before using it, and distinguish required post-change meaning review from a redundant retrieval call.
 
