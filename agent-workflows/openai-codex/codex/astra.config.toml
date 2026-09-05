@@ -1,0 +1,48 @@
+model = "gpt-6-astra"
+model_reasoning_effort = "high"
+model_provider = "openai"
+
+[features]
+hooks = true
+
+[agents]
+default_subagent_model = "gpt-5.6-sol"
+default_subagent_reasoning_effort = "high"
+
+[agents.codex-explorer]
+config_file = "agent-workflows/openai-codex/codex/agents/codex-explorer.toml"
+
+[agents.codex-investigator]
+config_file = "agent-workflows/openai-codex/codex/agents/codex-investigator.toml"
+
+[agents.codex-editor]
+config_file = "agent-workflows/openai-codex/codex/agents/codex-editor.toml"
+
+[agents.codex-implementer]
+config_file = "agent-workflows/openai-codex/codex/agents/codex-implementer.toml"
+
+[[hooks.SessionStart]]
+[[hooks.SessionStart.hooks]]
+type = "command"
+command = 'bun "${CODEX_HOME:-$HOME/.codex}/agent-workflows/openai-codex/codex/hook.ts"'
+timeout = 10
+
+[[hooks.SubagentStart]]
+[[hooks.SubagentStart.hooks]]
+type = "command"
+command = 'bun "${CODEX_HOME:-$HOME/.codex}/agent-workflows/openai-codex/codex/hook.ts"'
+timeout = 10
+
+[[hooks.UserPromptSubmit]]
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = 'bun "${CODEX_HOME:-$HOME/.codex}/agent-workflows/openai-codex/codex/hook.ts"'
+timeout = 10
+
+[[hooks.PreToolUse]]
+matcher = "^(spawn_agent|Agent|collaborationspawn_agent|spawn_agents_on_csv)$"
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = 'bun "${CODEX_HOME:-$HOME/.codex}/agent-workflows/openai-codex/codex/hook.ts"'
+timeout = 10
+
