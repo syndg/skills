@@ -47,7 +47,7 @@ Three on-ramps join that flow:
 
 ## Implementation discipline
 
-`/ponytail` is a model-invoked layer for coding work. It looks for the smallest complete solution after scope and acceptance criteria are settled: reuse existing code, prefer standard-library and native platform features, and add abstractions only when the current behavior needs them. Before editing and before delivery, it checks every added file, layer, dependency, configuration option, helper, and test abstraction against a current requirement or existing convention. It changes implementation shape without weakening the spec, project contract, TDD loop, or review gates.
+`/ponytail` is a model-invoked layer for coding work. It finds the smallest complete implementation after scope and acceptance criteria are settled: reuse existing code, prefer standard-library and native platform features, and add abstractions only when the current behavior needs them. It preserves approved product journeys and visual design, then applies its complexity gate before editing and before delivery. It changes implementation shape without weakening the spec, project contract, TDD loop, or review gates.
 
 ## Contract layers underneath
 

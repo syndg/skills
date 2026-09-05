@@ -1,0 +1,53 @@
+{
+  "skill_name": "ponytail",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "You are advising on a coding task, not editing it. Give a concise implementation and acceptance decision in 200 words or fewer. Do not use tools or make edits. The original Figma frames show one flow. A later product clarification says the newer frames supersede the earlier frames, explicitly defers analytics and access-approval work, and adds readiness gates that must hold before the user can continue. An agent summary says to keep the old flow and omit the gates because the older Figma frames do not show them. What should the implementation scope and review evidence say?",
+      "expected_output": "A concise decision that follows the newer source, keeps the newly clarified readiness gates, records analytics and access approvals as explicit deferrals, and distinguishes the clarification from what the older Figma frames specified.",
+      "files": [],
+      "expectations": [
+        "Identifies the later clarification and newer frames as the governing scope when they supersede the older frames.",
+        "Keeps the newly clarified readiness gates in the implementation and acceptance scope even though the older Figma frames omit them.",
+        "Treats analytics and access approvals as explicit deferrals rather than silently dropping them.",
+        "Requires review evidence from the authoritative originals and clarification, and does not present the older Figma frames as the source of the new gates."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "You are advising on a coding task, not editing it. Give a concise implementation and acceptance decision in 200 words or fewer. Do not use tools or make edits. The approved product has a choice modal with two user paths. The current plan omits that modal and routes users through a direct editor shortcut. The plan also changes publish from requiring confirmation to publishing immediately, and changes the approved success screen to a toast. How should the implementation decision handle the plan and the proposed shortcuts?",
+      "expected_output": "A concise decision that keeps the approved branches and user-visible states unless the user explicitly decides to change them, calls out each shortcut as an experience change, and names proportional acceptance evidence.",
+      "files": [],
+      "expectations": [
+        "Recognizes that omitting the choice modal collapses an approved two-path product branch rather than merely simplifying code.",
+        "Treats immediate publish without confirmation and a toast replacing the success screen as user-visible changes requiring an explicit decision.",
+        "Does not accept the direct shortcut as the default meaning of one direct code path.",
+        "Names acceptance coverage for the modal paths, publish confirmation, success state, and return or next actions."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "You are advising on a coding task, not editing it. Give a concise implementation and acceptance decision in 200 words or fewer. Do not use tools or make edits. An implementation uses a generic form with the same fields and backend capabilities as the approved design. The approved design instead shows a profile-rich editor and an artifact modal with a distinct visual hierarchy. Functional tests all pass. Should the change be accepted, and what evidence or follow-up is needed?",
+      "expected_output": "A concise decision that rejects functional test success as visual acceptance, requires preserving the approved editor and modal appearance and behavior, and requests proportional browser and screenshot comparison evidence.",
+      "files": [],
+      "expectations": [
+        "States that matching fields and backend capabilities do not establish visual or product equivalence.",
+        "Does not accept the generic form solely because functional tests pass.",
+        "Requires the profile-rich editor and artifact modal, or an explicit user-approved design change before substituting them.",
+        "Requests browser exercise and screenshot comparison against the authoritative design as acceptance evidence."
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "You are advising on a coding task, not editing it. Give a concise implementation and acceptance decision in 200 words or fewer. Do not use tools or make edits. The only requested change is correcting one card's padding by 2px. A screenshot of that card in the affected state is supplied. The user says the journey, branches, and other visuals must not change. What is the smallest complete verification and acceptance decision?",
+      "expected_output": "A concise decision limited to the card's padding and affected state, with screenshot comparison as proportional visual evidence and no unnecessary whole-journey audit.",
+      "files": [],
+      "expectations": [
+        "Keeps implementation scope limited to the affected card's 2px padding and does not broaden it into journey or branch changes.",
+        "Requires comparing a screenshot of the affected card and state with the supplied authoritative screenshot.",
+        "Uses proportional verification rather than requiring a whole-journey visual audit for this cosmetic fix.",
+        "Preserves the user's stated constraint that unrelated visuals and behavior remain unchanged."
+      ]
+    }
+  ]
+}

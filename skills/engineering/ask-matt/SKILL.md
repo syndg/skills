@@ -51,7 +51,7 @@ Not feature work — upkeep.
 
 ## Implementation discipline
 
-**`/ponytail`** is the model-invoked simplicity layer for coding work. It runs when a task designs, implements, fixes, or refactors code, then finds the smallest complete solution within the settled scope: reuse first, standard library and native platform before custom machinery, and no speculative layers. A strict complexity gate runs before the first edit and before delivery; every added file, layer, dependency, configuration option, helper, and test abstraction must serve a current requirement or existing convention. Ponytail changes the implementation shape, not the accepted requirements, project contract, TDD loop, or review gates.
+**`/ponytail`** is the model-invoked simplicity layer for coding work. It runs when a task designs, implements, fixes, or refactors code, then finds the smallest complete solution within settled scope: reuse first, standard library and native platform before custom machinery, and no speculative layers. It preserves approved product journeys and visual design while applying its complexity gate before the first edit and before delivery. Ponytail changes implementation shape, not accepted requirements, project contract, TDD loop, or review gates.
 
 ## Contract layers underneath
 
