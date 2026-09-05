@@ -1,12 +1,12 @@
 # Domain docs
 
-Before repository exploration, check for `dox.config.json`. Its presence selects exactly one branch below. Never combine the branches.
+Check for `dox.config.json` when choosing the contract route. Its presence selects exactly one branch below. Never combine the branches.
 
 ## Configured DOX branch
 
 Use this branch when `dox.config.json` is present. Root `AGENTS.md` carries the minimal activation pointer to the installed `dox` skill.
 
-The installed `dox` skill owns when and how resolution, expansion, change-impact review, and lint run. This file does not repeat that procedure. Configured records remain canonical; do not enumerate the record directory, fall back to an AGENTS domain hierarchy, mirror records into instruction files, or keep a parallel `DECISIONS.md`.
+The installed `dox` skill owns retrieval eligibility, context reuse, and maintenance. This file does not repeat that procedure. Configured records remain canonical; do not mirror them into instruction files or keep a parallel `DECISIONS.md`.
 
 DOX initialization is separate setup. Preview `dox init`, then run `dox init --apply` only after explicit human approval.
 

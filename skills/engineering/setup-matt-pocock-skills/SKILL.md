@@ -16,11 +16,11 @@ This is prompt-driven setup. Discover the repository, present a draft, get confi
 
 ## Process
 
-### 1. Select contract storage before exploration
+### 1. Select contract storage
 
-Check for `dox.config.json` before reading source, history, or repository instructions. Its presence selects one of two mutually exclusive branches.
+Check for `dox.config.json` when choosing the contract route. Its presence selects one of two mutually exclusive branches.
 
-**Configured DOX branch.** Follow the installed `/dox` skill for this setup task. Treat the configured records as canonical and use any applicable compact items to understand ownership and existing contract pointers. Do not enumerate the configured record directory or every `AGENTS.md`, build an AGENTS domain hierarchy, mirror records into `AGENTS.md`, or create `DECISIONS.md`.
+**Configured DOX branch.** Follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Treat the configured records as canonical. Setup adds consumer pointers, not an AGENTS domain hierarchy or a parallel `DECISIONS.md` ledger.
 
 **Unconfigured AGENTS fallback.** When `dox.config.json` is absent, inspect the root instruction files, the existing root-to-nearest `AGENTS.md` paths for likely work areas, and any relevant co-located `DECISIONS.md` entries those chains index. This branch may scaffold a root-only fallback or preserve durable child boundaries already present.
 
@@ -88,7 +88,7 @@ In the configured branch, ensure root `AGENTS.md` contains exactly one minimal D
 ```markdown
 # DOX
 
-This repository uses DOX. Follow the installed `dox` skill for repository contract retrieval and change-impact review.
+This repository uses DOX. Follow the installed `dox` skill for repository meaning, context reuse, and contract maintenance.
 ```
 
 When root `AGENTS.md` already has content, update an existing `# DOX` or `## DOX` section; otherwise add a `## DOX` section with the same sentence. Preserve surrounding instructions. The pointer activates the installed skill; it does not copy the skill's invocation rules or create a parallel contract store.

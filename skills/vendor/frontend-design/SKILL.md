@@ -10,7 +10,7 @@ The user provides frontend requirements: a component, page, application, or inte
 
 ## Design Thinking
 
-Before inspecting or writing a target repository, check it for `dox.config.json`. When present, invoke `/dox` with one frontend implementation task and every known relevant path, then use its compact resolved items for targeted work. This is a direct cutover: do not enumerate records or also read `AGENTS.md`. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. Another worktree resolves locally and treats supplied compact items only as hints.
+For a target repository with `dox.config.json`, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries.
 
 Before coding, understand the context and commit to a BOLD aesthetic direction:
 - **Purpose**: What problem does this interface solve? Who uses it?

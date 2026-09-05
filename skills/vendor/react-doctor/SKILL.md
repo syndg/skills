@@ -10,7 +10,7 @@ Scans React codebases for security, performance, correctness, and architecture i
 
 ## Repository grounding
 
-Before the first scan, repository inspection, or fix, check for `dox.config.json`. If it exists, invoke `/dox` with one React diagnosis task and the known or changed paths, then use its compact resolved items as the project contract. This is a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes when project contract context is needed. A scan in another worktree resolves locally and treats supplied compact items only as hints.
+For repository work with `dox.config.json`, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries when project contract context is needed.
 
 ## After making React code changes:
 

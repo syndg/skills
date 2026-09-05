@@ -246,7 +246,7 @@ Three step types:
 
 **Do**
 1. Read the PRD. Extract: title, problem, goals, non-goals, owner, audience, success metrics, rollout hints, risks.
-2. If entry points provided: follow `codebase-grounding.md` — resolve configured DOX context before repository research, then use bounded 20-file expansion and depth-1 imports. In the unconfigured fallback, load the root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md`; read `CLAUDE.md` only for harness-operational instructions. `ARCHITECTURE.md` and `OWNERS` remain ordinary grounding inputs.
+2. If entry points provided: follow `codebase-grounding.md` for the contract route and bounded 20-file expansion with depth-1 imports. The installed `/dox` skill owns configured retrieval and reuse policy. `ARCHITECTURE.md` and `OWNERS` remain ordinary grounding inputs.
 3. Produce the **tech-context object**: `files_read`, `contract_context`, `services`, `external_deps`, `key_modules`, `architecture_notes`, `ownership`, `expansion_truncated`.
 
 **Self-check**

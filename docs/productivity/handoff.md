@@ -33,7 +33,7 @@ The document carries the live thread — what's in flight, why, and what's next 
 
 What it deliberately does not carry is anything already written down. Specs, plans, issues, commits, and diffs stay behind paths or URLs. In an unconfigured project, the same rule applies to `AGENTS.md` contracts and co-located `DECISIONS.md` entries.
 
-A configured DOX project needs a different move. The handoff carries the target task and known paths, then tells the destination worktree to run `dox resolve` again. A receipt is only a local manifest; it does not contain the loaded contract prose and is not a portable substitute for resolution. The handoff never sends the next agent straight to a DOX record path. If the destination cannot reach the repository, it can instead carry the few relevant compact items from the current resolution envelope, labelled explicitly as hints rather than authority.
+A configured DOX handoff carries the target task and paths and points the recipient to [dox](https://aihero.dev/skills-dox)'s grounding policy. A receipt or record path is not loaded contract content. That policy governs when supplied context is reusable and when a destination needs local retrieval.
 
 ## Common questions
 
@@ -56,7 +56,7 @@ Open the fresh session and point it at the path: read this file, then continue. 
 Analogous, not identical, and `/branch` isn't a shipped skill here — `/handoff` is the canonical name. A fork inherits an exact copy of the context; this skill produces a *targeted* compression aimed at a stated next task, in a file. Where a fork will do — same machine, same harness, same directory — a fork is less work. The file wins the moment the destination is somewhere the fork can't go.
 
 **When does something belong in the project contract instead?**
-Ask whether it is true next month. In an unconfigured project, standing context belongs in the applicable `AGENTS.md` hierarchy or its indexed `DECISIONS.md`. In a configured DOX project, durable contracts and decisions belong in DOX and are loaded through `dox resolve`. A handoff is about one piece of work in flight and is dead once that work lands.
+Ask whether it is true next month. In an unconfigured project, standing context belongs in the applicable `AGENTS.md` hierarchy or its indexed `DECISIONS.md`. In a configured DOX project, durable meaning and obligations belong in canonical records under the installed skill's maintenance policy. A handoff is about one piece of work in flight and is dead once that work lands.
 
 **It captures the what, not the why.**
 A fair and repeated criticism. Two things help. Pass the argument, telling it what the next session is for, so the reasoning that bears on *that* is kept rather than flattened. Then watch for confident claims the session never verified, such as "X isn't built" or "Y is done". The next agent may treat the document as a contract and skip the check. Read the document before you hand it over, and downgrade anything you only assumed.
@@ -65,7 +65,7 @@ A fair and repeated criticism. Two things help. Pass the argument, telling it wh
 
 - The document is a small fraction of the conversation, and the specs, issues and diffs appear in it as paths and URLs rather than as copied text.
 - You can read it cold, without the original session open, and know what to do next.
-- In a configured DOX project, the destination reruns resolution in its own worktree. If repository access is impossible, any necessary compact items are labelled as hints, not authority.
+- In a configured DOX project, the handoff points the recipient to the installed skill's grounding policy rather than passing a receipt as authority.
 - The fresh agent starts working instead of asking you to re-explain the setup.
 - In the fork case, your original session is still sitting there untouched when you come back to it.
 - The suggested-skills section names the skill you'd have reached for yourself.

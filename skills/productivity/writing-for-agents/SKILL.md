@@ -7,7 +7,7 @@ Reference for writing any document an agent consumes: a skill, an `AGENTS.md` / 
 
 When the document you're writing is a skill, read [`SKILL-MECHANICS.md`](SKILL-MECHANICS.md) for frontmatter, invocation choice, and router skills.
 
-When placing repository contract prose, first check for `dox.config.json`. A configured project writes canonical contract and decision knowledge to its resolved DOX records; do not add a parallel `AGENTS.md` / `DECISIONS.md` ledger. Only an unconfigured project uses the root-to-nearest `AGENTS.md` fallback and its indexed `DECISIONS.md`.
+When placing repository contract prose, check for `dox.config.json`. A configured project follows the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance of canonical records. Only an unconfigured project uses the root-to-nearest `AGENTS.md` fallback and its indexed `DECISIONS.md`. Keep each meaning in the selected store, not a parallel ledger.
 
 Run the `/unslop` skill on prose this skill adds or rewrites. `writing-for-agents` owns document behavior and information hierarchy; `unslop` owns the AI-tell cleanup pass. Preserve the document's exact symbols and project language through both.
 

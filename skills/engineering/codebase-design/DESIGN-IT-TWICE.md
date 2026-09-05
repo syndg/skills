@@ -27,7 +27,7 @@ Prompt each sub-agent with a separate technical brief (file paths, coupling deta
 - Agent 3: "Optimise for the most common caller — make the default case trivial."
 - Agent 4 (if applicable): "Design around ports & adapters for cross-seam dependencies."
 
-Include [SKILL.md](SKILL.md) vocabulary plus the project's resolved domain language in every brief. When `dox.config.json` exists, a subagent in the same worktree may receive compact items only for this exact design task and path set. A subagent in another worktree resolves locally and treats supplied compact items only as hints. Do not inspect the record store or also read `AGENTS.md`. Without DOX, pass the Ubiquitous Language and indexed decisions from the applicable root-to-nearest `AGENTS.md` / co-located `DECISIONS.md` fallback.
+Include [SKILL.md](SKILL.md) vocabulary plus applicable project domain language in every design brief. When `dox.config.json` exists, follow the installed `/dox` skill's delegation and context-reuse policy. Without DOX, pass the Ubiquitous Language and indexed decisions from the applicable root-to-nearest `AGENTS.md` / co-located `DECISIONS.md` fallback.
 
 Each sub-agent outputs:
 

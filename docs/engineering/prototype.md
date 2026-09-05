@@ -4,7 +4,7 @@
 
 Throwaway is a constraint on how the code is *written*, not a promise to destroy it. No tests, no error handling beyond what makes it run, no abstractions, no persistence — because none of that helps you learn the one thing you're trying to learn. What survives is the answer, folded into the real code, and the prototype itself, parked on a branch out of main as the evidence the answer came from.
 
-Before reading surrounding code, the skill resolves one contract route. A configured DOX repository resolves the prototype question with the known paths. Without DOX, it reads the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. It never initializes DOX as part of prototyping.
+In a configured repository, [dox](https://aihero.dev/skills-dox) owns conditional retrieval and reuse for the prototype question. Without DOX, the skill reads the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. Prototyping never initializes DOX.
 
 ## When to reach for it
 
@@ -14,7 +14,7 @@ Reach for it the moment you hit a question you can't settle by talking — a sta
 
 You will also arrive here without choosing to. [wayfinder](https://aihero.dev/skills-wayfinder) files `prototype` decision [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) on its map, and working one is this skill.
 
-Before it reads surrounding repository code, the skill checks for `dox.config.json`. A configured repository uses compact contract items resolved through `/dox`; an unconfigured repository reads the applicable root-to-nearest `AGENTS.md` fallback. Prototyping never initializes DOX.
+Use an existing repository when the question depends on its code or domain. The selected contract route above preserves that context without creating a second store.
 
 ## Two branches
 

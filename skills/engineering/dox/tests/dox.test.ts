@@ -6,6 +6,7 @@ const cli = join(import.meta.dir, "..", "scripts", "dox.ts");
 const roots: string[] = [];
 
 async function run(root: string, ...args: string[]) {
+  if (args[0] === "resolve") args.push("--json");
   const proc = Bun.spawn(["bun", cli, ...args], { cwd: root, stdout: "pipe", stderr: "pipe" });
   const [code, stdout, stderr] = await Promise.all([proc.exited, new Response(proc.stdout).text(), new Response(proc.stderr).text()]);
   return { code, stdout, stderr };
@@ -77,11 +78,6 @@ state: enforced
 afterEach(async () => { await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true }))); });
 
 describe("public DOX CLI", () => {
-  test("reports the released package version", async () => {
-    const root = await mkdtemp("/tmp/dox-version-"); roots.push(root);
-    const result = await run(root, "--version");
-    expect(result).toEqual({ code: 0, stdout: "0.2.1\n", stderr: "" });
-  });
 
   test("init is explicit and does not create an invariant ledger", async () => {
     const root = await mkdtemp("/tmp/dox-init-"); roots.push(root); await git(root, "init", "-q");

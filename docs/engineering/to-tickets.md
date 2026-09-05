@@ -4,7 +4,7 @@
 
 Every ticket is a **tracer bullet**: a narrow but complete path through every layer of the change — schema, API, UI, tests — that can be demoed on its own the moment it lands. That is the constraint that makes it behave differently from the obvious way to split work, which is to cut one layer at a time and integrate at the end. It also sizes each ticket to fit in a single fresh [context window](https://www.aihero.dev/ai-coding-dictionary/context-window), because the thing that will pick the ticket up is a [session](https://www.aihero.dev/ai-coding-dictionary/session) that has never seen your spec.
 
-When the breakdown needs repository planning, `to-tickets` resolves contract context before exploration. A configured DOX repository gets one ticket-planning task with the known paths; other repositories use the root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. It uses the compact result for targeted planning rather than sweeping DOX records or reading both contract sources.
+Configured repositories follow [dox](https://aihero.dev/skills-dox)'s retrieval and reuse policy for planning. An existing conversation's applicable meaning can carry into the breakdown. Without DOX, the skill uses the root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries.
 
 ## When to reach for it
 

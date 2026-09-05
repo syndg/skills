@@ -16,18 +16,18 @@ The issue-tracker workflow should have been provided through project context. If
 
 ### 1. Select the fixed point
 
-Whatever the user named is the fixed point: a commit SHA, branch name, tag, `main`, `HEAD~5`, and so on. If they did not specify one, ask. Selecting the ref is not permission to inspect the repository yet.
+Whatever the user named is the fixed point: a commit SHA, branch name, tag, `main`, `HEAD~5`, and so on. If they did not specify one, ask.
 
-### 2. Resolve project contract context, then inspect the diff
+### 2. Identify the review scope and contract context
 
-Check for `dox.config.json`. If it exists, make the configured resolver the first repository operation: invoke `/dox` with one review task using changed-path and base semantics equivalent to `dox resolve "review changes since <fixed-point>" --changed --base <fixed-point>`. Use the compact resolved items as contract content. Do not enumerate DOX records, read `AGENTS.md` as a second contract source, or pass only the receipt onward; a receipt is a local expansion handle, not portable contract content.
+Confirm the fixed point with `git rev-parse <fixed-point>` and capture changed paths with `git diff --name-only <fixed-point>...HEAD`. Respect any path limits the user supplied. A bad ref or an empty changed-path set fails before either review begins.
 
-Select one branch before reading the full diff:
+Select one contract route:
 
-- **Configured DOX:** after resolution, confirm the fixed point with `git rev-parse <fixed-point>`, then capture the changed paths with `git diff --name-only <fixed-point>...HEAD`.
-- **Unconfigured fallback:** confirm the fixed point, capture only the changed path names, then read each changed file's applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries that chain indexes. Do not inspect the full diff or commit log before this contract context is loaded.
+- **Configured DOX:** follow the installed `/dox` skill for retrieval eligibility, context reuse, maintenance, and delegated review context. Use the actual review paths; include the whole branch only when that is the requested review scope.
+- **Unconfigured fallback:** read each changed file's applicable root-to-nearest `AGENTS.md` chain and any indexed co-located `DECISIONS.md` entries before inspecting the full diff or commit log.
 
-A bad ref or an empty changed-path set fails here. After the selected contract branch is complete, capture each remaining input once:
+After the selected contract route is satisfied, capture each remaining input once, limiting the diff to the requested paths when applicable:
 
 - Diff: `git diff <fixed-point>...HEAD`
 - Commits: `git log <fixed-point>..HEAD --oneline`
@@ -74,7 +74,7 @@ Delegate both reviews in parallel when independent execution is available. Other
 **Standards review input** — include:
 
 - The full diff command, commit list, and changed paths.
-- The compact resolved contract items relevant to standards and invariants, not a bare receipt.
+- Applicable standing meaning and complete binding obligations for standards review, under the installed `/dox` skill's delegation policy when configured.
 - The list of standards-source files you found in step 4, **plus the smell baseline from step 4** pasted in full.
 - The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Keep this axis independent from spec compliance. Under 400 words."
 
@@ -82,7 +82,7 @@ Delegate both reviews in parallel when independent execution is available. Other
 
 - The diff command, commit list, and changed paths.
 - The path or fetched contents of the spec.
-- The compact resolved contract items relevant to the changed paths, not a bare receipt. Use them to understand project terms and binding constraints, not to invent requirements absent from the spec.
+- Applicable standing meaning and complete binding obligations for the changed paths, under the installed `/dox` skill's delegation policy when configured. Use them to understand project terms and constraints, not to invent requirements absent from the spec.
 - The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Keep this axis independent from standards compliance. Under 400 words."
 
 If the spec is missing, skip the Spec review and note this in the final report.

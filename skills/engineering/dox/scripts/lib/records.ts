@@ -1,13 +1,13 @@
 import { lstat, readdir, readFile, realpath } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import type { Config, Diagnostic, Record as DoxRecord } from "./types.ts";
-import { asBindings, asStrings, DoxError, isInside, safeGlob, safeRelative } from "./safe.ts";
+import { asBindings, asStrings, DoxError, globMatches, isInside, safeGlob, safeRelative } from "./safe.ts";
 
 const DEFAULT_RECORDS_DIR = "dox/records";
 const ENFORCEMENT_KINDS = new Set(["database", "type", "chokepoint", "test", "lint", "prose"]);
 const RECORD_KINDS = new Set(["record", "decision", "contract", "invariant", "ownership", "term"]);
 const INVARIANT_STATES = new Set(["proposed", "accepted", "enforced", "retired"]);
-const CONFIG_FIELDS = new Set(["schema_version", "records_dir", "owners", "coverage"]);
+const CONFIG_FIELDS = new Set(["schema_version", "records_dir", "owners", "coverage", "scopes"]);
 const RECORD_FIELDS = new Set([
   "id", "kind", "owner", "statement", "paths", "path", "intents", "intent", "symbols", "symbol", "terms", "term", "aliases", "alias",
   "adr", "adr_refs", "contracts", "contract", "contract_refs", "depends_on", "enforced_by", "depended_on_by", "enforcement", "verification",
@@ -40,6 +40,37 @@ export async function loadConfig(root: string): Promise<Config> {
     const paths = asStrings(coverageRaw.paths, "coverage.paths");
     paths.forEach((path) => safeGlob(path, "coverage.paths"));
     config.coverage = { paths };
+  }
+  if (raw.scopes !== undefined) {
+    if (!Array.isArray(raw.scopes)) throw new DoxError("invalid scopes: expected an array");
+    const seen = new Set<string>();
+    config.scopes = raw.scopes.map((value) => {
+      if (!value || typeof value !== "object" || Array.isArray(value)) throw new DoxError("invalid scope");
+      const scope = value as Record<string, unknown>;
+      rejectUnknown(scope, new Set(["path", "context", "decisions"]), "scope");
+      if (typeof scope.path !== "string") throw new DoxError("invalid scope.path");
+      const path = scope.path;
+      if (path !== ".") {
+        safeRelative(path, "scope.path");
+        if (/[\\*?\[\]{}]/u.test(path) || path.split("/").some((part) => !part || part === "." || part === "..")) {
+          throw new DoxError(`invalid scope.path: ${path}; expected a canonical directory`);
+        }
+      }
+      if (seen.has(path)) throw new DoxError(`duplicate scope.path: ${path}`);
+      seen.add(path);
+      const members = (field: "context" | "decisions") => {
+        const values = scope[field];
+        if (!Array.isArray(values) || values.some((id) => typeof id !== "string" || !id.trim() || id !== id.trim())) {
+          throw new DoxError(`invalid scope.${field}: ${path}; expected record identifiers`);
+        }
+        if (new Set(values).size !== values.length) throw new DoxError(`duplicate scope.${field} reference: ${path}`);
+        return values as string[];
+      };
+      const context = members("context");
+      const decisions = members("decisions");
+      for (const adr of decisions) if (!/^ADR-\d{4}$/u.test(adr)) throw new DoxError(`invalid scope decision: ${adr}`);
+      return { path, context, decisions };
+    });
   }
   return config;
 }
@@ -178,6 +209,31 @@ export function brokenContractReferences(records: readonly DoxRecord[]): BrokenC
   return broken;
 }
 
+export function pathHasContext(records: readonly DoxRecord[], config: Config, path: string): boolean {
+  if (config.scopes?.some((scope) => scope.path === "." || path === scope.path || path.startsWith(`${scope.path}/`))) return true;
+  return records.some((record) => [
+    ...record.paths,
+    ...record.enforced_by.flatMap((edge) => edge.path ? [edge.path] : []),
+    ...record.depended_on_by.flatMap((edge) => edge.path ? [edge.path] : []),
+  ].some((pattern) => globMatches(pattern, path)));
+}
+
+export function scopeReferenceDiagnostics(config: Config, records: readonly DoxRecord[]): Diagnostic[] {
+  const byId = new Map(records.map((record) => [record.id, record]));
+  const byAdr = new Map(records.filter((record) => record.adr).map((record) => [record.adr, record]));
+  const diagnostics: Diagnostic[] = [];
+  const error = (message: string) => diagnostics.push({ level: "error", file: "dox.config.json", message });
+  for (const scope of config.scopes ?? []) {
+    for (const id of scope.context) {
+      const record = byId.get(id);
+      if (!record) error(`scope ${scope.path}: unknown context record: ${id}`);
+      else if (record.kind === "decision") error(`scope ${scope.path}: decision ${id} belongs in decisions by ADR identifier`);
+    }
+    for (const adr of scope.decisions) if (byAdr.get(adr)?.kind !== "decision") error(`scope ${scope.path}: unknown decision: ${adr}`);
+  }
+  return diagnostics;
+}
+
 export async function loadRecords(root: string, config: Config, tolerateMalformed = false): Promise<{ records: DoxRecord[]; diagnostics: Diagnostic[] }> {
   const rootReal = await realpath(root);
   const recordsDirectory = resolve(root, config.records_dir);
@@ -212,6 +268,9 @@ export async function loadRecords(root: string, config: Config, tolerateMalforme
     const brokenContracts = brokenContractReferences(records);
     if (brokenContracts.length) throw new DoxError(brokenContracts[0].message);
   }
+  const scopeDiagnostics = scopeReferenceDiagnostics(config, records);
+  if (!tolerateMalformed && scopeDiagnostics.length) throw new DoxError(scopeDiagnostics[0].message);
+  diagnostics.push(...scopeDiagnostics);
   return { records: records.sort((a, b) => a.id.localeCompare(b.id)), diagnostics };
 }
 

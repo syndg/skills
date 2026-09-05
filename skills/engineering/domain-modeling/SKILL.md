@@ -9,18 +9,13 @@ Build the project's domain model while designing. Challenge terms, test edge cas
 
 ## Select one storage branch
 
-Check for `dox.config.json` before repository research. Its presence selects one branch. Never read or write both stores.
+Check for `dox.config.json` when choosing the contract store. Its presence selects one branch. Never read or write both stores.
 
 ### Configured DOX direct cutover
 
-When `dox.config.json` is present:
+Follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Adjudicate terminology and decisions against the delivered contract. Keep semantic updates in canonical records, not a parallel `AGENTS.md` or `DECISIONS.md` ledger.
 
-1. Invoke `/dox` with the semantic task and any known paths before inspecting source.
-2. Use the resolver's compact returned items as the contract. Expand only a record ID discovered in the local receipt when its full body is needed.
-3. Adjudicate terminology and decisions against that resolved context. Edit the resolved owning record, or create a configured record only when resolution shows a real gap and the owner and schema are known. Do not mirror the result into `AGENTS.md` or `DECISIONS.md`.
-4. After semantic edits, run `/dox` validation with `dox lint` (and `dox lint --json` when structured output helps). Treat errors as blockers.
-
-`/domain-modeling` owns meaning. `/dox` owns retrieval and structural validation.
+`/domain-modeling` adjudicates meaning. `/dox` owns invocation, retrieval, reuse, and record-maintenance policy.
 
 ### Unconfigured AGENTS fallback
 
@@ -61,7 +56,7 @@ Check stated behavior against code. Surface contradictions directly: "The code c
 
 ### Record settled semantics
 
-Write each resolved canonical term and relationship when it settles. In configured DOX, update its owning record, or create one for a confirmed gap, then run `/dox` lint validation. In the unconfigured fallback, update the nearest owner's **Ubiquitous Language** section immediately.
+Write each resolved canonical term and relationship when it settles. In configured DOX, follow the installed `/dox` skill's maintenance policy for settled meaning, including durable boundaries and behavioral contracts that do not need an ADR. In the unconfigured fallback, update the nearest owner's **Ubiquitous Language** section immediately.
 
 Keep domain records focused on canonical language, definitions, relationships, useful dialogue, and flagged ambiguity. Put implementation guidance, specifications, and scratch notes elsewhere.
 
@@ -73,4 +68,4 @@ Offer a decision record only when all three are true:
 2. **Surprising without context**: a future reader will ask why.
 3. **A real trade-off**: alternatives existed and one was chosen for a reason.
 
-If any condition is absent, skip the record. In configured DOX, write the decision to the appropriate configured record and run `/dox` lint validation. In the unconfigured fallback, allocate the next global immutable number and use the nearest owner's **Architectural Decisions** section as described in [ADR-FORMAT.md](./ADR-FORMAT.md).
+If any condition is absent, skip the ADR, not other durable meaning. In configured DOX, follow the installed `/dox` skill's maintenance policy. In the unconfigured fallback, allocate the next global immutable number and use the nearest owner's **Architectural Decisions** section as described in [ADR-FORMAT.md](./ADR-FORMAT.md).

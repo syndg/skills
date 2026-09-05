@@ -14,7 +14,7 @@ Designs and iterates production-grade frontend interfaces. Real working code, co
 
 Before any design work or file edits:
 
-1. Establish repository contract context. If `dox.config.json` exists, invoke `/dox` with one interface-design task and every known relevant path, then use its compact resolved items for targeted work. This is a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes when project contract context is needed. Reuse context only in the same worktree for the same task and paths; a subagent in another worktree resolves locally and treats supplied items only as hints.
+1. For repository work with `dox.config.json`, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries when project contract context is needed.
 2. Load context (PRODUCT.md / DESIGN.md) via the loader script.
 3. Identify the register and load the matching register reference (brand.md or product.md).
 4. **If the user invoked a sub-command (e.g. `craft`, `shape`, `audit`), load its reference file too.** This is non-negotiable: `craft` without `craft.md` loaded means you'll skip the shape-and-confirm step the user expects.

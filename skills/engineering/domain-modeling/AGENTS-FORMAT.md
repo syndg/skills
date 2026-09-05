@@ -1,6 +1,6 @@
 # Fallback AGENTS.md domain documentation format
 
-Use this reference only when `dox.config.json` is absent. A configured DOX repository uses its compact resolved items directly and does not mirror domain language into `AGENTS.md`.
+Use this reference only when `dox.config.json` is absent. A configured repository follows the installed `/dox` skill and does not mirror domain language into `AGENTS.md`.
 
 In the unconfigured fallback, domain language lives in the **Ubiquitous Language** section of the nearest owning `AGENTS.md`. Do not create a parallel glossary.
 

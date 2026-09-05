@@ -10,7 +10,7 @@ The user has asked for a **retrospective**. You are suggesting improvements to t
 
 1. Run the `/writing-for-agents` skill for the writing and pruning vocabulary.
 
-2. Read the primary sources for the session the user specifies. This may require searching local session logs. If the user does not specify a session, use the current one. When `dox.config.json` exists, run `/dox` for the session's task and changed paths before judging the project environment, then use the compact items in its resolution envelope. Otherwise read the applicable root-to-nearest `AGENTS.md` chain and any decision file that chain indexes.
+2. Read the primary sources for the session the user specifies. This may require searching local session logs. If the user does not specify a session, use the current one. When `dox.config.json` exists, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Otherwise read the applicable root-to-nearest `AGENTS.md` chain and any decision file that chain indexes.
 
 3. Look for candidates for improvement in these categories.
 
@@ -36,7 +36,7 @@ Prefer automated checks for deterministic rules and review instructions for judg
 
 Choose one project-contract branch before inspecting contract sources:
 
-- **Configured DOX:** use `dox resolve` and judge the compact resolved items. Receipts are local manifests, not loaded contract prose. DOX is the direct-cutover contract and decision store, so do not combine it with `AGENTS.md`, `DECISIONS.md`, or **Child DOX Index** as parallel contract sources.
+- **Configured DOX:** follow the installed `/dox` skill's retrieval and reuse policy, then judge the delivered meaning and obligations. DOX remains the canonical contract store, not a parallel source beside `AGENTS.md`, `DECISIONS.md`, or **Child DOX Index**.
 - **Unconfigured project:** use the applicable `AGENTS.md` hierarchy for always-loaded bindings and navigation pointers. Read a co-located `DECISIONS.md` only when the owning `AGENTS.md` indexes it, and use **Child DOX Index** only to navigate child `AGENTS.md` files. This branch is an `AGENTS.md`/`DECISIONS.md` contract, not DOX.
 
 In either branch, also inspect:

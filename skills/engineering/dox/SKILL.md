@@ -1,17 +1,99 @@
 ---
 name: dox
-description: DOX repository contract retrieval and maintenance. Use in a repository with dox.config.json when nonlocal decisions, contracts, invariants, ownership, dependencies, or change impact may govern repository research or code work, and once after substantive repository content changes. Also use when the user asks to initialize, migrate, query, lint, or capture a decision, contract, or invariant in DOX. Skip external tooling, runtime connectivity checks, Git-only actions, and ordinary follow-ups within an already-resolved task.
+description: DOX repository meaning and contract maintenance. In repositories with dox.config.json, use before substantive design or behavioral changes, for intended-meaning and ADR questions, and after substantive content changes. Reuse loaded context within the same task and scope. Also use for explicit DOX initialization, migration, retrieval, lint, or recording settled meaning. Skip source-fact lookups, Git-only actions, external tooling, and runtime commands.
 ---
 
 # DOX
 
-Use DOX as the repository's structured context seam. Records are Markdown with YAML frontmatter and are selected by deterministic evidence, not by broad instruction-file fallbacks.
+This skill owns when to load, reuse, and maintain DOX context. Other skills and repository instruction files point here rather than copying the procedure. Configured records hold intended meaning; source, configuration, tests, and runtime own current facts.
 
-## Start safely
+## Choose the right source
 
-Run commands from the target Git worktree. Existing configured repositories start with resolution below; do not initialize them again.
+Run commands from the target Git worktree. A `dox.config.json` selects canonical DOX records, not a parallel `AGENTS.md` or `DECISIONS.md` contract ledger.
 
-Only when the human explicitly asks to initialize DOX, preview the proposal first:
+- For substantive design or behavioral change, load the applicable curated brief before making design choices or changing behavior. Reviews of such work use its actual paths.
+- For questions about intended meaning, domain boundaries, governing obligations, or an ADR, load the scope brief before answering. Use named retrieval for any additional context or rationale.
+- For current implementation facts, file locations, package scripts, configuration, test commands, Git state, external tools, or current runtime behavior, inspect the source that owns the fact directly. DOX is not a prerequisite to source discovery, launching a server, or checking connectivity.
+- For questions about how to invoke DOX, reuse context, or maintain records, answer from this loaded skill. Retrieve project context only if the answer requires repository-specific facts or the user asks for an actual record change. A stipulated or hypothetical product example is not a request to audit its implementation.
+- If a fact-finding task becomes a design or meaning task, load context at that boundary. Read-only status alone does not decide eligibility.
+
+Source discovery may precede the brief to identify the relevant paths. Discover those paths outside the configured record directory. Keep the user's requested deliverables and verification obligations in the working plan; do not turn the whole user prompt into a search query.
+
+## Load a curated brief
+
+```bash
+dox brief --path src/auth/login.ts --path src/auth/session.ts
+```
+
+Choose concrete task paths. Use `--path .` only for genuinely repository-wide meaning, not as a substitute for finding a narrower scope.
+
+A brief deterministically assembles canonical record bodies in curated scope order, inheriting root-to-nearest and deduplicating membership. It delivers full standing meaning, complete applicable binding invariant tuples, and an ADR title/index whose full rationale remains available on demand. It is neither an LLM summary nor a second authored ledger.
+
+The scope's standing context and a path's obligations are different. Scope membership selects shared meaning; explicit applicability paths, enforcement targets, dependent paths, and declared graph edges select additional relevant obligations. An accountable `owner` alone does not make an ordinary record or invariant apply to that owner's whole subtree.
+
+No matching scope is an explicit missing-scope failure, not permission to substitute lexical search or the AGENTS fallback. Check the target path; if correct, report the curation gap and establish the missing scope through an approved DOX maintenance change before governed work proceeds. Do not invent product policy to fill it.
+
+Default output is readable wrapped text. Use `--json` only when structured output is needed. Both forms are atomically budgeted. Full selected standing context and applicable bindings cannot be silently truncated; a budget failure states the required bytes. Increase `--max-bytes` enough to receive the complete result rather than dropping required knowledge.
+
+The default ceiling is 128 KiB for a brief, 16 KiB for named retrieval, and 64 KiB for expansion. A brief emits only its curated bodies, applicable bindings, and decision index; spare budget does not pull in supplementary excerpts.
+
+## Reuse context and retrieve only what is missing
+
+Within the same task and worktree, reuse the standing meaning already loaded for the same scope. A follow-up, another skill, or another file within that scope does not require a fresh generic brief. Check newly touched paths for their own applicable bindings when necessary; load only new scope context when the work crosses a material domain, dependency, or ownership boundary. Refresh affected context when its records change or a receipt is stale.
+
+Use `resolve` for an additional named term, domain, contract, or decision, not generic NLP over the task:
+
+```bash
+dox resolve "authorization" --path src/auth/login.ts
+dox resolve "ADR-0002"
+dox resolve --from <receipt-id> --expand <record-id>
+```
+
+Path and changed-path cues select applicable change context. With path cues, unrelated task-only matches must not displace that context. Inspect returned titles and evidence before requesting a body. Expand discovered IDs through their local receipt; batch the bodies actually needed into one expansion command. A brief's standing bodies are already loaded, so do not expand them again. Full ADR rationale uses receipt-backed expansion.
+
+Keep record retrieval inside `dox brief`, `dox resolve`, and receipt expansion. Do not enumerate, grep, or bulk-read the record directory to answer ordinary project questions. Once retrieval identifies an owning record and supplies its full body, direct access may write that file for a semantic update. Direct record reads are reserved for maintaining DOX itself.
+
+A receipt is a local manifest, not loaded prose or portable authority. A same-worktree delegate may receive already-loaded applicable content under this skill's reuse rules. Cross-worktree handoffs carry the task and paths and direct the recipient to this skill; supplied content is only a hint until locally grounded. A recipient without repository access must disclose that limitation rather than treating hints as current authority.
+
+## Carry the complete contract
+
+Read the full delivered standing bodies and every field of each binding invariant. Preserve statement, enforcement, targets, dependencies, verification, failure modes, impact, criticality, and state. Do not pipe the result through `jq` or another projection that discards invariant fields before reading them.
+
+Carry each applicable obligation and prohibited behavior into the work and its verification. Preserve distinctions that affect the answer; a summary must not erase one obligation by merging it with another. If a failure mode requires clarification, ask explicitly for each missing field it names.
+
+`binding_complete` describes the delivered applicable binding set under the recorded evidence. It is not a semantic-recall guarantee: missing scope membership, paths, or dependency edges can leave real obligations undiscovered. Deferred titles identify available optional context, not permission to ignore a relevant decision. When source exposes a new boundary or contradiction, inspect the additional named context and report the gap.
+
+When implementation and DOX disagree, state both the observed behavior and the intended contract. Do not silently rewrite intended meaning to match code, or describe unimplemented intent as working behavior. Use `/domain-modeling` when the meaning itself needs adjudication.
+
+## Review and maintain the actual work
+
+After substantive repository content changes, review their impact once against the loaded meaning and current applicable bindings. Select the paths changed by this task, not incidental edits elsewhere in the worktree or unrelated commits on the branch:
+
+```bash
+dox brief --path src/auth/login.ts --path src/auth/login.test.ts
+```
+
+Use changed-path selection only when the requested work intentionally includes the entire selected diff:
+
+```bash
+dox brief --changed
+dox brief --changed --base origin/main
+```
+
+Inspect a path-limited diff separately for a path-limited review. Combine explicit paths with `--changed` only when their union is intended. Preserve the original task's acceptance criteria and verification obligations during review. Skip another pass for staging, committing, or the same unchanged diff.
+
+Check both kinds of maintenance need:
+
+- Correct a record, applicability edge, or scope membership that the work proved false or incomplete.
+- Capture newly settled durable meaning, such as a canonical term, domain boundary, behavioral contract, or obligation, even when no existing record is false. Record only meaning the user settled or approved, not an inferred product policy. Use an ADR for optional rationale when a hard-to-reverse, surprising choice involved a real trade-off; ordinary standing meaning does not need an ADR to be durable.
+
+Update the existing canonical owner rather than adding a duplicate summary. Create a record only for a confirmed gap. Keep standing meaning in scope context, binding obligations in invariant fields, and optional decision rationale in decision records. Curate membership/order by ID; do not copy bodies into config or an AGENTS ledger. Read [references/record-schema.md](references/record-schema.md) before changing records or scope configuration.
+
+After record or scope edits, run `dox lint` and retrieve the affected scope or paths to check that the intended content is delivered. Lint errors block completion. Successful lint proves structure, not semantic agreement.
+
+## Initialize only on request
+
+An existing configured repository starts with the workflow above, not initialization. Only when the human asks to initialize DOX, preview:
 
 ```bash
 dox init
@@ -19,80 +101,15 @@ dox init
 dox init --apply
 ```
 
-`init` is read-only. Only `--apply` writes the config, record directory, migration manifest, and an ignored cache directory. It does not invent an invariant ledger.
+Only `--apply` writes the config, record directory, migration manifest, and ignored cache directory. Initialization does not invent standing meaning or binding invariants. Curate scopes from approved canonical records before expecting a brief.
 
-## Establish governing context
-
-In a configured repository, resolve once before work that may be governed by ownership, decisions, contracts, binding invariants, dependencies, or change impact. Typical cases are planning, debugging, review, implementation, and read-only investigation of repository behavior. The purpose is to surface constraints outside the source immediately in view.
-
-Do not open a new pre-work resolution for external tooling, runtime connectivity or status checks, Git-only actions, or an ordinary follow-up within a task whose governing context is already established. A follow-up that changes repository content receives only the change-impact review below. For facts owned by source, tests, configuration, scripts, runbooks, or current runtime state, inspect that owner directly. Resolve first only when recorded contract context may govern the task.
-
-Give the resolver one natural-language task and any known paths:
-
-```bash
-dox resolve "authorize a charge without bypassing payment policy" --path src/payments/charge.ts
-dox resolve "trace the sign-in boundary" --path src/auth/login.ts --path src/auth/session.ts
-dox resolve "review the authorization changes" --changed
-dox resolve "review changes since the release branch" --changed --base origin/main
-```
-
-Preserve the user's requested deliverables and constraints in the task string, not only the code subject. Include ambiguity or clarification needs when requested. For plans and reviews, include applicable testing and verification obligations. If no source path is known, omit `--path`; never use `--path .`, because the repository root is not a narrow applicability cue. For a review scoped to named paths, resolve those paths without `--changed`; inspect the path-limited Git diff separately. Combine `--changed` with explicit paths only when the task intentionally covers both the named paths and every repository change since the selected base.
-
-The normal result is canonical compact JSON. It contains ranked record capsules, bounded relevant excerpts, complete accepted or enforced invariant bindings, evidence edges, deferred record IDs, and a deterministic receipt. The default 16,384-byte budget removes optional capsules before mandatory knowledge. If complete mandatory context cannot fit, resolution fails with `DOX_BUDGET_TOO_SMALL`; it never returns a partial invariant binding.
-
-## Retrieval boundary
-
-DOX answers the questions its record corpus is built to hold: applicable ownership, decisions, contracts, binding invariants, dependencies, and change impact. Its job is to surface governing context that may live outside the source path immediately in view. Establish that context once per task, not once per prompt.
-
-Treat the resolution as constraints on the task, not as a substitute for current repository truth. Records may deliberately name enforcement symbols, verification commands, or operational constraints; carry those forward. For a needed fact that the capsules do not state, use the source that owns it: source and tests for behavior, package scripts and runbooks for procedures, configuration for declared settings, and runtime inspection for current state.
-
-The single task-plus-path retry below establishes whether records apply after source discovery. Once governing context is established, continue with targeted repository work.
-
-Use the returned paths and symbols for targeted source inspection. If you need a full body, expand only a discovered ID from its receipt:
-
-```bash
-dox resolve --from <receipt-id> --expand <record-id>
-```
-
-Expansion returns only newly requested bodies and a child receipt. Stale receipts, unknown IDs, repeated expansions, and over-budget expansions fail closed.
-
-Keep structured-record retrieval inside `dox resolve`. Do not enumerate, grep, or bulk-read the configured record directory. After resolution identifies a specific record, direct access may write that file for an approved semantic edit, but any full-body read must first use `dox resolve --from <receipt-id> --expand <record-id>`. Direct record reads are reserved for maintaining DOX itself.
-
-If the result has no useful capsule, discover a relevant source path outside the configured record directory, then run one new task-plus-path resolution. Do not perform synonym sweeps or repeated overlapping calls. Treat `receipt.deferred` as an explicit signal that optional details remain available, not as silent truncation. When several discovered bodies are necessary, request their IDs in one expansion command. Start another expansion round only when the first expansion establishes a new conflict or dependency.
-
-Read each capsule's `evidence`: `source` identifies task, path, changed-path, binding, or graph evidence; `edge` identifies the matched field or relationship. A path that hits invariant enforcement returns the complete binding tuple. A dependent path returns the same invariant with dependent relation evidence.
-
-Treat every field in a returned binding invariant as required knowledge. Carry its failure modes, enforcement, dependencies, and verification into the plan or answer when they affect the task; do not reduce the invariant to its statement. Preserve each distinct applicable obligation and prohibited behavior in the final answer. Do not combine an enumerated requirement when the combination removes one of its fields. When a failure mode names information that must be clarified before work proceeds, ask for every named field explicitly as a checklist rather than collapsing the fields into one broad question.
-
-## Review substantive changes
-
-After substantive repository content changes, run one change-impact resolution from the target worktree. Reuse the original task and its verification obligations so ranking retains the work's intent. For example:
-
-```bash
-dox resolve "review the login authorization change and its required tests" --changed
-```
-
-Use `--base <revision>` when the requested review covers a branch or another fixed point. This pass replaces another generic pre-commit resolution; it does not add one. Skip it when no repository file content changed, when the action was Git-only, or when the same unchanged diff has already been reviewed. After DOX record changes, also run `dox lint`.
-
-## Record shape
-
-Create records under the configured `records_dir` (default `dox/records`). Use the schema in [references/record-schema.md](references/record-schema.md). Every record needs a stable `id`, a single accountable `owner`, and a Markdown body. Path patterns are repository-relative globs.
-
-For an invariant, record its enforcement target, verification, failure modes, impact, criticality, state, and dependency edges. The precision makes a change-impact answer actionable rather than merely descriptive.
-
-Use `kind: decision` plus a globally unique four-digit `adr` for full architectural decision bodies. In a DOX project, keep decisions only in DOX records. Lint rejects parallel `DECISIONS.md` files and actual ADR entries in index-tracked `AGENTS.md` files while allowing explicit DOX pointers and inert Markdown examples.
-
-Every contract name belongs to one record, and every contract relation must resolve to a declared contract rather than an arbitrary record ID. Proposed invariants remain nonbinding; accepted or enforced invariants must name their enforcement classes, targets, and verification. Unknown schema fields, ambiguous declarations, and incomplete binding records fail closed.
-
-## Verify the seam
+## Structural checks
 
 ```bash
 dox lint
 dox lint --json
+dox brief --help
+dox resolve --help
 ```
 
-Treat errors as blockers. Lint checks strict record and config structure, ownership, path coverage when configured, references, unique four-digit ADR records, invariant enforcement, dependency patterns, and stale symbols. It also rejects parallel decision sources in index-tracked `DECISIONS.md` and `AGENTS.md`.
-
-## Boundaries
-
-DOX is a direct-cutover store: read its configured records only. Do not add another-source readers, instruction-file fallbacks, compatibility shims, or runtime content conversion. Refuse ambiguous critical ownership, unsafe paths, and symlink escapes instead of guessing.
+Lint checks strict schema, references, scope membership, accountability, configured coverage, ADR uniqueness, binding completeness, dependency patterns, and stale symbols. Unsafe paths, symlink escapes, ambiguous critical ownership, and invalid references fail closed. Configured repositories keep no compatibility reader or fallback contract store.

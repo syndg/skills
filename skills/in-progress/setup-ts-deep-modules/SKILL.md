@@ -38,12 +38,12 @@ Layering (which packages may depend on which) is a *different* concern and is le
 
 ### 1. Resolve the repository contract
 
-Before inspecting the package manager or source tree, check the repository root for `dox.config.json`.
+Check for `dox.config.json` when choosing the contract route.
 
-- When it exists, run `/dox` for "set up a lint-enforced package entry-point boundary" with any known paths, such as `package.json` and an existing dependency-cruiser config. Use the compact items in the resolution envelope. DOX is the contract store; do not fall back to `AGENTS.md` for contract prose.
+- When it exists, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance.
 - When it does not exist, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes before continuing. Read `CLAUDE.md` only for harness-operational instructions, never as fallback domain-contract storage.
 
-**Done when:** the configured or unconfigured contract branch is known and its context is loaded before any repository research.
+**Done when:** the selected contract route is satisfied for the package-boundary design.
 
 ### 2. Detect the environment
 
@@ -124,7 +124,7 @@ Then use the repository-contract branch selected in step 1:
   criticality: high
   ```
 
-  Replace the `owner` placeholder with one accountable owner. Keep an existing invariant's stable `id` when updating it. The example shows the required schema evidence; the record also needs a non-empty Markdown body. Run `dox lint`, then rerun `dox resolve` for the boundary with `--path .dependency-cruiser.cjs`, `--path package.json`, and the packages root. The resolution must return the complete invariant binding, including enforcement targets, dependent paths, verification, and failure modes. Do not add an `AGENTS.md` or `CLAUDE.md` contract pointer in this branch.
+  Replace the `owner` placeholder with one accountable owner. Keep an existing invariant's stable `id` when updating it. The example shows required binding evidence; the record also needs a non-empty Markdown body. Follow the installed `/dox` skill's maintenance policy and confirm complete delivery from both enforcement and dependent paths. Do not duplicate this contract in `AGENTS.md` or `CLAUDE.md`.
 - **Unconfigured project:** add one context pointer to the packages README in the applicable `AGENTS.md`, creating the owning `AGENTS.md` only when a durable subtree boundary warrants one and indexing that child from its parent. For example: `Packages are deep modules; see [src/packages/README.md](./src/packages/README.md) before adding or importing one.`
 
 **Done when:** the packages README exists and discourages barrels. In configured DOX, the binding invariant passes `dox lint` and resolves completely from enforcement and dependent paths. In an unconfigured project, the applicable `AGENTS.md` links to the README.

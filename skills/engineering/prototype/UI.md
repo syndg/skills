@@ -4,9 +4,9 @@ Generate **several radically different UI variations** on a single route, switch
 
 If the question is about logic/state rather than what something looks like — wrong branch. Use [LOGIC.md](LOGIC.md).
 
-## Resolve before repository work
+## Project contract
 
-Before inspecting pages, components, routes, or styling, check for `dox.config.json`. When present, invoke `/dox` with the UI question and known paths and use the compact resolved items directly. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes. These branches are mutually exclusive.
+Follow [SKILL.md](SKILL.md)'s project-contract route for UI work too; the installed `/dox` skill owns configured retrieval and reuse policy.
 
 ## When this is the right shape
 

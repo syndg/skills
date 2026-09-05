@@ -43,7 +43,7 @@ If the subfolder has code, it also needs a `main.ts` (>1 line). But for stubs, a
 
 ## Workflow
 
-Before inspecting or changing the exercise repository, check for `dox.config.json`. When present, invoke `/dox` with one exercise-scaffolding task and the known plan and target paths, then use its compact resolved items for targeted work. This is a direct cutover: do not enumerate records or also read `AGENTS.md`. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. Another worktree resolves locally and treats supplied compact items only as hints.
+For the exercise repository with `dox.config.json`, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries.
 
 1. **Parse the plan** - extract section names, exercise names, and variant types
 2. **Create directories** - `mkdir -p` for each path

@@ -16,7 +16,7 @@ Highlights are valuable because they're already user-curated and compact — a b
 - `raw/` directory exists.
 - `wiki/home.md` has a clear through-line, or the user has told you the research frame.
 
-Before reading `wiki/home.md` or `wiki/index.md`, check the hub root for `dox.config.json`. When present, invoke `/dox` with one highlight-fetch task and the known wiki paths, then use its compact resolved items as the schema. Do not enumerate records or also read `AGENTS.md`. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
+When the hub has `dox.config.json`, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
 
 ## Step 1 — Formulate vector search queries
 

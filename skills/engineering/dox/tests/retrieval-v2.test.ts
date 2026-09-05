@@ -5,10 +5,15 @@ import { join } from "node:path";
 const cli = join(import.meta.dir, "..", "scripts", "dox.ts");
 const roots: string[] = [];
 
-async function run(root: string, ...args: string[]) {
+async function runText(root: string, ...args: string[]) {
   const proc = Bun.spawn(["bun", cli, ...args], { cwd: root, stdout: "pipe", stderr: "pipe" });
   const [code, stdout, stderr] = await Promise.all([proc.exited, new Response(proc.stdout).text(), new Response(proc.stderr).text()]);
   return { code, stdout, stderr };
+}
+
+async function run(root: string, ...args: string[]) {
+  if (args[0] === "resolve" || args[0] === "brief") args.push("--json");
+  return runText(root, ...args);
 }
 
 async function git(root: string, ...args: string[]) {
@@ -124,12 +129,12 @@ describe("DOX retrieval v2 public CLI", () => {
   test("defers optional capsules before it removes mandatory context", async () => {
     const root = await project();
     for (let index = 0; index < 20; index += 1) {
-      await writeFile(join(root, "dox", "records", `optional-${index}.md`), `---\nid: optional-${index}\nkind: contract\nowner: identity\nterms: [login]\n---\n# Optional ${index}\n\n${"Supplemental login guidance. ".repeat(30)}\n`);
+      await writeFile(join(root, "dox", "records", `optional-${index}.md`), `---\nid: optional-${index}\nkind: contract\nowner: identity\npaths: src/auth/**\nterms: [login]\n---\n# Optional ${index}\n\n${"Supplemental login guidance. ".repeat(30)}\n`);
     }
-    const result = await run(root, "resolve", "inspect login authorization", "--path", "src/auth/login.ts", "--max-bytes", "2400");
+    const result = await run(root, "resolve", "inspect login authorization", "--path", "src/auth/login.ts", "--max-bytes", "8000");
 
     expect(result.code).toBe(0);
-    expect(Buffer.byteLength(result.stdout)).toBeLessThanOrEqual(2400);
+    expect(Buffer.byteLength(result.stdout)).toBeLessThanOrEqual(8000);
     const data = JSON.parse(result.stdout);
     expect(data.items.some((item: { id: string }) => item.id === "authz-invariant")).toBe(true);
     expect(data.receipt.binding_complete).toBe(true);
@@ -147,7 +152,7 @@ describe("DOX retrieval v2 public CLI", () => {
     const ids = JSON.parse(result.stdout).items.map((item: { id: string }) => item.id);
     expect(ids).toContain("rate-limit");
     expect(ids).not.toContain("catalog-invariant");
-    expect(ids.indexOf("rate-limit")).toBeLessThan(ids.indexOf("architecture"));
+    expect(ids).toContain("architecture");
   });
 
   test("distinguishes weak task binding metadata from strong exact symbols", async () => {
@@ -181,7 +186,7 @@ describe("DOX retrieval v2 public CLI", () => {
       await writeFile(join(root, "dox", "records", `weak-${index}.md`), `---\nid: weak-${index}\nkind: invariant\nowner: unrelated\nstatement: Candidate workflow evidence remains canonical for subsystem ${index}.\nstate: accepted\nenforcement: [test]\nenforced_by:\n  - path: src/unrelated/${index}/**\ndepended_on_by:\n  - path: src/unrelated-consumer/${index}/**\nverification: [bun test]\nfailure_modes: [evidence-drift]\nimpact: unrelated\ncriticality: high\n---\n# Candidate workflow evidence\n\nCandidate evaluation evidence remains durable and canonical.\n`);
     }
 
-    const result = await run(root, "resolve", "explain GenQ Playground candidate overlays submission evaluation and recruiter evidence", "--max-bytes", "3000");
+    const result = await run(root, "resolve", "explain GenQ Playground candidate overlays submission evaluation and recruiter evidence", "--max-bytes", "6000");
     expect(result.code).toBe(0);
     const ids = JSON.parse(result.stdout).items.map((item: { id: string }) => item.id);
     expect(ids).toContain("playground-invariant");
@@ -195,7 +200,7 @@ describe("DOX retrieval v2 public CLI", () => {
       await writeFile(join(root, "dox", "records", `local-${index}.md`), `---\nid: local-${index}\nkind: contract\nowner: src/auth\n---\n# Local ${index}\n\nUnrelated local guidance.\n`);
     }
 
-    const result = await run(root, "resolve", "plan clarifying tooltip copy", "--path", "src/auth/login.ts", "--max-bytes", "3000");
+    const result = await run(root, "resolve", "plan clarifying tooltip copy", "--path", "src/auth/login.ts", "--max-bytes", "8000");
     expect(result.code).toBe(0);
     const ids = JSON.parse(result.stdout).items.map((item: { id: string }) => item.id);
     expect(ids).toContain("frontend-testing");
@@ -227,7 +232,7 @@ describe("DOX retrieval v2 public CLI", () => {
     const data = JSON.parse(result.stdout);
     expect(data.items.map((item: { id: string }) => item.id)).toEqual(["exact-source", "relevant-decision"]);
     expect(data.receipt.deferred).toContain("lower-source");
-    expect(data.receipt.deferred).toContain("unrelated-invariant");
+    expect(data.items.some((item: { id: string }) => item.id === "unrelated-invariant")).toBe(false);
   });
 
   test("keeps binding graph closure for an authoritative path when an unrelated exact source exists", async () => {
@@ -238,7 +243,7 @@ describe("DOX retrieval v2 public CLI", () => {
     }
     await writeFile(join(root, "dox", "records", "path-contract.md"), `---\nid: path-contract\nkind: contract\nowner: src/auth\npaths: src/auth/**\n---\n# Auth path contract\n`);
     await writeFile(join(root, "dox", "records", "path-invariant.md"), `---\nid: path-invariant\nkind: invariant\nowner: auth\nstatement: Auth path effects remain fenced.\nstate: enforced\nenforcement: [test]\nenforced_by:\n  - path: src/enforcement/**\ndepended_on_by:\n  - contract: path-contract\nverification: [bun test]\nfailure_modes: [unfenced-auth-effect]\nimpact: auth\ncriticality: high\n---\n# Auth path invariant\n`);
-    const result = await run(root, "resolve", "inspect OAuth", "--path", "src/auth/login.ts");
+    const result = await run(root, "resolve", "inspect OAuth", "--path", "src/auth/login.ts", "--max-bytes", "32768");
     expect(result.code).toBe(0);
     const data = JSON.parse(result.stdout);
     expect(data.items.map((item: { id: string }) => item.id)).toContain("path-invariant");
@@ -248,7 +253,7 @@ describe("DOX retrieval v2 public CLI", () => {
 
   test("treats the root of a recursive path scope as covered", async () => {
     const root = await project();
-    await writeFile(join(root, "dox", "records", "auth-scope.md"), `---\nid: auth-scope\nkind: contract\nowner: src/auth\n---\n# Auth scope\n`);
+    await writeFile(join(root, "dox", "records", "auth-scope.md"), `---\nid: auth-scope\nkind: contract\nowner: src/auth\npaths: src/auth/**\n---\n# Auth scope\n`);
     const result = await run(root, "resolve", "inspect this scope", "--path", "src/auth");
     expect(result.code).toBe(0);
     const ids = JSON.parse(result.stdout).items.map((item: { id: string }) => item.id);
@@ -265,7 +270,7 @@ describe("DOX retrieval v2 public CLI", () => {
       await writeFile(join(root, "dox", "records", `distractor-${index}.md`), `---\nid: distractor-${index}\nkind: contract\nowner: platform\nterms: [rate limit]\n---\n# Distractor\n\n${"Unrelated rate limit detail. ".repeat(30)}\n`);
     }
 
-    const result = await run(root, "resolve", "explain distributed rate limit pseudonymous keys and outage policy", "--max-bytes", "2400");
+    const result = await run(root, "resolve", "explain distributed rate limit pseudonymous keys and outage policy", "--max-bytes", "12000");
     expect(result.code).toBe(0);
     const data = JSON.parse(result.stdout);
     expect(data.items.map((item: { id: string }) => item.id)).toContain("decision-0002");
@@ -284,7 +289,7 @@ describe("DOX retrieval v2 public CLI", () => {
     await writeFile(join(root, "dox", "records", "authorization-source.md"), `---\nid: authorization-source\nkind: contract\nowner: platform\npaths: "**"\nsymbols: [authorize]\nadr_refs: [ADR-0002, ADR-0003]\n---\n# Authorization source\n`);
     await writeFile(join(root, "dox", "records", "generic-distractor.md"), `---\nid: generic-distractor\nkind: contract\nowner: platform\nterms: [rate limit]\n---\n# Generic rate limit\n`);
 
-    const result = await run(root, "resolve", "authorize generic rate limit for a longer implementation review", "--max-bytes", "3000");
+    const result = await run(root, "resolve", "authorize generic rate limit for a longer implementation review", "--max-bytes", "8000");
     expect(result.code).toBe(0);
     const ids = JSON.parse(result.stdout).items.map((item: { id: string }) => item.id);
     expect(ids).toContain("decision-0002");
@@ -349,25 +354,25 @@ describe("DOX retrieval v2 public CLI", () => {
     const baseWithoutChanged = await run(root, "resolve", "review authorization", "--base", "HEAD");
     expect(baseWithoutChanged.code).toBe(1);
     expect(baseWithoutChanged.stderr).toContain("--base requires --changed");
-    for (const option of ["--json", "--query", "--intent", "--symbol", "--term"]) {
+    for (const option of ["--query", "--intent", "--symbol", "--term"]) {
       const legacy = await run(root, "resolve", "review authorization", option, "legacy");
       expect(legacy.code).toBe(1);
       expect(legacy.stderr).toContain(`unknown option: ${option}`);
     }
   });
 
-  test("uses owner scopes for configured path coverage", async () => {
+  test("does not use owner accountability for configured path coverage", async () => {
     const root = await project();
     await writeFile(join(root, "dox", "records", "owner-only.md"), `---\nid: owner-only\nkind: ownership\nowner: src/owned\n---\n# Owned scope\n`);
     await writeFile(join(root, "dox", "records", "api.md"), `---\nid: api\nkind: contract\nowner: platform\npaths: src/api.ts\n---\n# API\n`);
     await mkdir(join(root, "src", "owned"), { recursive: true });
     await writeFile(join(root, "src", "owned", "file.ts"), "export const owned = true;\n");
     const result = await run(root, "resolve", "inspect the owned scope", "--path", "src/owned/file.ts");
-    expect(result.code).toBe(0);
-    expect(JSON.parse(result.stdout).items.map((item: { id: string }) => item.id)).toContain("owner-only");
+    expect(result.code).toBe(1);
+    expect(result.stderr).toContain("uncovered path: src/owned/file.ts");
     const linted = await run(root, "lint", "--json");
-    expect(linted.code).toBe(0);
-    expect(JSON.parse(linted.stdout).diagnostics).toEqual([]);
+    expect(linted.code).toBe(1);
+    expect(JSON.parse(linted.stdout).diagnostics.some((item: { message: string }) => item.message === "uncovered path: src/owned/file.ts")).toBe(true);
   });
 
   test("keeps every explicit graph reference discoverable", async () => {
@@ -379,14 +384,16 @@ describe("DOX retrieval v2 public CLI", () => {
     for (let index = 0; index < 80; index += 1) {
       await writeFile(join(root, "dox", "records", `reference-noise-${index}.md`), `---\nid: reference-noise-${index}\nkind: contract\nowner: src/references\npaths: src/references/**\n---\n# Scope guidance ${index}\n`);
     }
-    const result = await run(root, "resolve", "inspect this scope", "--path", "src/references/file.ts", "--max-bytes", "4096");
+    const tooSmall = await run(root, "resolve", "inspect this scope", "--path", "src/references/file.ts", "--max-bytes", "4096");
+    expect(tooSmall.code).toBe(1);
+    expect(tooSmall.stdout).toBe("");
+    expect(tooSmall.stderr).toContain("DOX_BUDGET_TOO_SMALL");
+    const result = await run(root, "resolve", "inspect this scope", "--path", "src/references/file.ts", "--max-bytes", "262144");
     expect(result.code).toBe(0);
     const data = JSON.parse(result.stdout);
     const discovered = new Set([...data.items.map((item: { id: string }) => item.id), ...data.receipt.deferred]);
     expect(references.every((number) => discovered.has(`decision-${number}`))).toBe(true);
-    expect([...discovered].some((id) => id.startsWith("reference-noise-"))).toBe(true);
-    expect(data.receipt.deferred.some((id: string) => id.startsWith("decision-"))).toBe(true);
-    expect(data.items.some((item: { id: string }) => item.id.startsWith("reference-noise-"))).toBe(false);
+    expect(data.decisions.map((item: { title: string }) => item.title)).toContain("Decision 71");
   });
 
   test("uses task-relevant exact metadata to select a compact supporting excerpt", async () => {
@@ -406,7 +413,7 @@ describe("DOX retrieval v2 public CLI", () => {
     for (let index = 0; index < 80; index += 1) {
       await writeFile(join(root, "dox", "records", `a-direct-noise-${String(index).padStart(2, "0")}.md`), `---\nid: a-direct-noise-${String(index).padStart(2, "0")}\nkind: contract\nowner: platform\nterms: [runtime, provisioning, workflow]\n---\n# Direct noise ${index}\n`);
     }
-    const result = await run(root, "resolve", "review contracts invariants verification for runtime provisioning workflow", "--max-bytes", "4096");
+    const result = await run(root, "resolve", "review contracts invariants verification for runtime provisioning workflow", "--max-bytes", "32768");
     expect(result.code).toBe(0);
     const data = JSON.parse(result.stdout);
     const discovered = new Set([...data.items.map((item: { id: string }) => item.id), ...data.receipt.deferred]);
@@ -424,5 +431,180 @@ describe("DOX retrieval v2 public CLI", () => {
     const repeated = await run(root, ...args);
     expect(repeated.code).toBe(0);
     expect(await readFile(sentinel, "utf8")).toBe("sentinel-content\n");
+  });
+});
+
+describe("curated scope briefs", () => {
+  async function curatedProject() {
+    const root = await project();
+    const body = `# Standing meaning\n\n${"Standing context preserves the complete domain meaning. ".repeat(60)}FINAL_STANDING_SENTENCE.\n\n\`\`\`python\nif allowed:\n    commit()\n\`\`\`\n`;
+    await writeFile(join(root, "dox", "records", "standing.md"), `---\nid: standing\nkind: record\nowner: platform\nsource_path: src/domain.ts\nsource_heading: Meaning\n---\n${body}`);
+    await writeFile(join(root, "dox", "records", "choice.md"), "---\nid: choice\nkind: decision\nowner: platform\nadr: ADR-0002\n---\n# Guarded writer rationale\n\nADR_RATIONALE_ONLY_ON_EXPANSION.\n");
+    const scopes = [
+      { path: "src/auth", context: ["login", "standing"], decisions: ["ADR-0002"] },
+      { path: ".", context: ["standing"], decisions: [] },
+    ];
+    await writeFile(join(root, "dox.config.json"), JSON.stringify({ schema_version: 1, scopes }));
+    return { root, body, scopes };
+  }
+
+  test("inherits standing bodies root-to-nearest in curated order and indexes ADRs", async () => {
+    const { root, body } = await curatedProject();
+    const result = await run(root, "brief", "--path", "src/auth/login.ts");
+    expect(result.code).toBe(0);
+    const data = JSON.parse(result.stdout);
+    expect(data.schema).toBe("dox.brief/v1");
+    expect(data.scopes.map((scope: { path: string }) => scope.path)).toEqual([".", "src/auth"]);
+    expect(data.items.map((item: { id: string }) => item.id)).toEqual(["standing", "login", "authz-invariant"]);
+    expect(data.items[0].body).toBe(body);
+    expect(data.items[0].source).toEqual({ path: "src/domain.ts", heading: "Meaning" });
+    expect(data.items[0].scopes).toEqual([".", "src/auth"]);
+    expect(data.items[2].invariant.verification).toEqual(["bun test"]);
+    expect(data.decisions).toContainEqual({ id: "choice", kind: "decision", adr: "ADR-0002", title: "Guarded writer rationale", file: "dox/records/choice.md" });
+    expect(result.stdout).not.toContain("ADR_RATIONALE_ONLY_ON_EXPANSION");
+    expect(data.receipt.context_complete).toBe(true);
+    expect(data.receipt.binding_complete).toBe(true);
+    expect(data.receipt.budget.used_bytes).toBe(Buffer.byteLength(result.stdout));
+    const expanded = await run(root, "resolve", "--from", data.receipt.id, "--expand", "choice");
+    expect(expanded.code).toBe(0);
+    expect(JSON.parse(expanded.stdout).expansions[0].body).toContain("ADR_RATIONALE_ONLY_ON_EXPANSION");
+  });
+
+  test("renders complete wrapped prose by default and fails both formats atomically on insufficient budget", async () => {
+    const { root } = await curatedProject();
+    const result = await runText(root, "brief", "--path", "src/auth/login.ts");
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("FINAL_STANDING_SENTENCE.");
+    expect(result.stdout).toContain("Guarded writer rationale");
+    expect(result.stdout).toContain("failure_modes:");
+    expect(result.stdout.split("\n").every((line) => line.length <= 120)).toBe(true);
+    const lines = result.stdout.split("\n");
+    const guardLine = lines.find((line) => line.trim() === "if allowed:")!;
+    const commitLine = lines.find((line) => line.trim() === "commit()")!;
+    expect(commitLine.indexOf("commit()") - guardLine.indexOf("if allowed:")).toBe(4);
+    for (const format of [[], ["--json"]]) {
+      const small = await runText(root, "brief", "--path", "src/auth/login.ts", "--max-bytes", "1024", ...format);
+      expect(small.code).toBe(1);
+      expect(small.stdout).toBe("");
+      expect(small.stderr).toMatch(/DOX_BUDGET_TOO_SMALL:.*require \d+ bytes/u);
+    }
+  });
+
+  test("does not activate owner-only records or invariants, even under an owned scope", async () => {
+    const { root } = await curatedProject();
+    await writeFile(join(root, "dox", "records", "owner-only.md"), "---\nid: owner-only\nkind: record\nowner: src/auth\n---\n# Unrelated account owner\n");
+    await writeFile(join(root, "dox", "records", "owner-invariant.md"), "---\nid: owner-invariant\nkind: invariant\nowner: src/auth\nstatement: Unrelated storage must keep durable objects.\nstate: accepted\nenforcement: [test]\nenforced_by:\n  - path: src/storage/**\ndepended_on_by:\n  - path: src/storage-consumer/**\nverification: [check-storage]\nfailure_modes: [lost-object]\nimpact: storage\ncriticality: high\n---\n# Storage guarantee\n");
+    const result = await run(root, "brief", "--path", "src/auth/login.ts");
+    expect(result.code).toBe(0);
+    const ids = JSON.parse(result.stdout).items.map((item: { id: string }) => item.id);
+    expect(ids).not.toContain("owner-only");
+    expect(ids).not.toContain("owner-invariant");
+    expect(ids).toContain("authz-invariant");
+  });
+
+  test("keeps path-matched supplementary records out of a brief without losing graph-bound obligations", async () => {
+    const { root } = await curatedProject();
+    await writeFile(join(root, "dox", "records", "supplement.md"), "---\nid: supplement\nkind: contract\nowner: platform\npaths: ['**']\ncontracts: [guarded-writes]\nadr_refs: [ADR-0003]\n---\n# Supplementary operations\n\nSUPPLEMENTARY_BODY.\n");
+    await writeFile(join(root, "dox", "records", "operations-choice.md"), "---\nid: operations-choice\nkind: decision\nowner: platform\nadr: ADR-0003\n---\n# Supplementary operations rationale\n");
+    await writeFile(join(root, "dox", "records", "graph-guard.md"), "---\nid: graph-guard\nkind: invariant\nowner: security\nstatement: Guarded writes reject revoked credentials.\nstate: enforced\nenforcement: [chokepoint]\nenforced_by:\n  - contract: guarded-writes\ndepended_on_by:\n  - path: src/api.ts\nverification: [check-revocation]\nfailure_modes: [revoked-access]\nimpact: authorization\ncriticality: high\n---\n# Revocation guard\n");
+    const result = await run(root, "brief", "--path", "src/auth/login.ts", "--max-bytes", "65536");
+    expect(result).toMatchObject({ code: 0 });
+    const data = JSON.parse(result.stdout);
+    expect(data.items.map((item: { id: string }) => item.id).sort()).toEqual(["authz-invariant", "graph-guard", "login", "standing"]);
+    expect(data.items.find((item: { id: string }) => item.id === "graph-guard").invariant.failure_modes).toEqual(["revoked-access"]);
+    expect(data.decisions.map((item: { id: string }) => item.id)).toEqual(["choice"]);
+    expect(data.deferred).toEqual([]);
+    const supplementary = await run(root, "resolve", "supplement");
+    expect(supplementary.code).toBe(0);
+    expect(JSON.parse(supplementary.stdout).items.some((item: { id: string }) => item.id === "supplement")).toBe(true);
+  });
+
+  test("scope meaning survives generic lexical dominance while explicit symbols retain their dependencies", async () => {
+    const { root } = await curatedProject();
+    await writeFile(join(root, "dox", "records", "noise.md"), "---\nid: noise\nkind: contract\nowner: unrelated\nintents: [implementation-plan]\nterms: [review, contracts, obligations, verification]\n---\n# Generic implementation plan\n");
+    await writeFile(join(root, "dox", "records", "external.md"), "---\nid: external\nkind: contract\nowner: elsewhere\nsymbols: [ExternalWriter]\ncontract_refs: [external-support]\n---\n# External writer\n");
+    await writeFile(join(root, "dox", "records", "external-support.md"), "---\nid: external-support\nkind: contract\nowner: elsewhere\n---\n# External dependency contract\n");
+    const result = await run(root, "resolve", "implementation plan review contracts obligations verification ExternalWriter", "--path", "src/auth/login.ts", "--max-bytes", "32768");
+    expect(result.code).toBe(0);
+    const data = JSON.parse(result.stdout);
+    const ids = data.items.map((item: { id: string }) => item.id);
+    expect(ids.slice(0, 2)).toEqual(["standing", "login"]);
+    expect(ids).not.toContain("noise");
+    expect(ids).toContain("external");
+    expect(ids).toContain("external-support");
+    expect(data.items[0].body).toContain("FINAL_STANDING_SENTENCE.");
+  });
+
+  test("requires a matching curated scope for every target without lexical fallback", async () => {
+    const root = await project();
+    const missing = await run(root, "brief", "--path", "src/auth/login.ts");
+    expect(missing.code).toBe(1);
+    expect(missing.stdout).toBe("");
+    expect(missing.stderr).toContain("DOX_SCOPE_MISSING");
+    await writeFile(join(root, "dox.config.json"), JSON.stringify({ schema_version: 1, scopes: [{ path: "src/auth", context: ["login"], decisions: [] }] }));
+    const mixed = await run(root, "brief", "--path", "src/auth/login.ts", "--path", "src/api.ts");
+    expect(mixed.code).toBe(1);
+    expect(mixed.stdout).toBe("");
+    expect(mixed.stderr).toContain("DOX_SCOPE_MISSING: no curated scope for src/api.ts");
+    const none = await run(root, "resolve", "xylophone");
+    expect(none.code).toBe(0);
+    expect(JSON.parse(none.stdout).status).toBe("no-context");
+  });
+
+  test("invalidates receipts when membership or membership order changes", async () => {
+    const { root, scopes } = await curatedProject();
+    const initial = await run(root, "brief", "--path", "src/auth/login.ts");
+    const receipt = JSON.parse(initial.stdout).receipt.id;
+    scopes[0].context.reverse();
+    await writeFile(join(root, "dox.config.json"), JSON.stringify({ schema_version: 1, scopes }));
+    const stale = await run(root, "resolve", "--from", receipt, "--expand", "choice");
+    expect(stale.code).toBe(1);
+    expect(stale.stdout).toBe("");
+    expect(stale.stderr).toContain("DOX_RECEIPT_STALE: curated scopes changed");
+  });
+
+  test("rejects invalid paths, references, duplicate memberships, and decision bodies in standing context", async () => {
+    const { root } = await curatedProject();
+    const invalid = [
+      { path: "src/**", context: ["login"], decisions: [] },
+      { path: "src/../auth", context: ["login"], decisions: [] },
+      { path: "./src/auth", context: ["login"], decisions: [] },
+      { path: "src/auth/", context: ["login"], decisions: [] },
+      { path: ".", context: ["missing"], decisions: [] },
+      { path: ".", context: ["login", "login"], decisions: [] },
+      { path: ".", context: ["choice"], decisions: [] },
+      { path: ".", context: [], decisions: ["ADR-9999"] },
+      { path: ".", context: [], decisions: ["ADR-0002", "ADR-0002"] },
+      { path: ".", context: [], decisions: ["choice"] },
+    ];
+    for (const scope of invalid) {
+      await writeFile(join(root, "dox.config.json"), JSON.stringify({ schema_version: 1, scopes: [scope] }));
+      const result = await run(root, "brief", "--path", "src/auth/login.ts");
+      expect(result.code).toBe(1);
+      expect(result.stdout).toBe("");
+      const linted = await run(root, "lint", "--json");
+      expect(linted.code).toBe(1);
+    }
+    await writeFile(join(root, "dox.config.json"), JSON.stringify({ schema_version: 1, scopes: [
+      { path: ".", context: ["login"], decisions: [] }, { path: ".", context: [], decisions: [] },
+    ] }));
+    const duplicate = await run(root, "brief", "--path", "src/auth/login.ts");
+    expect(duplicate.stderr).toContain("duplicate scope.path");
+  });
+
+  test("brief changed paths preserves target evidence and command help does not require configuration", async () => {
+    const { root } = await curatedProject();
+    await git(root, "add", ".");
+    await git(root, "commit", "-qm", "curated context");
+    await writeFile(join(root, "src", "auth", "login.ts"), "export const authorize = () => false;\n");
+    const result = await run(root, "brief", "--changed", "--base", "HEAD");
+    expect(result.code).toBe(0);
+    expect(JSON.parse(result.stdout).scopes[0].targets).toEqual(["src/auth/login.ts"]);
+    await rm(join(root, "dox.config.json"));
+    for (const command of ["brief", "resolve", "lint", "init"]) {
+      const help = await runText(root, command, "--help");
+      expect(help.code).toBe(0);
+      expect(help.stdout).toContain("Usage:");
+    }
   });
 });

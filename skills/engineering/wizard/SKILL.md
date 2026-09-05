@@ -15,7 +15,7 @@ A wizard is ephemeral by default — built for one run, saved to a scratch or `s
 
 ### 1. Scope the procedure
 
-Before reading the repository to scope the procedure, establish contract context for this wizard. If `dox.config.json` exists, invoke `/dox` with one scoping task and every known relevant path, then use its compact resolved items for targeted inspection. Treat that as a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable `AGENTS.md` chain from the repo root to the nearest owner and any relevant co-located `DECISIONS.md` entries it indexes when project contract context is needed.
+For repository work with `dox.config.json`, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries when project contract context is needed.
 
 Work out every manual step the human must take and every value that gets captured along the way. Read the repo first — don't ask cold:
 

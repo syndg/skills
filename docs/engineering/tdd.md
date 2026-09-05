@@ -3,7 +3,7 @@
 `tdd` builds a feature or fixes a bug test-first: one failing test, then just enough code to pass it, then the next behaviour. It carries the standards that make that loop produce tests worth keeping — what a good test is, where tests go, what mocks are for, and the three anti-patterns that quietly ruin a suite.
 
 It writes no test at a seam you have not agreed to first. Before any test exists, it names the public boundaries it intends to test at and stops for your confirmation, because testing effort is finite and this is where you spend it on the critical paths instead of on every edge case. The other thing to know is that `tdd` is a **reference**, not a driver. It holds the rules of the loop, and something else (you, or [implement](https://aihero.dev/skills-implement)) runs the [session](https://www.aihero.dev/ai-coding-dictionary/session) that applies them.
-A standalone TDD run resolves repository contract context before it explores or writes code. In a configured DOX repository, that means one implementation task plus the known paths; otherwise it uses the root-to-nearest `AGENTS.md` chain when needed. It reuses compact context only when a calling workflow produced it in the same worktree for the same task and paths. Another worktree resolves locally and treats supplied items only as hints.
+Configured repositories follow [dox](https://aihero.dev/skills-dox)'s retrieval and reuse policy, so entering TDD from an implementation flow need not reload the same meaning. Without DOX, the skill uses the applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries when contract context is needed.
 
 ## When to reach for it
 

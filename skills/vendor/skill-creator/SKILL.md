@@ -31,7 +31,7 @@ Cool? Cool.
 
 ## Repository grounding
 
-Before reading, writing, snapshotting, or evaluating skill files in a target repository, check it for `dox.config.json`. When present, invoke `/dox` with one skill-creation or skill-improvement task and every known skill and eval path, then use its compact resolved items for targeted work. This is a direct cutover: do not enumerate records or also read `AGENTS.md`. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. A subagent in another worktree resolves locally and treats supplied compact items only as hints.
+For a target repository with `dox.config.json`, follow the installed `/dox` skill for retrieval eligibility, context reuse, maintenance, and delegated worktree grounding. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries.
 
 ## Communicating with the user
 

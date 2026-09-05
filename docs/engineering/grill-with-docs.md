@@ -26,22 +26,23 @@ The skill writes into your repository, so you need to be somewhere it is safe to
 
 | Trigger | Contract behavior |
 | --- | --- |
-| `dox.config.json` exists | `/dox` returns compact items from the applicable structured records and validates their shape. `domain-modeling` adjudicates and writes semantic updates to those canonical records. No parallel `AGENTS.md` / `DECISIONS.md` decision store is created. |
+| `dox.config.json` exists | Follow the installed DOX skill's retrieval, reuse, and maintenance policy. `domain-modeling` adjudicates semantic updates in canonical records, without a parallel `AGENTS.md` / `DECISIONS.md` store. |
 | `dox.config.json` is absent | Read from the root `AGENTS.md` down to the nearest owner. Terms and durable decisions land there, inheriting **Ubiquitous Language** and **Architectural Decisions** from every parent. New sections and child files appear lazily; each child enters its parent's **Child DOX Index**, and large decision bodies graduate to co-located `DECISIONS.md`. |
 
 The skill also needs [grilling](https://aihero.dev/skills-grilling) and [domain-modeling](https://aihero.dev/skills-domain-modeling) available because its own `SKILL.md` delegates to them. `grilling` supplies the interview, and `domain-modeling` supplies the contract updates.
 
 ## The paper trail
 
-Three things can come out of a session, and they are not equal.
+Settled knowledge has different homes depending on what it means.
 
 | What resolved | Configured DOX | Unconfigured fallback |
 | --- | --- | --- |
 | A term, meaning the project's own word for a thing | The applicable canonical term record | The **Ubiquitous Language** of the nearest owning `AGENTS.md` |
 | A decision that is hard to reverse, surprising without context, and a real trade-off | A canonical DOX decision record | The nearest owner's **Architectural Decisions**, graduating later to co-located `DECISIONS.md` |
-| Everything else you decided | The conversation, and nowhere else | The conversation, and nowhere else |
+| A settled domain boundary or behavioral contract | Canonical standing context or binding obligations under the DOX maintenance policy; no ADR required | The applicable owning contract section |
+| Temporary implementation choices, specs, and scratch notes | The conversation or task artifact, not canonical records | The conversation or task artifact, not the domain ledger |
 
-That third row catches people out. Ubiquitous Language is deliberately kept as domain vocabulary: no implementation detail, no [spec](https://www.aihero.dev/ai-coding-dictionary/spec), and no scratch notes. Architectural decisions must pass all three gates, so most choices do not qualify and many sessions produce none. A sharper language with zero new decisions is working as designed, but the rest of what you agreed still exists only in the [context window](https://www.aihero.dev/ai-coding-dictionary/context-window). Hand the same conversation to [to-spec](https://aihero.dev/skills-to-spec) rather than [clearing](https://www.aihero.dev/ai-coding-dictionary/clearing) it.
+Ubiquitous Language stays focused on vocabulary. Architectural decisions need all three gates, so many sessions produce none. Other durable meaning can still deserve a canonical record. Keep the remaining task detail in the [context window](https://www.aihero.dev/ai-coding-dictionary/context-window) and hand the same conversation to [to-spec](https://aihero.dev/skills-to-spec) rather than [clearing](https://www.aihero.dev/ai-coding-dictionary/clearing) it.
 
 The domain language is the point: the project's own words, agreed once, so you, the agent, and colleagues stop paying to derive them again. The sharpest counterargument is that a canonical term and its plain-English expansion may perform similarly for the model, so the vocabulary primarily compresses communication between humans. That reading still leaves it useful; it simply locates the value more honestly.
 
@@ -51,7 +52,7 @@ The domain language is the point: the project's own words, agreed once, so you, 
 Scope decides it. Use this for anything you can settle in one session. Use [wayfinder](https://aihero.dev/skills-wayfinder) when the effort is too large to hold in one, and it charts the work as a map of decision [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket). Wayfinder can still drop into a grilling session for one part of its map.
 
 **It ran, but no contract file changed.**
-Two causes are common. First, nothing qualified: the session may introduce no new vocabulary, and architectural decisions need all three gates. Second, the interview primitive loaded without `domain-modeling`, so the conversation worked but the paper trail did not. In an unconfigured `AGENTS.md` repository, check the nearest owner as well as the root. In a configured DOX project, inspect the compact resolved items through `/dox`, not by scanning the record store. Ask the agent which skills it loaded if the result is unclear.
+First ask whether any new durable meaning settled. No new vocabulary or ADR does not rule out a changed boundary or behavioral contract in configured DOX. If meaning did settle but nothing was recorded, check that `domain-modeling` loaded and followed the selected store's maintenance policy. In an unconfigured repository, check the nearest owner as well as the root. Use `/dox` for configured retrieval rather than scanning records.
 
 **It asked everything at once, with no recommendations, and never mentioned the domain contract.**
 That means its dependencies did not load correctly. A proper `grilling` run asks one dependency-safe frontier per round and gives a recommendation for every question. Partial loading is more confusing: the interview can look right while `domain-modeling` is absent and no semantic update lands. Ask directly which skills are active, then invoke the missing one by name.

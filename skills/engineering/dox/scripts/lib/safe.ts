@@ -30,10 +30,6 @@ export function globMatches(pattern: string, path: string): boolean {
   return new RegExp(`^${quoted}$`).test(path);
 }
 
-export function ownerScopeMatches(owner: string | undefined, path: string): boolean {
-  const scope = owner?.replace(/\/$/u, "");
-  return Boolean(scope && scope !== "." && scope.includes("/") && (path === scope || path.startsWith(`${scope}/`)));
-}
 
 export function globSpecificity(pattern: string): number {
   return pattern.replaceAll("*", "").length * 10 - (pattern.match(/\*/g)?.length ?? 0);

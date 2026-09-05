@@ -7,7 +7,7 @@ description: Fetch one or more Readwise Reader documents into the wiki's raw/ wi
 
 Grab a Reader document (or several) and drop it into `raw/` **without ever loading the full body into context**. Only small metadata (title, author, url, date, category, doc_id) belongs in context. The body streams from the CLI to a file via a pipe.
 
-Operate on a wiki hub (default `~/Knowledge`). Before inspecting the hub or writing `raw/`, check its root for `dox.config.json`. When present, invoke `/dox` with one Readwise-document fetch task and the known raw path, then use its compact resolved items as the schema; do not enumerate records or also read `AGENTS.md`. When absent, read the hub's applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
+Operate on a wiki hub (default `~/Knowledge`). When `dox.config.json` exists, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the hub's applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
 
 ## Preconditions
 

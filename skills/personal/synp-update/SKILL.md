@@ -61,7 +61,7 @@ Keep the last verified Synp binary recoverable throughout the update.
 
 ### 1. Inspect
 
-- Check for `dox.config.json`. If present, run the `/dox` skill for one upstream-update task and all known affected paths. Use its compact resolved items. If absent, use the applicable root-to-nearest `AGENTS.md` chain and any indexed co-located `DECISIONS.md`. Read `CONTRIBUTING.md` when present.
+- When `dox.config.json` exists, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Otherwise use the applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md`. Read `CONTRIBUTING.md` when present.
 - Verify remotes by URL before relying on their names.
 - Record local `main`, `origin/main`, `upstream/main`, merge bases, divergence, downstream commits, worktrees, status, and launcher targets.
 - Confirm `synp` points at the local built binary and `omp` points at the official installation.

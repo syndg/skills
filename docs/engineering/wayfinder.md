@@ -4,7 +4,7 @@
 
 It plans, it does not do. Every ticket holds a question whose resolution is a decision, not a slice of a build to execute, and the map is finished when nothing is left to decide before someone goes and builds the thing. That one rule is what separates a wayfinder ticket from an ordinary implementation [ticket](https://www.aihero.dev/ai-coding-dictionary/ticket), and it is the rule agents break most often. When the map clears, wayfinder hands off; it does not carry on into code.
 
-When a map requires repository research or planning, wayfinder resolves contract context before that work. A configured DOX repository gets one task with the known paths; other repositories use the root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. Same-worktree steps may reuse compact context for the same task and paths, but delegated ticket work in another worktree resolves locally and treats supplied items only as hints. Maps that never touch the repository need neither route.
+Repository planning follows [dox](https://aihero.dev/skills-dox)'s conditional retrieval, reuse, and delegated-grounding policy when configured. Without DOX, it uses the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. Maps that never touch the repository need neither route.
 
 ## When to reach for it
 
@@ -24,7 +24,7 @@ Greenfield is not a requirement. Wayfinder is used routinely on legacy and half-
 
 ## Prerequisites
 
-The map and its tickets live on the repo's issue tracker, so wayfinder needs the tracker wiring that [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) lays down. Those tracker operations are setup-generated operational configuration, independent of whether domain contracts come from compact `/dox` results or the `AGENTS.md` fallback. With no tracker configured at all, wayfinder falls back to local markdown files.
+The map and its tickets live on the repo's issue tracker, so wayfinder needs the tracker wiring that [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) lays down. Those tracker operations are setup-generated operational configuration, independent of whether domain contracts come through the installed DOX skill or the `AGENTS.md` fallback. With no tracker configured at all, wayfinder falls back to local markdown files.
 
 The tracker is not decoration. Blocking is what renders the frontier visually in the tracker's own UI, and a tracker without native dependency links — a self-hosted Gitea, say — degrades wayfinder to inferring blockers from the map text, which works but needs closer supervision.
 

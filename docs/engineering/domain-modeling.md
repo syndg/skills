@@ -2,7 +2,7 @@
 
 `domain-modeling` builds and sharpens a project's **ubiquitous language** while you design. It challenges conflicting terms, forces precise words where vague ones hide distinctions, and tests relationships with concrete scenarios.
 
-It checks `dox.config.json` before repository research. In a configured repository, `/dox` returns compact items from canonical records and validates the records after semantic edits. Only an unconfigured repository uses the root-to-nearest `AGENTS.md` and `DECISIONS.md` fallback. The two stores are never combined.
+Configured repositories follow [dox](https://aihero.dev/skills-dox)'s retrieval, reuse, and maintenance policy. `domain-modeling` adjudicates meaning against the delivered standing context and obligations. Only an unconfigured repository uses the root-to-nearest `AGENTS.md` and `DECISIONS.md` fallback. The stores are never combined.
 
 ## When to reach for it
 
@@ -25,7 +25,7 @@ Choose storage by one trigger:
 
 | Trigger | Contract path |
 | --- | --- |
-| `dox.config.json` exists | Use [dox](https://aihero.dev/skills-dox) to resolve the applicable compact items before adjudication, expanding a discovered record only when its full body is needed. After semantic edits, run `/dox` validation with `dox lint`. |
+| `dox.config.json` exists | Follow the installed DOX skill for retrieval, reuse, and canonical-record maintenance; use `domain-modeling` to adjudicate meaning. |
 | `dox.config.json` is absent | Read the `AGENTS.md` chain from the repository root to the nearest owner and any relevant co-located `DECISIONS.md` entries it indexes. Parent language and decisions are inherited. Create sections lazily and child documents only for durable ownership. |
 
 ## Two kinds of contract knowledge, two bars
@@ -39,15 +39,15 @@ Terms and architectural decisions are held to different standards, and conflatin
 | Written | Existing canonical DOX record, or a new configured record for a confirmed gap; otherwise inline in the nearest fallback `AGENTS.md` | Canonical DOX decision record when configured; otherwise inline in the nearest fallback `AGENTS.md`, with co-located `DECISIONS.md` only after the section grows large |
 | Never holds | Implementation guidance, a [spec](https://www.aihero.dev/ai-coding-dictionary/spec), or scratch notes | A diary of every choice made in the session |
 
-Miss any one of the decision's three tests and there is no record. An easily reversed decision will simply be reversed; an unsurprising one raises no future question; one with no real alternative records that you did the obvious thing.
+Miss any one of the decision's three tests and there is no ADR. That does not discard other durable meaning: in configured DOX, a settled domain boundary or behavioral contract can belong in standing context without a historical rationale record.
 
-The Ubiquitous Language rule is easy to break. It holds domain language and nothing else. In configured DOX, keep the owning record focused and run `/dox` lint after edits. In the unconfigured fallback, keep specs and session notes out of `AGENTS.md`; graduate large decision bodies to co-located `DECISIONS.md` while retaining their numbered index.
+The Ubiquitous Language rule is easy to break. Keep vocabulary records focused on domain language. Configured DOX separates standing meaning, binding obligations, and optional ADR rationale under its maintenance policy. In the unconfigured fallback, keep specs and session notes out of `AGENTS.md`; graduate large decision bodies to co-located `DECISIONS.md` while retaining their numbered index.
 
 ## Cross-referencing, and where it stops
 
 The move that makes the skill click is checking the code when you state how something works and surfacing the contradiction. *"Your code cancels entire Orders, but you just said partial cancellation is possible. Which is right?"* The language and the code are made to agree out loud before either changes.
 
-The comparison follows the selected store. With `dox.config.json`, `/dox` returns the applicable compact items instead of broad record-store inspection. Without it, read each fallback `AGENTS.md` from root to nearest owner. The skill does not search the issue tracker, so durable guidance belongs in the canonical contract rather than issue history.
+The comparison follows the selected store. Configured DOX supplies applicable meaning through its installed skill rather than broad record-store inspection. Without it, read each fallback `AGENTS.md` from root to nearest owner. The skill does not search the issue tracker, so durable guidance belongs in the canonical contract rather than issue history.
 
 ## Common questions
 
@@ -77,11 +77,11 @@ No. A language you do not understand becomes meaningless once written down. This
 - It stops you mid-sentence to ask which of two things you meant instead of picking one.
 - The selected owning contract changes during the conversation, not in a burst at the end.
 - A new term appears in one canonical DOX record or at the narrowest fallback scope, never both.
-- It refuses to record a reversible choice and says which test failed.
+- It refuses an ADR for a reversible choice without discarding other settled durable meaning.
 - Fallback decision bodies graduate without losing their global number or `AGENTS.md` index.
-- In configured DOX, `/dox` resolves compact items before research and `dox lint` passes after semantic edits.
+- Configured DOX supplies standing meaning and applicable obligations for adjudication, and semantic edits follow its maintenance policy.
 - It quotes your code back when the code and the stated model disagree.
 
 ## Where it fits
 
-`domain-modeling` is a **model-invoked reference** that runs underneath other skills more often than it runs alone. [dox](https://aihero.dev/skills-dox) is its contract-layer neighbour: it retrieves compact context and structurally validates configured records while `domain-modeling` determines their semantics. [grill-with-docs](https://aihero.dev/skills-grill-with-docs) drives it through a grilling session, [wayfinder](https://aihero.dev/skills-wayfinder) loads it while charting a map, [triage](https://aihero.dev/skills-triage) keeps [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) in the project's language, and [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) calls it as decisions crystallise. Its closest sibling is [codebase-design](https://aihero.dev/skills-codebase-design): this skill owns the domain vocabulary, while that one owns the module's shape. When you are unsure which skill fits, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.
+`domain-modeling` is a **model-invoked reference** that runs underneath other skills more often than it runs alone. [dox](https://aihero.dev/skills-dox) owns configured retrieval, reuse, and maintenance while `domain-modeling` adjudicates semantics. [grill-with-docs](https://aihero.dev/skills-grill-with-docs) drives it through a grilling session, [wayfinder](https://aihero.dev/skills-wayfinder) loads it while charting a map, [triage](https://aihero.dev/skills-triage) keeps [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) in the project's language, and [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) calls it as decisions crystallise. Its closest sibling is [codebase-design](https://aihero.dev/skills-codebase-design): this skill owns domain vocabulary, while that one owns module shape. When you are unsure which skill fits, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.

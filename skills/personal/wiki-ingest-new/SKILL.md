@@ -10,7 +10,7 @@ description: >
 
 # Catch-up ingest
 
-Before reading wiki content, check the hub root (default `~/Knowledge`) for `dox.config.json`. When present, invoke `/dox` with the catch-up ingest task and known wiki paths and use the compact resolved items as the schema; do not also read `AGENTS.md` as a parallel contract. When absent, read the hub's applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
+For the wiki hub (default `~/Knowledge`), follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance when `dox.config.json` exists. Without DOX, read the hub's applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
 
 Find raw sources that exist on disk but have not been turned into wiki pages yet. This is the batch counterpart to `wiki-ingest` (single source).
 

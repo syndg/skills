@@ -3,64 +3,243 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "Initialize DOX in this Git repository, show me exactly what will be created, and do not write anything until I approve it.",
-      "expected_output": "A deterministic dry-run proposal and an explicit --apply boundary.",
+      "name": "source-prompt",
+      "stage": "small",
+      "prompt": "Print the exact current collaborator prompt used for GenQ Playground. Inspect the implementation. If it is composed or owned outside this workspace, identify the composition/owning source you can verify rather than inventing prompt text. Do not propose changes.",
+      "expected_output": "Uses source for exact current prompt facts, not a DOX record as the prompt Does not invoke DOX merely for this source-print request States source limitations honestly",
+      "expectations": [
+        "Uses source for exact current prompt facts, not a DOX record as the prompt",
+        "Does not invoke DOX merely for this source-print request",
+        "States source limitations honestly"
+      ],
       "files": []
     },
     {
       "id": 2,
-      "prompt": "I am changing src/auth/login.ts. Find the relevant decision and any invariant that enforces authorization there, including the verification command.",
-      "expected_output": "A path resolution with a receipt and a full invariant binding.",
+      "name": "git-divergence",
+      "stage": "small",
+      "prompt": "Inspect this checkout's Git state and explain whether local and remote history diverge. If there is no configured remote or insufficient history, say so explicitly. Do not modify Git state.",
+      "expected_output": "Uses Git evidence to establish current state Does not query product contracts for Git topology Does not invent an absent remote or commit history",
+      "expectations": [
+        "Uses Git evidence to establish current state",
+        "Does not query product contracts for Git topology",
+        "Does not invent an absent remote or commit history"
+      ],
       "files": []
     },
     {
       "id": 3,
-      "prompt": "Lint our DOX records before the release and report broken ownership, ADR references, and documentation links.",
-      "expected_output": "Lint diagnostics with errors distinguished from warnings.",
+      "name": "playground-design",
+      "stage": "small",
+      "prompt": "Design-only: in apps/invyte-new/src/services/playground/playground-chat-service.ts, we want the collaborator to help without taking over the candidate's reasoning. Explain the governing scope meaning, candidate versus collaborator authority, immutable assignment, and causal outcome constraints that an implementation must preserve. Identify applicable verification from the retrieved context. Do not edit.",
+      "expected_output": "Receives coherent Playground scope context before proposing behavioral design Preserves candidate authority and immutable Scenario Assignment Receives and uses the complete causal-fencing invariant, including enforcement, failure modes and verification Does not claim unrelated Candidate API invariants govern this service merely because the same app owns them",
+      "expectations": [
+        "Receives coherent Playground scope context before proposing behavioral design",
+        "Preserves candidate authority and immutable Scenario Assignment",
+        "Receives and uses the complete causal-fencing invariant, including enforcement, failure modes and verification",
+        "Does not claim unrelated Candidate API invariants govern this service merely because the same app owns them"
+      ],
       "files": []
     },
     {
       "id": 4,
-      "prompt": "Read-only: explain how authentication works in this DOX-enabled repository and identify the governing decisions and invariants. Do not edit anything.",
-      "expected_output": "DOX is queried before broad source inspection; record retrieval stays inside one task-oriented CLI resolution; the compact receipt exposes applicable owners, decisions, contracts, complete invariant bindings, dependencies, and deferred IDs; full bodies are expanded only by discovered ID when needed; the answer does not enumerate the record directory or perform overlapping synonym calls.",
+      "name": "wire-contract",
+      "stage": "small",
+      "prompt": "Design-only: assess a change to packages/launch-runtime-contracts/src/playground-v0.ts. Who owns wire syntax versus domain semantics, who produces the launch runtime session, and what must remain true about callback trust and artifact identity? Identify the governing decisions and the source that proves the current schema. Do not edit.",
+      "expected_output": "Receives launch-runtime package standing contracts regardless of task wording Separates package wire syntax from Invyte domain semantics Preserves backend-minted identity and scoped callback trust Distinguishes intended contracts from current schema source Does not substitute Lisa sidebar or Public Apply records for package context",
+      "expectations": [
+        "Receives launch-runtime package standing contracts regardless of task wording",
+        "Separates package wire syntax from Invyte domain semantics",
+        "Preserves backend-minted identity and scoped callback trust",
+        "Distinguishes intended contracts from current schema source",
+        "Does not substitute Lisa sidebar or Public Apply records for package context"
+      ],
       "files": []
     },
     {
       "id": 5,
-      "prompt": "This repository uses DOX. Start the LiveKit frontend locally through Portless without disturbing the service already using port 3000. Find the correct startup command, required local configuration, and working URL, then verify that it responds.",
-      "expected_output": "The agent begins with one task-oriented DOX resolution to establish applicable governing context, uses receipt expansion or the single task-plus-path retry only when needed, then gets operational facts from package scripts, runbooks, configuration, source, and runtime inspection. It launches LiveKit through a named Portless .localhost URL, verifies that URL, and confirms that port 3000 remains untouched without issuing overlapping or synonym-based DOX resolutions for startup details.",
-      "files": [],
+      "name": "evaluation-change",
+      "stage": "small",
+      "prompt": "Design-only: investigate making the GenQ evaluation path explicitly score-only, without a passing threshold or persisted pass/fail result. Start from apps/invyte-new/src/services/genq/genq-assessments-v0-client.ts. Explain current source truth, intended evaluation ownership, applicable constraints and whether this newly settled durable meaning should be recorded. Do not implement anything or assume the change is still needed.",
+      "expected_output": "Reads current implementation before claiming a change is needed Uses DOX for evaluation meaning and ownership Does not make Candidate MCP authorization mandatory through app ownership alone Would record new durable settled meaning even when no old sentence becomes literally false Surfaces code/contract discrepancies rather than silently choosing a new product policy",
       "expectations": [
-        "Begins with one task-oriented DOX resolution before repository research because the repository is configured.",
-        "Treats the resolved records as governing context and constraints rather than expecting them to supply every operational fact.",
-        "Inspects package scripts, runbooks, configuration, source, or runtime state to determine the startup command and local settings.",
-        "Uses Portless to expose LiveKit through a named .localhost URL rather than reporting only a raw application port.",
-        "Does not issue overlapping or synonym-based DOX resolutions to force the record corpus to answer startup details.",
-        "Verifies the named Portless URL and confirms that the existing listener on port 3000 remains untouched."
-      ]
+        "Reads current implementation before claiming a change is needed",
+        "Uses DOX for evaluation meaning and ownership",
+        "Does not make Candidate MCP authorization mandatory through app ownership alone",
+        "Would record new durable settled meaning even when no old sentence becomes literally false",
+        "Surfaces code/contract discrepancies rather than silently choosing a new product policy"
+      ],
+      "files": []
     },
     {
       "id": 6,
-      "prompt": "Supabase MCP is already configured for this repository. Without changing repository files, call its read-only list_extensions tool to confirm OAuth still works, then report whether the connection succeeded.",
-      "expected_output": "The agent does not invoke DOX for an external-tool runtime connectivity check. It calls the read-only MCP operation directly, reports the result, and does not turn the follow-up into a repository-context query.",
-      "files": [],
+      "name": "context-reuse",
+      "stage": "small",
+      "prompt": "We are continuing the same launch-runtime wire review in packages/launch-runtime-contracts/src/playground-v0.ts. Its scope context was already read in full and remains current: Invyte owns semantics and produces sessions; the shared browser-safe package owns wire syntax; callback identity is backend-minted and scoped. No files or decisions have changed. Explain which context you would reuse and whether a new pre-work or change-impact DOX call is needed. This is a workflow question, not a request to fetch the context again.",
+      "expected_output": "Reuses explicitly current same-task scope context Does not repeat retrieval merely because a new user message arrived Does not perform change-impact review when no content changed",
       "expectations": [
-        "Does not run dox resolve for the MCP connectivity check.",
-        "Uses the read-only Supabase operation rather than mutating project data.",
-        "Reports connectivity and authentication status from runtime evidence."
-      ]
+        "Reuses explicitly current same-task scope context",
+        "Does not repeat retrieval merely because a new user message arrived",
+        "Does not perform change-impact review when no content changed"
+      ],
+      "files": []
     },
     {
       "id": 7,
-      "prompt": "The governing DOX context for my login authorization task was already resolved before implementation. I have now finished changing src/auth/login.ts and its tests. Review the finished changes and prepare them for commit.",
-      "expected_output": "The agent does not repeat the pre-work resolution. It runs one changed-file impact resolution whose task string preserves the login authorization intent and test obligations, then uses the resulting constraints for review. Staging or committing the unchanged diff does not trigger another resolution.",
-      "files": [],
+      "name": "external-mcp",
+      "stage": "held-out",
+      "prompt": "I want to connect Trigger.dev MCP to an Executor running on another machine. For this step, only explain which external CLI/configuration evidence you would inspect and whether Resumatchweb product contracts are required. Do not connect, authenticate, deploy, or change files.",
+      "expected_output": "Routes the task to external tooling/configuration evidence Does not retrieve unrelated Invyte Network sourcing contracts Does not perform remote mutations",
       "expectations": [
-        "Runs exactly one dox resolve --changed review for the finished repository content changes.",
-        "Preserves the original login authorization task and verification obligations in the changed-review task string.",
-        "Does not run a second generic pre-commit resolution after the unchanged diff has been reviewed.",
-        "Treats Git staging or commit preparation as part of the already-resolved task rather than a new DOX task."
-      ]
+        "Routes the task to external tooling/configuration evidence",
+        "Does not retrieve unrelated Invyte Network sourcing contracts",
+        "Does not perform remote mutations"
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "local-start-command",
+      "stage": "held-out",
+      "prompt": "Read package.json and identify the local development entry point available in this checkout. Do not start services or change files. I only need what the current scripts declare, not an architectural review.",
+      "expected_output": "Answers from package scripts Does not require DOX for a declared command lookup",
+      "expectations": [
+        "Answers from package scripts",
+        "Does not require DOX for a declared command lookup"
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "scope-orientation",
+      "stage": "held-out",
+      "prompt": "I am unfamiliar with packages/launch-runtime-contracts. Give me a small coherent orientation: purpose, responsibility boundaries, essential domain terms and decision titles worth knowing before substantive changes. Distinguish this from a source-file inventory.",
+      "expected_output": "Uses deterministic scope context rather than a generic repository-wide ownership search Delivers package meaning and discoverable decision titles Does not dump every app decision",
+      "expectations": [
+        "Uses deterministic scope context rather than a generic repository-wide ownership search",
+        "Delivers package meaning and discoverable decision titles",
+        "Does not dump every app decision"
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "explicit-adr",
+      "stage": "held-out",
+      "prompt": "Explain ADR-0008 and why launch runtime identity and callbacks are backend-owned. Retrieve the actual decision rationale rather than guessing from a title. Identify the record you used.",
+      "expected_output": "Finds the named ADR without unrelated decision displacement Reads the complete rationale using supported retrieval Distinguishes historical decision rationale from current implementation details",
+      "expectations": [
+        "Finds the named ADR without unrelated decision displacement",
+        "Reads the complete rationale using supported retrieval",
+        "Distinguishes historical decision rationale from current implementation details"
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "candidate-api-boundary",
+      "stage": "held-out",
+      "prompt": "Design-only: examine apps/invyte-new/src/services/candidate-api/connected-apps.ts. Explain the authorization and revocation guarantees a behavior change must preserve and their enforcement/verification. Do not edit or call a production service.",
+      "expected_output": "Includes genuinely applicable delegated candidate access invariants Preserves complete revocation/consent obligations and verification Does not overcorrect the owner-scope bug by omitting applicable Candidate API bindings",
+      "expectations": [
+        "Includes genuinely applicable delegated candidate access invariants",
+        "Preserves complete revocation/consent obligations and verification",
+        "Does not overcorrect the owner-scope bug by omitting applicable Candidate API bindings"
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "release-ordering",
+      "stage": "held-out",
+      "prompt": "Assess whether push-triggered environment synchronization can safely race with Vercel deployment. Inspect .github/workflows and docs/env-workflow.md for current behavior, then explain the intended release ordering and whether any policy change is actually needed. Do not mutate configuration or deploy.",
+      "expected_output": "Uses workflow/docs evidence for actual trigger behavior Uses applicable scope meaning for durable release ordering Does not base the decision on Job Share or Public Apply policies Does not propose a change already implemented",
+      "expectations": [
+        "Uses workflow/docs evidence for actual trigger behavior",
+        "Uses applicable scope meaning for durable release ordering",
+        "Does not base the decision on Job Share or Public Apply policies",
+        "Does not propose a change already implemented"
+      ],
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "new-file-scope",
+      "stage": "held-out",
+      "prompt": "Design-only: suppose we add apps/invyte-new/src/services/playground/candidate-reasoning-review.ts. That file does not exist yet. Establish the existing parent scope meaning and applicable boundaries without claiming the new file exists or requiring an unrelated repository-wide search.",
+      "expected_output": "Uses the parent scope for a legitimate planned file Reports that the file is proposed rather than present Preserves candidate reasoning authority and does not invent implementation",
+      "expectations": [
+        "Uses the parent scope for a legitimate planned file",
+        "Reports that the file is proposed rather than present",
+        "Preserves candidate reasoning authority and does not invent implementation"
+      ],
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "cross-scope-wire",
+      "stage": "held-out",
+      "prompt": "Design-only: a proposed Playground change touches both apps/invyte-new/src/services/playground/playground-chat-service.ts and packages/launch-runtime-contracts/src/playground-v0.ts. Explain both scopes and their shared boundary, deduplicating inherited context. Which responsibilities cannot move to the browser-safe package? Do not edit.",
+      "expected_output": "Loads both relevant scopes with coherent shared meaning Preserves Invyte domain ownership and browser-safe syntax-only package responsibility Does not replace either scope with lexical distractors",
+      "expectations": [
+        "Loads both relevant scopes with coherent shared meaning",
+        "Preserves Invyte domain ownership and browser-safe syntax-only package responsibility",
+        "Does not replace either scope with lexical distractors"
+      ],
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "changed-scope-policy",
+      "stage": "held-out",
+      "prompt": "During a Playground task whose context is already established, we now need a substantive authorization change in apps/invyte-new/src/services/candidate-api/connected-apps.ts. Explain what context must be acquired for the new scope and which old context can be reused. Retrieve the newly applicable constraints, but do not implement.",
+      "expected_output": "Recognizes a genuinely new scope despite an existing task Retrieves applicable candidate authorization constraints Does not reuse Playground context as authority for Candidate API",
+      "expectations": [
+        "Recognizes a genuinely new scope despite an existing task",
+        "Retrieves applicable candidate authorization constraints",
+        "Does not reuse Playground context as authority for Candidate API"
+      ],
+      "files": []
+    },
+    {
+      "id": 16,
+      "name": "runtime-versus-meaning",
+      "stage": "held-out",
+      "prompt": "A production proctoring packet reportedly contains unknown violation types. Without production access, inspect available Activity Run/evaluation source entry points and explain what runtime evidence is needed versus what DOX can establish. Do not claim the actual packet is valid or invalid and do not fetch credentials.",
+      "expected_output": "Does not use DOX to invent production packet contents Separates current producer/consumer schema from intended evidence ownership States the missing runtime evidence explicitly",
+      "expectations": [
+        "Does not use DOX to invent production packet contents",
+        "Separates current producer/consumer schema from intended evidence ownership",
+        "States the missing runtime evidence explicitly"
+      ],
+      "files": []
+    },
+    {
+      "id": 17,
+      "name": "settled-meaning-maintenance",
+      "stage": "held-out",
+      "prompt": "We have explicitly settled a product rule: collaborators may help express candidate reasoning but may not substitute their own reasoning for the candidate. Suppose the current implementation obeys it, but no existing DOX statement becomes false. Should an agent record this durable meaning, and may it silently invent additional eligibility policy? Answer using the DOX workflow, without editing records.",
+      "expected_output": "Recognizes newly settled durable meaning as a maintenance trigger Does not require an old false sentence before recording meaning Does not invent or settle additional product policy without the user Does not rerun repository retrieval for this workflow-only question",
+      "expectations": [
+        "Recognizes newly settled durable meaning as a maintenance trigger",
+        "Does not require an old false sentence before recording meaning",
+        "Does not invent or settle additional product policy without the user",
+        "Does not rerun repository retrieval for this workflow-only question"
+      ],
+      "files": []
+    },
+    {
+      "id": 18,
+      "name": "delivery-integrity",
+      "stage": "held-out",
+      "prompt": "Retrieve the applicable contract context for apps/invyte-new/src/services/playground/playground-chat-service.ts. In your answer, demonstrate that you received the causal-fencing invariant's enforcement, dependencies, verification and failure modes, not just its title or a binding_complete flag. Do not change files or run the verification commands.",
+      "expected_output": "Receives complete invariant tuple through actual tool rendering Includes meaningful enforcement, dependency, verification and failure-mode evidence Does not strip invariant fields through a projection or rely on binding_complete alone",
+      "expectations": [
+        "Receives complete invariant tuple through actual tool rendering",
+        "Includes meaningful enforcement, dependency, verification and failure-mode evidence",
+        "Does not strip invariant fields through a projection or rely on binding_complete alone"
+      ],
+      "files": []
     }
   ]
 }

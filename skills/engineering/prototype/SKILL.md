@@ -7,9 +7,9 @@ description: Build a throwaway prototype to answer a design question. Use when t
 
 A prototype is **throwaway code that answers a question**. The question decides the shape.
 
-## Resolve the project contract first
+## Project contract
 
-Before reading surrounding code or starting the prototype, check for `dox.config.json`. When present, invoke `/dox` with the prototype question and known paths, then use only the compact resolved items as contract context. When absent, read the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes before repository work. Do not initialize DOX as part of prototyping.
+When `dox.config.json` exists, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries before repository work. Do not initialize DOX as part of prototyping.
 
 ## Pick a branch
 

@@ -43,7 +43,7 @@ If the wording genuinely does not reveal whether the user wants integration, def
 Treat the downstream commits and current downstream diff as intent, not noise. Preserve these adaptations while accepting upstream improvements:
 
 1. **Repository contract storage**
-   - Detect `dox.config.json` before repository research. When it exists, DOX is a direct-cutover store. Retrieve contract and decision language through `dox resolve`; do not use `AGENTS.md` or `DECISIONS.md` as parallel contract sources. Preserve compact resolution-envelope wording and treat receipts as local manifests rather than loaded prose.
+   - When `dox.config.json` exists, preserve the installed `/dox` skill as the authority for retrieval eligibility, context reuse, and maintenance. Canonical records remain the only contract store; do not restore blanket before-source calls, task-prompt search, compact-only context, or parallel `AGENTS.md` / `DECISIONS.md` ledgers.
    - When `dox.config.json` is absent, domain language lives in the applicable `AGENTS.md` hierarchy. Architectural decisions live inline in `AGENTS.md` while small, then move to a co-located `DECISIONS.md` while retaining an index in `AGENTS.md`. This is the AGENTS/DECISIONS fallback, not DOX.
    - Keep the root `AGENTS.md` as the canonical fallback contract file and `CLAUDE.md` as a separate harness-operational pointer file; do not symlink them together or restore a central `.agents/adr/` ledger.
    - Preserve `skills/engineering/domain-modeling/AGENTS-FORMAT.md` and do not restore `CONTEXT-FORMAT.md` as the unconfigured storage contract.
@@ -73,7 +73,7 @@ Never resolve a conflict by broadly choosing all of `ours` or `theirs`. Read the
 
 From `~/skills`:
 
-- Detect `dox.config.json` before other repository research. If configured, run `dox resolve` for the fork update and known affected paths, then use the compact items in its resolution envelope. If unconfigured, read the applicable `AGENTS.md` chain and any decision file it indexes.
+- When `dox.config.json` exists, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. If unconfigured, read the applicable root-to-nearest `AGENTS.md` chain and any decision file it indexes.
 
 - Confirm the active branch and repository root.
 - Locate the official and personal remotes by URL.

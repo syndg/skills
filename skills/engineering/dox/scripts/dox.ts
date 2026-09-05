@@ -4,15 +4,33 @@ import { randomUUID } from "node:crypto";
 import { join } from "node:path";
 import { gitRoot, changedPaths } from "./lib/git.ts";
 import { lint } from "./lib/lint.ts";
-import { loadConfig, loadRecords } from "./lib/records.ts";
+import { loadConfig, loadRecords, pathHasContext } from "./lib/records.ts";
 import { expandContext, resolveContext } from "./lib/resolve.ts";
-import { DoxError, globMatches, ownerScopeMatches } from "./lib/safe.ts";
-import type { ReceiptManifest, ResolveRequest } from "./lib/types.ts";
+import { DoxError, globMatches } from "./lib/safe.ts";
+import type { Config, ReceiptManifest, Record as DoxRecord, ResolveRequest } from "./lib/types.ts";
 
-const VERSION = "0.2.1";
+const VERSION = "0.3.0";
 const DEFAULT_BUDGET = 16_384;
+const DEFAULT_BRIEF_BUDGET = 131_072;
 const DEFAULT_EXPANSION_BUDGET = 65_536;
-const HELP = `DOX ${VERSION}\n\nUsage:\n  dox init [--apply]\n  dox resolve <task> [--path <path>]... [--changed] [--base <revision>] [--max-bytes <bytes>]\n  dox resolve --from <receipt> --expand <record-id>... [--max-bytes <bytes>]\n  dox lint [--json]\n\nresolve emits canonical compact JSON. Full record bodies require receipt-backed expansion.`;
+const HELP = `DOX ${VERSION}
+
+Usage:
+  dox init [--apply]
+  dox brief --path <path>... [--changed] [--base <revision>] [--max-bytes <bytes>] [--json]
+  dox resolve <subject> [--path <path>]... [--changed] [--base <revision>] [--max-bytes <bytes>] [--json]
+  dox resolve --from <receipt> --expand <record-id>... [--max-bytes <bytes>] [--json]
+  dox lint [--json]
+  dox <command> --help
+
+brief delivers full curated standing context, applicable invariant tuples, and an ADR index.
+Scopes inherit root-to-nearest. Missing scopes fail explicitly without lexical fallback.
+resolve retrieves additional named or domain context; paths select applicable change context.
+Default output is wrapped text. --json selects the structured envelope.
+Full ADR bodies and deferred records require receipt-backed --from/--expand.
+Required context never truncates: a budget error reports the required byte count.
+Default budgets: ${DEFAULT_BRIEF_BUDGET} bytes for brief, ${DEFAULT_BUDGET} for named resolve, ${DEFAULT_EXPANSION_BUDGET} for expansion.
+Exit 1 means invalid configuration, missing scope, stale receipt, or insufficient budget.`;
 
 type ResolveArgs = {
   task?: string;
@@ -22,6 +40,7 @@ type ResolveArgs = {
   from?: string;
   expansions: string[];
   budgetBytes?: number;
+  json: boolean;
 };
 
 function has(args: string[], flag: string) { return args.includes(flag); }
@@ -32,11 +51,12 @@ function unknown(args: string[], accepted: string[]) {
   }
 }
 
-function parseResolve(args: string[]): ResolveArgs {
-  const parsed: ResolveArgs = { paths: [], changed: false, expansions: [] };
+function parseResolve(args: string[], brief = false): ResolveArgs {
+  const parsed: ResolveArgs = { paths: [], changed: false, expansions: [], json: false };
   for (let index = 0; index < args.length; index += 1) {
     const arg = args[index];
     if (arg === "--changed") { parsed.changed = true; continue; }
+    if (arg === "--json") { parsed.json = true; continue; }
     if (["--path", "--base", "--from", "--expand", "--max-bytes"].includes(arg)) {
       const value = args[index + 1];
       if (!value || value.startsWith("--")) throw new DoxError(`DOX_USAGE: ${arg} requires a value`);
@@ -53,14 +73,16 @@ function parseResolve(args: string[]): ResolveArgs {
       continue;
     }
     if (arg.startsWith("--")) throw new DoxError(`DOX_USAGE: unknown option: ${arg}`);
-    if (parsed.task !== undefined) throw new DoxError("DOX_USAGE: resolve accepts one task");
+    if (brief || parsed.task !== undefined) throw new DoxError(brief ? "DOX_USAGE: brief accepts paths, not a subject" : "DOX_USAGE: resolve accepts one subject");
     parsed.task = arg;
   }
   if (parsed.base && !parsed.changed) throw new DoxError("DOX_USAGE: --base requires --changed");
   if (parsed.from || parsed.expansions.length) {
+    if (brief) throw new DoxError("DOX_USAGE: use resolve for receipt expansion");
     if (!parsed.from || !parsed.expansions.length) throw new DoxError("DOX_USAGE: --from and --expand must be used together");
     if (parsed.task || parsed.paths.length || parsed.changed || parsed.base) throw new DoxError("DOX_USAGE: expansion cannot include retrieval cues");
-  } else if (!parsed.task?.trim()) throw new DoxError("DOX_USAGE: resolve requires one task");
+  } else if (!brief && !parsed.task?.trim()) throw new DoxError("DOX_USAGE: resolve requires one subject");
+  if (brief && !parsed.paths.length && !parsed.changed) throw new DoxError("DOX_USAGE: brief requires --path or --changed");
   return parsed;
 }
 
@@ -131,20 +153,21 @@ async function loadReceipt(root: string, id: string): Promise<ReceiptManifest> {
   return parsed as ReceiptManifest;
 }
 
-function checkCoverage(records: Awaited<ReturnType<typeof loadRecords>>["records"], coverage: string[] | undefined, paths: string[]): void {
+function checkCoverage(records: DoxRecord[], config: Config, paths: string[]): void {
   for (const path of paths) {
-    const covered = records.some((record) => ownerScopeMatches(record.owner, path) || [...record.paths, ...(record.kind === "invariant" && ["accepted", "enforced"].includes(record.state ?? "") ? record.enforced_by.map((edge) => edge.path).filter(Boolean) as string[] : [])].some((pattern) => globMatches(pattern, path)));
-    if (coverage?.some((pattern) => globMatches(pattern, path)) && !covered) throw new DoxError(`uncovered path: ${path}`);
+    if (config.coverage?.paths?.some((pattern) => globMatches(pattern, path)) && !pathHasContext(records, config, path)) {
+      throw new DoxError(`uncovered path: ${path}`);
+    }
   }
 }
 
-async function resolve(root: string, args: string[]): Promise<void> {
-  const parsed = parseResolve(args);
+async function resolve(root: string, args: string[], brief = false): Promise<void> {
+  const parsed = parseResolve(args, brief);
   const config = await loadConfig(root);
   const { records } = await loadRecords(root, config);
   if (parsed.from) {
     const prior = await loadReceipt(root, parsed.from);
-    const result = expandContext(records, prior, parsed.expansions, parsed.budgetBytes ?? DEFAULT_EXPANSION_BUDGET);
+    const result = expandContext(records, prior, parsed.expansions, parsed.budgetBytes ?? DEFAULT_EXPANSION_BUDGET, config.scopes, parsed.json ? "json" : "text");
     await saveReceipt(root, result.manifest);
     process.stdout.write(result.output);
     return;
@@ -155,8 +178,12 @@ async function resolve(root: string, args: string[]): Promise<void> {
   if (parsed.changed) for (const path of await changedPaths(root, parsed.base)) {
     paths.push(path); pathSources[path] = "changed-path";
   }
-  checkCoverage(records, config.coverage?.paths, paths);
-  const result = resolveContext(records, { task: parsed.task as string, paths, pathSources, budgetBytes: parsed.budgetBytes ?? DEFAULT_BUDGET });
+  if (!brief) checkCoverage(records, config, paths);
+  const result = resolveContext(records, {
+    task: parsed.task ?? "", paths, pathSources, scopes: config.scopes,
+    mode: brief ? "brief" : "resolve", format: parsed.json ? "json" : "text",
+    budgetBytes: parsed.budgetBytes ?? (brief ? DEFAULT_BRIEF_BUDGET : DEFAULT_BUDGET),
+  });
   await saveReceipt(root, result.manifest);
   process.stdout.write(result.output);
 }
@@ -165,9 +192,10 @@ async function main() {
   const [command, ...args] = process.argv.slice(2);
   if (!command || command === "--help" || command === "-h" || command === "help") { console.log(HELP); return; }
   if (command === "--version" || command === "-v" || command === "version") { console.log(VERSION); return; }
+  if (["init", "brief", "resolve", "lint"].includes(command) && (has(args, "--help") || has(args, "-h"))) { console.log(HELP); return; }
   const root = await gitRoot();
   if (command === "init") { unknown(args, ["--apply"]); await init(root, has(args, "--apply")); return; }
-  if (command === "resolve") { await resolve(root, args); return; }
+  if (command === "resolve" || command === "brief") { await resolve(root, args, command === "brief"); return; }
   if (command === "lint") {
     unknown(args, ["--json"]);
     const diagnostics = await lint(root, await loadConfig(root));

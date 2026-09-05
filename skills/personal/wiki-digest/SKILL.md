@@ -5,7 +5,7 @@ description: Deep-propagate already-ingested sources across the knowledge wiki �
 
 # Digest source
 
-Before reading wiki content, check the hub root (default `~/Knowledge`) for `dox.config.json`. When present, invoke `/dox` with the digest task and known wiki paths and use the compact resolved items as the schema; do not also read `AGENTS.md` as a parallel contract. When absent, read the hub's applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
+For the wiki hub (default `~/Knowledge`), follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance when `dox.config.json` exists. Without DOX, read the hub's applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
 
 Goal: take one or more raw files that already have a wiki summary page (created by `wiki-ingest`) and produce the full ripple effect — surgical propagation into existing pages + new pages where genuinely warranted + index/log updates. This turns an ingested source into *integrated* knowledge across the wiki.
 
@@ -26,7 +26,7 @@ If your agent supports parallel subagents, delegate the heavy lifting so the mai
 
 1. Identify which sources need digesting.
 2. Load the selected schema context, `wiki/home.md`, and `wiki/index.md` to understand the current state.
-3. Dispatch a subagent with the tight brief below, including the relevant compact DOX items or unconfigured `AGENTS.md` / indexed `DECISIONS.md` schema (one subagent for all sources, not one per source, so cross-references stay coherent).
+3. Dispatch a subagent with the tight brief below, using the installed `/dox` skill's delegation policy or the unconfigured `AGENTS.md` / indexed `DECISIONS.md` schema (one subagent for all sources, not one per source, so cross-references stay coherent).
 4. Relay the subagent's report concisely.
 
 If your agent does **not** support subagents, do the same work inline: use the selected schema context, identify sources, and make the edits yourself following the brief.
@@ -45,7 +45,7 @@ Confirm with the user if there's ambiguity.
 
 Read (and pass to the subagent, if using one):
 
-- The relevant compact items from the DOX resolution, or the applicable `AGENTS.md` chain and its indexed `DECISIONS.md` entries only in the unconfigured branch.
+- Applicable DOX context under the installed skill's delegation policy, or the `AGENTS.md` chain and indexed `DECISIONS.md` entries only in the unconfigured branch.
 - `wiki/home.md` — current through-line and live tensions.
 - `wiki/index.md` — full catalog of existing pages.
 

@@ -5,7 +5,7 @@ description: Ingest a source into the knowledge wiki — read it, save the raw, 
 
 # Ingest a source
 
-Before reading wiki content, check the hub root (default `~/Knowledge`) for `dox.config.json`. When present, invoke `/dox` with the ingest task and known wiki paths and use the compact resolved items as the schema; do not also read `AGENTS.md` as a parallel contract. When absent, read the hub's applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes once before starting. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
+For the wiki hub (default `~/Knowledge`), follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance when `dox.config.json` exists. Without DOX, read the hub's applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries once before starting. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose.
 
 Take the source provided by the user (URL, file path, or pasted text). Then:
 

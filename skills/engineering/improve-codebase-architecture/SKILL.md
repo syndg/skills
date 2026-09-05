@@ -8,18 +8,18 @@ disable-model-invocation: true
 
 Surface architectural friction and propose **deepening opportunities** — refactors that turn shallow modules into deep ones. The aim is testability and AI-navigability.
 
-This command uses compact resolved project-contract items and a shared design vocabulary:
+This command uses applicable project meaning and a shared design vocabulary:
 
 - Run `/codebase-design` for **module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, and **locality**, plus the deletion test and "the interface is the test surface." Use those terms in every suggestion.
-- Use the compact items' domain language to name seams and their durable decisions to avoid re-litigating settled trade-offs.
+- Use the project's domain language to name seams and its durable decisions to avoid re-litigating settled trade-offs.
 
 ## Process
 
-### 1. Resolve, scope, then explore
+### 1. Scope and explore
 
-Check for `dox.config.json` before reading history or source.
+Check for `dox.config.json` when choosing the contract route.
 
-- **Configured DOX:** invoke `/dox` for the architecture survey with any user-named paths. Use the compact returned items as canonical context. If history later identifies a candidate path that was not supplied to resolution or represented in the returned items, resolve the task with that path before opening its source. Do not fall back to an AGENTS decision store.
+- **Configured DOX:** follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance as candidate scopes emerge.
 - **Unconfigured fallback:** use the applicable root-to-nearest `AGENTS.md` chain and any relevant co-located `DECISIONS.md` entries it indexes. Read that context for each candidate area before inspecting its source.
 
 Then decide where to look. Deepening pays when future changes become easier, so bias toward active code:
@@ -54,7 +54,7 @@ For each candidate, render a card with:
 
 End the report with a **Top recommendation** section: which candidate you'd tackle first and why.
 
-Use the compact resolved items' domain language and the `/codebase-design` vocabulary. If the project contract defines "Order," write "the Order intake module," not "the FooBarHandler" or "the Order service."
+Use the applicable project's domain language and the `/codebase-design` vocabulary. If the project contract defines "Order," write "the Order intake module," not "the FooBarHandler" or "the Order service."
 
 **Decision conflicts:** surface a conflict only when the friction justifies reopening the decision. Cite its DOX record ID or fallback ADR number in the card and explain why it may be worth revisiting.
 
@@ -69,6 +69,6 @@ Once the user picks a candidate, run the `/grilling` skill to walk the decision 
 As decisions crystallize, run `/domain-modeling` to keep the selected contract store current:
 
 - **A deepened module uses a missing domain concept:** record the canonical term in its owning DOX record when configured, or the nearest owning `AGENTS.md` fallback otherwise.
-- **A fuzzy term becomes precise:** update that same selected store immediately. In configured DOX, finish the semantic edit with `/dox` lint validation.
+- **A fuzzy term becomes precise:** update that same selected store immediately, following the installed `/dox` skill's maintenance policy when configured.
 - **The user rejects a candidate for a durable reason:** offer a decision in the selected store so later surveys do not repeat it. Skip temporary reasons such as "not worth it right now".
 - **Alternative interfaces need exploration:** run `/codebase-design` and use its design-it-twice pattern.

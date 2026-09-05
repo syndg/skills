@@ -10,7 +10,7 @@ The destination varies per effort, and naming it is the first act of charting â€
 
 ## Repository context
 
-Before charting or resolving a map that requires repository research or planning, establish contract context for that exact task. If `dox.config.json` exists, invoke `/dox` with one task and every known relevant path, then use its compact resolved items for targeted work. Treat that as a direct cutover: do not enumerate DOX records or also read `AGENTS.md`. Without DOX, read the applicable `AGENTS.md` chain from the repo root to the nearest owner and any relevant co-located `DECISIONS.md` entries it indexes when project contract context is needed. Reuse compact context only in the same worktree for the same task and paths. Delegated ticket work in another worktree resolves locally and treats supplied items only as hints. Work that never touches the repository needs neither resolver.
+For repository work with `dox.config.json`, follow the installed `/dox` skill for retrieval eligibility, context reuse, maintenance, and delegated worktree grounding. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries when project contract context is needed. Work outside a repository needs neither route.
 
 ## Plan, don't do
 

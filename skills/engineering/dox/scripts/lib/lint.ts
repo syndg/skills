@@ -2,8 +2,8 @@ import { readFile, realpath } from "node:fs/promises";
 import { basename, join } from "node:path";
 import type { Config, Diagnostic, Record as DoxRecord } from "./types.ts";
 import { indexTrackedFiles, trackedFiles } from "./git.ts";
-import { brokenContractReferences, duplicateContractDeclarations, linkTarget, loadRecords } from "./records.ts";
-import { globMatches, ownerScopeMatches } from "./safe.ts";
+import { brokenContractReferences, duplicateContractDeclarations, linkTarget, loadRecords, pathHasContext } from "./records.ts";
+import { globMatches } from "./safe.ts";
 
 function add(diagnostics: Diagnostic[], level: Diagnostic["level"], message: string, file?: string) {
   diagnostics.push({ level, message, file });
@@ -188,7 +188,7 @@ export async function lint(root: string, config: Config): Promise<Diagnostic[]> 
   if (config.coverage?.paths) {
     for (const target of config.coverage.paths) {
       for (const file of files.filter((file) => globMatches(target, file))) {
-        const covered = records.some((record) => ownerScopeMatches(record.owner, file) || [...record.paths, ...((record.kind === "invariant" && ["accepted", "enforced"].includes(record.state ?? "")) ? record.enforced_by.map((edge) => edge.path).filter(Boolean) as string[] : [])].some((pattern) => globMatches(pattern, file)));
+        const covered = pathHasContext(records, config, file);
         if (!covered) add(diagnostics, "error", `uncovered path: ${file}`);
       }
     }

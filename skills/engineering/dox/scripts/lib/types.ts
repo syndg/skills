@@ -38,11 +38,14 @@ export type Record = {
   file: string;
 };
 
+export type Scope = { path: string; context: string[]; decisions: string[] };
+
 export type Config = {
   schema_version: 1;
   records_dir: string;
   owners?: string[];
   coverage?: { paths?: string[] };
+  scopes?: Scope[];
 };
 
 export type Match = {
@@ -60,7 +63,7 @@ export type Diagnostic = {
 };
 
 export type RetrievalEvidence = {
-  source: "task" | "path" | "changed-path" | "graph" | "binding";
+  source: "task" | "path" | "changed-path" | "graph" | "binding" | "scope";
   edge: string;
   value: string;
 };
@@ -70,6 +73,9 @@ export type ResolveRequest = {
   paths: string[];
   pathSources?: globalThis.Record<string, "path" | "changed-path">;
   budgetBytes: number;
+  scopes?: Scope[];
+  format?: "text" | "json";
+  mode?: "resolve" | "brief";
 };
 
 export type ContextItem = {
@@ -78,6 +84,27 @@ export type ContextItem = {
   owner?: string;
   relation: "record" | "proposal" | "binding" | "dependent" | "reference";
   summary: string;
+  title: string;
+  adr?: string;
+  body?: string;
+  scopes?: string[];
+  paths: string[];
+  symbols: string[];
+  terms: string[];
+  aliases: string[];
+  intents: string[];
+  contracts: string[];
+  adr_refs: string[];
+  contract_refs: string[];
+  depends_on: Binding[];
+  enforced_by: Binding[];
+  depended_on_by: Binding[];
+  state?: string;
+  enforcement?: string[];
+  verification?: string[];
+  failure_modes?: string[];
+  impact?: string;
+  criticality?: string;
   excerpt?: string;
   file: string;
   source?: { path: string; heading?: string; sha256?: string; digest?: string };
@@ -102,6 +129,7 @@ export type ReceiptManifest = {
   id: string;
   parent?: string;
   corpusDigest: string;
+  scopesDigest: string;
   requestDigest: string;
   budgetBytes: number;
   delivered: string[];
@@ -111,14 +139,27 @@ export type ReceiptManifest = {
 };
 
 export type ResolveEnvelope = {
-  schema: "dox.resolve/v2";
-  status: "ok";
+  schema: "dox.resolve/v2" | "dox.brief/v1";
+  status: "ok" | "no-context";
   items: ContextItem[];
+  scopes: Array<{ path: string; targets: string[]; context: string[]; decisions: string[] }>;
+  decisions: ContextIndex[];
+  deferred: ContextIndex[];
   receipt: {
     id: string;
     binding_complete: true;
+    context_complete: boolean;
     delivered: string[];
     deferred: string[];
     budget: { limit_bytes: number; used_bytes: number };
   };
+};
+
+export type ContextIndex = {
+  id: string;
+  title: string;
+  kind: string;
+  adr?: string;
+  file: string;
+  source?: ContextItem["source"];
 };

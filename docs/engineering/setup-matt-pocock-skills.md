@@ -2,7 +2,7 @@
 
 `setup-matt-pocock-skills` answers three repository-level questions: where issues live, what the triage labels are called, and how engineering skills find the canonical domain contract. It writes the answers under `docs/agents/` and adds a small pointer block to the repository's root instruction file. In a configured DOX repository, it also places one minimal activation pointer in root `AGENTS.md`.
 
-The first contract check happens before repository exploration. If `dox.config.json` exists, configured DOX records stay canonical. If it does not, setup may create or preserve a root-to-nearest `AGENTS.md` fallback. It never initializes DOX implicitly.
+Contract storage follows `dox.config.json`. Configured records stay canonical, and the installed DOX skill owns conditional retrieval, reuse, and maintenance. Without the config, setup may create or preserve a root-to-nearest `AGENTS.md` fallback. It never initializes DOX implicitly.
 
 ## When to reach for it
 
@@ -53,7 +53,7 @@ The domain-doc branches are mutually exclusive:
 | `dox.config.json` exists | records returned through `/dox` | the minimal root `AGENTS.md` activation pointer and consumer pointers; no AGENTS domain hierarchy, mirrored decisions, or `DECISIONS.md` |
 | `dox.config.json` is absent | root-to-nearest `AGENTS.md` fallback | a root-only default, plus children only at durable ownership boundaries |
 
-In the fallback branch, parents pass down Ubiquitous Language and Architectural Decisions, direct children appear in **Child DOX Index**, and large inline decision sections may graduate to co-located `DECISIONS.md`. In the configured branch, root `AGENTS.md` activates the installed [dox](https://aihero.dev/skills-dox) skill, which owns retrieval and change-impact behavior; [domain-modeling](https://aihero.dev/skills-domain-modeling) owns semantic changes.
+In the fallback branch, parents pass down Ubiquitous Language and Architectural Decisions, direct children appear in **Child DOX Index**, and large inline decision sections may graduate to co-located `DECISIONS.md`. In the configured branch, root `AGENTS.md` points to the installed [dox](https://aihero.dev/skills-dox) skill for eligibility, reuse, and maintenance; [domain-modeling](https://aihero.dev/skills-domain-modeling) adjudicates semantic changes.
 
 ## Common questions
 

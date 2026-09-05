@@ -16,9 +16,9 @@ If the user says "none" or "skip", skip grounding entirely and proceed to interv
 
 ## Expansion rules
 
-Before any repository read, check the repository root for `dox.config.json`:
+Select the contract route for repository work:
 
-- **Configured:** invoke `/dox` with the planning task and provided entry points. Keep the relevant compact resolved items in `contract_context`. Do not inspect the DOX record store or read `AGENTS.md` as a parallel contract source.
+- **Configured:** follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Keep applicable delivered meaning and complete binding obligations in `contract_context`.
 - **Unconfigured:** read the applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes as the fallback contract context. `CLAUDE.md` may supply harness-operational instructions, not fallback contract prose.
 
 For each entry point, up to the 20-file cap:
@@ -77,11 +77,11 @@ The grounding phase produces a structured object consumed by interview + content
 ### Field guidance
 
 - **`files_read`** — exhaustive list for transparency in the content-plan printout. User can spot wrong branches.
-- **`contract_context`** — relevant compact DOX items in configured repositories, or concise attributable items from the applicable instruction chain in the unconfigured fallback. Never place a receipt here; it is only a local manifest.
+- **`contract_context`** — applicable DOX meaning and complete binding obligations in configured repositories, or concise attributable items from the applicable instruction chain in the unconfigured fallback. Follow the installed `/dox` skill's delegation policy; a receipt is not loaded content.
 - **`services`** — inferred from directory names, `services.yaml`, manifests, or the selected contract context. If none are found, leave empty. Do NOT invent.
 - **`external_deps`** — packages the code imports from third-party sources. Names + roles only.
 - **`key_modules`** — a short list of the most important files encountered (≤8). Use judgment based on file size, how many others import them, and whether they're named in architecture docs.
-- **`architecture_notes`** — verbatim quotes or close paraphrases from compact DOX items, `ARCHITECTURE.md`, or the unconfigured instruction chain. Prefer quotes with attribution so the user can trace them.
+- **`architecture_notes`** — verbatim quotes or close paraphrases from delivered DOX context, `ARCHITECTURE.md`, or the unconfigured instruction chain. Prefer quotes with attribution so the user can trace them.
 - **`ownership`** — team name if discoverable.
 
 ## How the content-shape phase uses this

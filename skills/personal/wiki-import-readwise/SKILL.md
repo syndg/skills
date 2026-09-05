@@ -5,7 +5,7 @@ description: Import highlights and documents from Readwise into the knowledge wi
 
 # Import from Readwise
 
-Operate on a wiki hub (default `~/Knowledge`). Before reading wiki content, check its root for `dox.config.json`. When present, invoke `/dox` with the import task and known wiki paths and use the compact resolved items as the schema; do not also read `AGENTS.md` as a parallel contract. When absent, read the hub's applicable root-to-nearest `AGENTS.md` chain and any co-located `DECISIONS.md` entries it indexes. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose. Then pull the user's reading history and highlights from Readwise and compile them into wiki pages.
+Operate on a wiki hub (default `~/Knowledge`). When `dox.config.json` exists, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the hub's applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries. `CLAUDE.md` may supply harness-operational instructions, not fallback schema or contract prose. Then pull the user's reading history and highlights from Readwise and compile them into wiki pages.
 
 **Use the `readwise` CLI for all Readwise access** — it handles authentication, pagination, and rate limiting. Do not use any MCP server, the HTTP API directly, or other methods. All commands run via your agent's shell tool.
 

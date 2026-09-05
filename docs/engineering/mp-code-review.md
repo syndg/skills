@@ -4,7 +4,7 @@
 
 The two axes are never merged and never re-ranked. The report ends with a worst issue *per axis* and refuses to name a single winner across them, because a change can pass one axis and fail the other: code that follows every convention while implementing the wrong thing passes Standards and fails Spec; code that does exactly what the [ticket](https://www.aihero.dev/ai-coding-dictionary/ticket) asked while breaking the repo's conventions does the reverse. A blended verdict lets the passing axis hide the failing one.
 
-Once you name the fixed point, contract resolution precedes full diff inspection. In a configured DOX repository, the review's first repository operation resolves one task using changed-path and base semantics, then gives each independent review the compact resolved items it needs. A bare receipt is only a local expansion handle, so it is not passed off as contract content. Without DOX, the review discovers changed path names, loads their root-to-nearest `AGENTS.md` chains and indexed co-located `DECISIONS.md` entries, and only then reads the full diff and commit log.
+The review confirms the fixed point and identifies the actual review paths first. Configured repositories follow [dox](https://aihero.dev/skills-dox)'s retrieval and reuse policy, including context passed to the independent reviewers. Path limits stay intact rather than pulling in incidental branch changes. Without DOX, reviewers load the changed paths' root-to-nearest `AGENTS.md` chains and indexed co-located `DECISIONS.md` entries before the full diff and commit log.
 
 ## When to reach for it
 
@@ -19,7 +19,7 @@ Type `/mp-code-review`, or the agent reaches for it automatically when you ask t
 | The whole codebase has drifted, not one diff | [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) |
 | Something is broken and you do not know why | [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs) |
 
-You must supply the fixed point. If you do not, the skill asks for one rather than guessing. In configured DOX repositories, resolution using that base is the first repository operation; the skill then verifies the ref explicitly and confirms the diff is non-empty before spawning anything, so a mistyped branch name still fails in front of you instead of inside two subagents.
+You must supply the fixed point. If you do not, the skill asks rather than guessing. It verifies the ref and confirms the diff is non-empty before spawning either review, so a mistyped branch fails in front of you instead of inside two subagents.
 
 ## Prerequisites
 

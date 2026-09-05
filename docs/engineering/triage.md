@@ -5,7 +5,7 @@
 It is only for issues **you didn't create**. Raw bug reports, incoming feature requests, an external pull request that arrived unannounced — work that landed in the tracker from outside, in whatever shape the reporter left it. [Tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) that [to-tickets](https://aihero.dev/skills-to-tickets) produced are already agent-ready by construction, and running `triage` over them is wasted work at best. The rule is flat: `/triage` is only for incoming issues, not for issues you created yourself.
 The second thing that separates it from labelling by hand: it recommends and waits. It tells you its category and state call with reasoning, plus what it found in the codebase, and applies nothing until you direct it.
 
-Before repository verification or review, triage resolves one project-contract route. A configured DOX repository gets one triage task with known or changed paths. Without DOX, it loads the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries before inspecting source.
+Configured repositories follow [dox](https://aihero.dev/skills-dox)'s conditional retrieval and reuse policy. Verifying current implementation facts differs from judging intended behavior. Without DOX, triage uses the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries when contract context is needed.
 
 ## When to reach for it
 
@@ -25,7 +25,6 @@ You invoke this by typing `/triage` and then describing what you want in plain l
 
 The tracker config also decides whether external pull requests count as a request surface, and who counts as external. That flag defaults to off and is no longer a setup question, so change it through the configured issue-tracker workflow if you want PRs in scope.
 
-When triage explores or verifies a request, it first takes one project-contract route. In a configured DOX repository, `/dox` resolves one triage task with every known relevant or changed path. Otherwise triage reads the root-to-nearest `AGENTS.md` chain when contract context is needed. The DOX route is a direct cutover, so it does not also inspect `AGENTS.md` or enumerate records.
 
 ## The state machine
 

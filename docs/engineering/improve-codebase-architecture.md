@@ -6,7 +6,7 @@ It never changes the code. The whole run produces one HTML file in your OS temp 
 
 Two filters keep the report from becoming generic cleanup advice. Every candidate has to pass the **deletion test** — would removing this module concentrate complexity behind a smaller interface, or just spread it across callers? Only the "concentrates" cases earn a card. And unless you point it at a specific area, it reads recent commit history first and biases the scan toward paths that are actively changing, on the grounds that a deepening in code nobody touches is a refactor you will never cash in.
 
-Contract grounding precedes history and source inspection. A configured DOX repository resolves one architecture-survey task and any named or later-discovered candidate paths. Without DOX, each candidate uses its root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries. The two storage routes are mutually exclusive.
+In a configured repository, [dox](https://aihero.dev/skills-dox) governs contract retrieval and reuse as candidate scopes emerge. History and source can identify candidates before their design context is loaded. Without DOX, each candidate uses its root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries.
 
 ## When to reach for it
 
@@ -27,7 +27,7 @@ Where it is confusable with siblings:
 - For a whole effort too large to hold in one session, use [wayfinder](https://aihero.dev/skills-wayfinder).
 - For "this specific thing is broken," use [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs). It hands back here when the real finding is that there is no good seam to lock the bug down.
 
-It speaks the shared design vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and the domain language from the selected contract store. Before reading history or source, it checks for `dox.config.json`. A configured repository gets compact items from canonical records through `/dox`; only an unconfigured repository reads the root-to-nearest `AGENTS.md` fallback.
+It speaks the shared design vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and the domain language from the selected contract store.
 
 ## Prerequisites
 
@@ -35,7 +35,7 @@ None to run it. Contract lookup is mutually exclusive:
 
 | Trigger | What the survey reads and writes |
 | --- | --- |
-| `dox.config.json` exists | `/dox` returns compact items from configured records before exploration. `domain-modeling` updates the applicable canonical records and runs `/dox` lint validation after semantic edits. |
+| `dox.config.json` exists | Follow the installed DOX skill's retrieval, reuse, and maintenance policy. `domain-modeling` adjudicates semantic changes in canonical records. |
 | `dox.config.json` is absent | The survey reads the applicable `AGENTS.md` chain. `domain-modeling` writes fallback language there and may use co-located `DECISIONS.md` for mature decision bodies. |
 
 The HTML report goes to `<tmpdir>/architecture-review-<timestamp>.html`, outside the repository.
