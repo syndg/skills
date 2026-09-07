@@ -1,5 +1,5 @@
 name = "codex-implementer"
-description = "Reasoning-heavy implementation for changes requiring diagnosis, design decisions, or coordinated edits across modules."
+description = "Sol implementation for bounded changes requiring diagnosis, local design decisions, or coordinated edits across modules."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "high"
-developer_instructions = "Resolve bounded implementation decisions within the assignment, then make the smallest complete change. Trace affected callers, preserve existing conventions, and report behavior, verification evidence, and unresolved risks."
+developer_instructions = "Own the bounded assignment through a usable result. Investigate the owned path, resolve local implementation decisions, make the smallest complete change, trace affected callers, preserve existing conventions, and return verification evidence plus unresolved risks."

@@ -14,12 +14,12 @@ type JsonObject = Record<string, unknown>;
 type Identity = { kind: "root" } | { kind: "worker"; role: Worker } | { kind: "unrelated" };
 
 const ROLE_GUIDANCE: Readonly<Record<Worker, string>> = {
-	"codex-explorer": "Retrieve concrete facts and report evidence without broadening the assignment.",
-	"codex-investigator": "Investigate hypotheses and resolve bounded reasoning questions within the assignment.",
-	"codex-editor": "Make settled, precisely specified edits and report exact evidence.",
-	"codex-implementer": "Implement the bounded change, making only local decisions allowed by the assignment.",
+	"codex-explorer": "Return concrete facts and decision-ready evidence without broadening the assignment.",
+	"codex-investigator": "Resolve bounded hypotheses and return decision-ready evidence.",
+	"codex-editor": "Complete settled mechanical edits through a usable result.",
+	"codex-implementer": "Own the bounded investigate-and-implement assignment through a usable result.",
 };
-const ROOT_GUIDANCE = `Codex Astra routing: this root session is fixed to ${ASTRA}. Spawn codex-explorer (${WORKERS["codex-explorer"]}) for factual retrieval, codex-investigator (${WORKERS["codex-investigator"]}) for reasoning-led investigation, codex-editor (${WORKERS["codex-editor"]}) for exact edits, and codex-implementer (${WORKERS["codex-implementer"]}) for bounded implementation. Each spawn message must be a self-contained contract with target and ownership, requirements and settled decisions, allowed local decisions and escalation conditions, acceptance criteria, and verification. Spawn workers without parent turns; they receive only that contract. These roles and models are fixed. Workers are leaves and must not create children.`;
+const ROOT_GUIDANCE = `Codex Astra role map: when delegating, choose codex-explorer (${WORKERS["codex-explorer"]}, medium) for factual retrieval, codex-editor (${WORKERS["codex-editor"]}, medium) for mechanical implementation, codex-investigator (${WORKERS["codex-investigator"]}, high) for reasoning-led investigation, or codex-implementer (${WORKERS["codex-implementer"]}, high) for bounded implementation. An omitted or default spawn role safely falls back to codex-implementer; fallback is not recommended role selection. Spawns are history-free, so pass the task-specific contract rather than repeating inherited policy or general catalogs.`;
 const SINGLE_SPAWN_TOOLS: Readonly<Record<string, true>> = {
 	spawn_agent: true,
 	Agent: true,
@@ -146,7 +146,7 @@ function handle(input: JsonObject) {
 			const role = requiredString(input, "agent_type");
 			if (!workerName(role)) return {};
 			const model = requiredString(input, "model");
-			const context = `${loadPolicy("worker")}\n\nCodex fleet role: you are ${role}, fixed to ${WORKERS[role]}. ${ROLE_GUIDANCE[role]} The spawn message is your complete parent contract; do not rely on parent history. Do not create subagents. Return the requested result and evidence to Astra.`;
+			const context = `${loadPolicy("worker")}\n\nCodex fleet role: you are ${role}, fixed to ${WORKERS[role]}. ${ROLE_GUIDANCE[role]} You receive only the task-specific spawn contract, not parent history.`;
 			if (model !== WORKERS[role]) {
 				return startOutput(
 					"SubagentStart",

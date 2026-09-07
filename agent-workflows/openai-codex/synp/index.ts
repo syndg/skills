@@ -5,7 +5,8 @@ import { AgentRegistry, type AgentRef, type ExtensionAPI, type ExtensionContext 
 
 const PROVIDER = "openai-codex";
 const ASTRA = "gpt-6-astra";
-const MARKER = "openai-codex-fleet-worker-v1";
+const WORKER_MARKER = "openai-codex-fleet-worker-v1";
+const STATE_MARKER = "openai-codex-fleet-state-v1";
 const START = "<!-- openai-codex-fleet:v1 -->";
 const END = "<!-- /openai-codex-fleet:v1 -->";
 const WORKERS = {
@@ -16,19 +17,21 @@ const WORKERS = {
 } as const;
 type Worker = keyof typeof WORKERS;
 type ModelIdentity = { provider: string; id: string } | undefined;
+type SessionManager = ExtensionContext["sessionManager"];
 
 const ALIASES: Readonly<Record<string, Worker>> = {
 	task: "codex-implementer",
 	sonic: "codex-editor",
 	scout: "codex-explorer",
 };
-const MAPPING = `Synp fleet routing: use codex-explorer for factual Luna research, codex-investigator for reasoning-led Sol research, codex-editor for exact Luna edits, and codex-implementer for bounded Sol implementation. These native definitions bind the worker models. Use these names in task, Eval agent(), and workpool(); omitted/default task uses codex-implementer. Do not request generic scout for reasoning research. Astra owns review; do not delegate review to another Astra or an advisor. Workers are leaves. Do not enable prewalk or advisors.`;
+const MAPPING = `Synp fleet role map: codex-explorer is Luna medium factual retrieval, codex-editor is Luna medium mechanical implementation, codex-investigator is Sol high reasoning-led investigation, and codex-implementer is Sol high bounded implementation. Select a named role for deliberate routing in task, Eval agent(), and workpool(). An omitted or default role safely falls back to codex-implementer; fallback is not recommended role selection. Generic scout remains a factual retrieval alias.`;
 const SCOUT_ONLY = "Read-only research MUST run on `scout` (faster model).";
 const SCOUT_DESCRIPTION = "MUST be used for exploratory codebase research, rapid code analysis, and broad pattern searches.";
-const FLEET_RESEARCH = "Read-only research MUST use `codex-explorer` for factual retrieval or `codex-investigator` for reasoning-led investigation.";
+const FLEET_RESEARCH = "For delegated read-only research, use `codex-explorer` for factual retrieval or `codex-investigator` for reasoning-led investigation; Astra may handle a small direct lookup.";
 
-// Shared across the loader's fresh per-session factories, keyed by registry generation.
+// Shared across the loader's fresh per-session factories, keyed by registry generation or session manager.
 const registeredUnderFleet = new WeakMap<AgentRef, boolean>();
+const enabledBySession = new WeakMap<SessionManager, { sessionId: string; enabled: boolean }>();
 let policies: { orchestrator: string; worker: string } | undefined;
 function loadPolicies() {
 	if (!policies) {
@@ -52,6 +55,29 @@ function matches(model: ModelIdentity, id: string) {
 }
 function activeMain(ref: AgentRef | undefined, model: ModelIdentity) {
 	return ref?.kind === "main" && matches(model, ASTRA);
+}
+function restoreEnabled(manager: SessionManager) {
+	let enabled = true;
+	for (const entry of manager.getBranch()) {
+		if (
+			entry.type === "custom" &&
+			entry.customType === STATE_MARKER &&
+			record(entry.data) &&
+			typeof entry.data.enabled === "boolean"
+		) {
+			enabled = entry.data.enabled;
+		}
+	}
+	enabledBySession.set(manager, { sessionId: manager.getSessionId(), enabled });
+	return enabled;
+}
+function fleetEnabled(manager: SessionManager) {
+	const state = enabledBySession.get(manager);
+	return state?.sessionId === manager.getSessionId() ? state.enabled : restoreEnabled(manager);
+}
+function activeFleetMain(ref: AgentRef | undefined, model: ModelIdentity) {
+	if (!ref?.session || !activeMain(ref, model)) return false;
+	return fleetEnabled(ref.session.sessionManager);
 }
 function rewriteTask(input: Record<string, unknown>): Record<string, unknown> {
 	if (Array.isArray(input.tasks)) {
@@ -135,6 +161,7 @@ export default function codexFleet(pi: ExtensionAPI) {
 		return worker?.manager === ctx.sessionManager && worker.sessionId === ctx.sessionManager.getSessionId() ? worker : undefined;
 	}
 	async function start(_event: unknown, ctx: ExtensionContext) {
+		restoreEnabled(ctx.sessionManager);
 		releaseRegistry?.();
 		releaseRegistry = undefined;
 		worker = undefined;
@@ -145,7 +172,7 @@ export default function codexFleet(pi: ExtensionAPI) {
 			// keep their launch policy if the parent changes model during child startup.
 			releaseRegistry = registry.onChange(event => {
 				if (event.type === "registered" && event.ref.kind === "sub" && event.ref.parentId === ref.id && registry.get(ref.id) === ref) {
-					registeredUnderFleet.set(event.ref, activeMain(ref, ref.session?.model));
+					registeredUnderFleet.set(event.ref, activeFleetMain(ref, ref.session?.model));
 				}
 			});
 			return;
@@ -156,20 +183,21 @@ export default function codexFleet(pi: ExtensionAPI) {
 		let marked = false;
 		for (const entry of ctx.sessionManager.getBranch()) {
 			if (entry.type === "session_init" && entry.agent) definition = entry.agent;
-			if (entry.type === "custom" && entry.customType === MARKER && record(entry.data) && workerName(entry.data.role)) {
+			if (entry.type === "custom" && entry.customType === WORKER_MARKER && record(entry.data) && workerName(entry.data.role)) {
 				role = entry.data.role;
 				marked = true;
 			}
 		}
 		const parent = ref.parentId ? registry.get(ref.parentId) : undefined;
-		const launchedActive = registeredUnderFleet.get(ref) ?? activeMain(parent, parent?.session?.model);
+		const launchedActive = registeredUnderFleet.get(ref) ??
+			(parent?.session && activeMain(parent, parent.session.model) ? restoreEnabled(parent.session.sessionManager) : false);
 		if (!marked && !launchedActive) return;
 		role ??= workerName(definition) ? definition : definition && Object.hasOwn(ALIASES, definition) ? ALIASES[definition] : undefined;
 		if (!role) return;
 		const state = { manager: ctx.sessionManager, sessionId: ctx.sessionManager.getSessionId(), role, error: undefined as Error | undefined };
 		worker = state;
 		try {
-			if (!marked) pi.appendEntry(MARKER, { role, parentId: ref.parentId });
+			if (!marked) pi.appendEntry(WORKER_MARKER, { role, parentId: ref.parentId });
 			loadPolicies();
 			if (parent?.session?.settings === ref.session.settings) throw new Error("Codex fleet: child settings are not isolated from its parent.");
 			ref.session.settings.override("task.maxRecursionDepth", 1);
@@ -197,10 +225,12 @@ export default function codexFleet(pi: ExtensionAPI) {
 
 	pi.on("session_start", start);
 	pi.on("session_switch", start);
+	pi.on("session_branch", start);
+	pi.on("session_tree", start);
 	pi.on("session_shutdown", () => { releaseRegistry?.(); releaseRegistry = undefined; });
 	pi.on("before_provider_request", (event, ctx) => {
 		const ref = identity(ctx);
-		if (activeMain(ref, ctx.model)) return inject(event.payload, `${loadPolicies().orchestrator}\n\n${MAPPING}`, true);
+		if (activeFleetMain(ref, ctx.model)) return inject(event.payload, `${loadPolicies().orchestrator}\n\n${MAPPING}`, true);
 		if (ref?.kind === "sub") {
 			const state = workerState(ctx);
 			if (state?.error) throw state.error;
@@ -213,19 +243,52 @@ export default function codexFleet(pi: ExtensionAPI) {
 			const failure = workerState(ctx)?.error;
 			if (failure) return event.toolName === "yield" ? { input: { error: failure.message } } : { block: true, reason: failure.message };
 		}
-		if (event.toolName !== "task" || !activeMain(identity(ctx), ctx.model)) return;
+		if (event.toolName !== "task" || !activeFleetMain(identity(ctx), ctx.model)) return;
 		const input = rewriteTask(event.input);
 		if (input !== event.input) return { input };
 	});
 	pi.registerCommand("fleet", {
-		description: "Show automatic Codex fleet activation for this session",
-		handler: async (_args, ctx) => {
+		description: "Show or change Codex fleet activation for this session branch",
+		getArgumentCompletions(argumentPrefix) {
+			if (argumentPrefix.includes(" ")) return null;
+			const prefix = argumentPrefix.trim().toLowerCase();
+			const completions = [
+				{ label: "status", value: "status", description: "Show fleet state" },
+				{ label: "on", value: "on", description: "Enable fleet routing" },
+				{ label: "off", value: "off", description: "Disable fleet routing" },
+				{ label: "toggle", value: "toggle", description: "Toggle fleet routing" },
+			];
+			const filtered = completions.filter(item => item.label.startsWith(prefix));
+			return filtered.length > 0 ? filtered : null;
+		},
+		handler: async (args, ctx) => {
+			const command = args.trim().toLowerCase();
 			const ref = identity(ctx);
 			const state = ref?.kind === "sub" ? workerState(ctx) : undefined;
+			if (command !== "" && command !== "status" && command !== "on" && command !== "off" && command !== "toggle") {
+				ctx.ui.notify("Usage: /fleet [status|on|off|toggle]", "warning");
+				return;
+			}
+			if (command === "on" || command === "off" || command === "toggle") {
+				if (ref?.kind !== "main") {
+					ctx.ui.notify("Only a registered main session can change fleet state. This worker keeps its launch configuration.", "error");
+					return;
+				}
+				const current = fleetEnabled(ctx.sessionManager);
+				const enabled = command === "toggle" ? !current : command === "on";
+				if (enabled !== current) {
+					pi.appendEntry(STATE_MARKER, { enabled });
+					enabledBySession.set(ctx.sessionManager, { sessionId: ctx.sessionManager.getSessionId(), enabled });
+				}
+			}
 			let status = "Codex fleet inactive. Requires a registered main session on openai-codex/gpt-6-astra.";
-			if (activeMain(ref, ctx.model)) {
+			if (ref?.kind === "main" && !fleetEnabled(ctx.sessionManager)) {
+				status = "Codex fleet off for this session branch.";
+			} else if (activeFleetMain(ref, ctx.model)) {
 				loadPolicies();
 				status = "Codex fleet active: Astra orchestrates; Luna and Sol handle leaf assignments.";
+			} else if (ref?.kind === "main") {
+				status = "Codex fleet enabled but inactive. Select openai-codex/gpt-6-astra to activate it.";
 			} else if (state) {
 				status = state.error ? `Codex fleet failed: ${state.error.message}` :
 					`Codex fleet worker ${state.role}; actual model ${ctx.model?.provider}/${ctx.model?.id}; worker policy ${matches(ctx.model, WORKERS[state.role]) ? "active" : "inactive"}.`;
