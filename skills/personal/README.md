@@ -7,6 +7,7 @@ Skills tied to my own setup (syndg), not promoted.
 - [synp-update](./synp-update/SKILL.md) — safely merge upstream Oh My Pi updates into the personalized Synp fork.
 - [skills-fork-update](./skills-fork-update/SKILL.md) — safely sync Matt Pocock's upstream into this personalized skills fork.
 - [synclaw-server](./synclaw-server/SKILL.md) — direct SSH access to the synclaw server.
+- [synclaw-t3-delegate](./synclaw-t3-delegate/SKILL.md) - checkpoint and hand off work to T3-managed Codex on synclaw.
 - [wiki-digest](./wiki-digest/SKILL.md) — deep-propagate ingested sources across the knowledge wiki.
 - [wiki-fetch-readwise-document](./wiki-fetch-readwise-document/SKILL.md) — fetch Readwise Reader documents into the wiki's raw/ layer.
 - [wiki-fetch-readwise-highlights](./wiki-fetch-readwise-highlights/SKILL.md) — mine Readwise highlights into the wiki's raw/ layer.

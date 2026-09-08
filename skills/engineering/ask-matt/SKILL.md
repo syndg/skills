@@ -64,6 +64,7 @@ Three model-invoked layers run *beneath* the other skills. They retrieve or main
 ## Crossing sessions
 
 - **`/handoff`** — create a portable Markdown context when the work must move to a new harness, directory, repository, colleague, or a side task found mid-phase. Portability is the reason to use it; a merely full context window normally lands on `/compact`.
+- **`/synclaw-t3-delegate`** checkpoints and pushes current task work, prepares an isolated Synclaw worktree, and starts a T3-managed Codex thread with a concrete handoff. Defaults to `gpt-5.6-sol` at high reasoning effort and full access; use `/handoff` instead when only a portable context document is needed.
 - **`/compact`** (built-in) — stay in the same conversation while replacing earlier turns with a lossy summary. Use it at an intentional phase boundary only after Continue, `/clear`, `/handoff`, and a scoped subagent have been ruled out.
 
 ## Standalone
