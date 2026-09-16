@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Remove the entire Impeccable skill bundle, its vendor listing, fork-validator requirements, and teaching-reference dependency.
 - Add a required simplicity and test-value check to `mp-code-review`. Review architectural burden and unconfirmed plan assumptions with evidence, concrete alternatives, preserved guarantees, and targeted verification; keep the existing two-axis, read-only workflow.
 - Add an explicit OpenAI Codex CLI Astra profile and a branch-persistent `/fleet on|off|toggle|status` control for the Synp fleet extension. The Codex profile uses the OpenAI provider, bare Astra/Sol/Luna model IDs, four profile-scoped native worker roles, native history-free dispatch, and the `cxa` launch/resume shortcut. Hook trust remains an explicit approval step, and plain `codex` defaults stay unchanged.
 - Tune the OpenAI Codex fleet for selective delegation. Astra keeps small coherent work, final synthesis, and small review fixes; bounded workers own delegated work through a usable artifact. Named Luna explorer/editor roles use medium effort, named Sol investigator/implementer roles use high effort, while the implicit Sol implementer remains a safe fallback. The policy batches independent work, avoids duplicate investigation and repeated polling, and defers shared validation until concurrent edits settle. Restart Synp or OMP sessions after updating package policy or agent definitions.

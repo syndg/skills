@@ -17,7 +17,6 @@ Third-party skills vendored from elsewhere (Anthropic, Vercel, etc.). Not promot
 - [figma-use-motion](./figma-use-motion/SKILL.md) — create and inspect motion through the Figma Plugin API (Figma).
 - [figma-use-slides](./figma-use-slides/SKILL.md) — apply the Figma Plugin API in Slides (Figma).
 - [generate-project-plan](./generate-project-plan/SKILL.md) — turn a PRD and codebase context into a FigJam project plan (Figma).
-- [impeccable](./impeccable/SKILL.md) — design, critique, and polish frontend interfaces.
 - [pdf](./pdf/SKILL.md) — read, create, and manipulate PDF files (Anthropic).
 - [playwright-cli](./playwright-cli/SKILL.md) — browser automation for testing, forms, screenshots, extraction.
 - [ponytail](./ponytail/SKILL.md) — find the smallest complete implementation within settled scope, preserving required product experience (Dietrich Gebert, adapted).

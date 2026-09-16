@@ -76,11 +76,10 @@ update automatically.
 Keep it boring DOM construction (`createElement`, `textContent` for anything user-authored so `&`
 etc. stay safe). No dependencies.
 
-## Visual design principles (product register)
+## Visual design principles
 
-Lessons are tools re-read while working, so the design *serves* the content (see the impeccable
-`product.md` register). Distinctiveness matters less than trust and legibility; consistency screen to
-screen is a virtue.
+Lessons are tools re-read while working, so the design serves the content. Distinctiveness matters
+less than trust and legibility; consistency screen to screen is a virtue.
 
 - **Theme by scene, not reflex.** Write one sentence about who reads this, where, in what light; let
   it force dark or light. Don't pick dark "because code."

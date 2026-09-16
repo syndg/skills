@@ -129,7 +129,6 @@ for path in \
   figma-implement-motion \
   figma-swiftui \
   frontend-design \
-  impeccable \
   react-doctor \
   skill-creator
 do
@@ -217,7 +216,6 @@ for path in \
   figma-use-slides \
   frontend-design \
   generate-project-plan \
-  impeccable \
   pdf \
   playwright-cli \
   ponytail \
