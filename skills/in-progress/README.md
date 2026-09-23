@@ -9,4 +9,5 @@ Skills that are still being developed. They're not ready to ship — expect roug
 - **[claude-handoff](./claude-handoff/SKILL.md)** — Hand the current conversation off to a fresh background agent that picks up the work immediately, seeded with a handoff summary via `claude --bg`. User-invoked.
 - **[setup-ts-deep-modules](./setup-ts-deep-modules/SKILL.md)** — Wire dependency-cruiser into a TypeScript repo so each package is a deep module — implementation hidden in subfolders, reachable only through its entry-point files, tests exercising it through those. User-invoked.
 - **[implement-spec](./implement-spec/SKILL.md)** — Implement a whole spec on one branch by working its ticket graph across the ready frontier, coordinating implementer subagents, and landing one PR. User-invoked.
+- **[pr](./pr/SKILL.md)** — Shape a PR body with a visual summary, before/after evidence, and merge risk. Model-invoked.
 - **[retro](./retro/SKILL.md)** — Suggest improvements to the agent environment after a session, including steering, standards, verification, tooling, and information access. User-invoked.

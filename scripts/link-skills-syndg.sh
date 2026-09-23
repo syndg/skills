@@ -18,7 +18,7 @@ REPO="$(cd "$(dirname "$0")/.." && pwd)"
 DESTS=("$HOME/.claude/skills" "$HOME/.agents/skills" "$HOME/.codex/skills")
 BUCKETS=(engineering productivity personal vendor)
 # Experimental skills are opt-in so the whole in-progress bucket stays hidden.
-ALLOWLIST=()
+ALLOWLIST=(in-progress/pr in-progress/retro)
 # Collect skills from the linked buckets.
 names=()
 srcs=()
@@ -70,10 +70,17 @@ for DEST in "${DESTS[@]}"; do
     esac
   done
 
+  linked=0
   for i in "${!names[@]}"; do
-    ln -sfn "${srcs[$i]}" "$DEST/${names[$i]}"
+    target="$DEST/${names[$i]}"
+    if [ -e "$target" ] && [ ! -L "$target" ]; then
+      echo "preserving existing non-symlink $target" >&2
+      continue
+    fi
+    ln -sfn "${srcs[$i]}" "$target"
+    linked=$((linked + 1))
   done
-  echo "linked ${#names[@]} skills into $DEST"
+  echo "linked $linked skills into $DEST"
 done
 
 DOX_LAUNCHER_DIR="$HOME/.local/bin"
