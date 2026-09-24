@@ -16,7 +16,7 @@ Reach for it when there is a concrete behaviour to build, with an input and an o
 | A behaviour with defined inputs and outputs — business logic, a request/response contract, a transformation, validation | `tdd` |
 | The behaviour isn't pinned down yet | [to-spec](https://aihero.dev/skills-to-spec), which also agrees the test seams before any code is written |
 | The question is really the shape of the interface, not the tests | [codebase-design](https://aihero.dev/skills-codebase-design) |
-| You have a [spec](https://www.aihero.dev/ai-coding-dictionary/spec) or [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) and want the whole build run for you | [implement](https://aihero.dev/skills-implement), which drives `tdd` per ticket |
+| You have a [spec](https://www.aihero.dev/ai-coding-dictionary/spec) or explicitly requested scoped [issues](https://www.aihero.dev/ai-coding-dictionary/ticket) and want the whole build run for you | [implement](https://aihero.dev/skills-implement), which drives `tdd` across the whole spec or selected issue |
 | Config, wiring, glue, type annotations, straight CRUD delegation | Nothing here fits well — see the open gap below |
 
 That last row is a real hole, not a stylistic preference. The skill decides *where* the seams go; nothing in it decides *whether* a change is worth the loop at all. Run it on a change with no independent source of truth to assert against and you get a test that restates the implementation: the tautological anti-pattern the skill itself warns about, arrived at from the other direction. It is [issue #746](https://github.com/mattpocock/skills/issues/746) and it is open. Until it closes, that judgement is yours or the applicable project contract's.
@@ -73,7 +73,7 @@ Into [codebase-design](https://aihero.dev/skills-codebase-design) in v1.0, gener
 
 **Does it know about my other tickets?**
 
-No. Run against one ticket, it will happily propose work that belongs to a sibling ticket, because it has no view of the rest of the issue graph ([issue #129](https://github.com/mattpocock/skills/issues/129)). That coordination is outside `tdd`'s job. Passing the spec alongside the ticket helps; right-sizing the tickets in the first place helps more.
+If you chose to split the spec into scoped issues, running `tdd` against one issue gives it no view of the rest of the issue graph. It may propose work that belongs to a sibling issue ([issue #129](https://github.com/mattpocock/skills/issues/129)). That coordination is outside `tdd`'s job. Pass the spec alongside the selected issue and keep the scope explicit.
 
 ## It's working if
 
@@ -89,7 +89,7 @@ No. Run against one ticket, it will happily propose work that belongs to a sibli
 `tdd` is the engine inside the build step of the main chain, rather than a step of its own:
 
 ```txt
-grill-with-docs → to-spec → to-tickets → implement → mp-code-review
+grill-with-docs → to-spec → implement → mp-code-review
 ```
 
-[to-spec](https://aihero.dev/skills-to-spec) agrees the test seams up front, [implement](https://aihero.dev/skills-implement) drives `tdd` per ticket, and [mp-code-review](https://aihero.dev/skills-mp-code-review) checks afterwards that only the agreed seams were used and owns the refactoring `tdd` no longer does. Its other neighbour is [codebase-design](https://aihero.dev/skills-codebase-design), the shared source of the seam and deep-module vocabulary `tdd` speaks. You can also reach for it on its own whenever there is a concrete behaviour to build and no full spec in play. When you are unsure which skill fits your situation, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.
+[to-spec](https://aihero.dev/skills-to-spec) agrees the test seams up front, [implement](https://aihero.dev/skills-implement) drives `tdd` across the whole spec, and [mp-code-review](https://aihero.dev/skills-mp-code-review) checks afterwards that only the agreed seams were used and owns the refactoring `tdd` no longer does. If you explicitly request decomposition through [to-tickets](https://aihero.dev/skills-to-tickets), implementation can instead target a selected scoped issue. Its other neighbour is [codebase-design](https://aihero.dev/skills-codebase-design), the shared source of the seam and deep-module vocabulary `tdd` speaks. You can also reach for it on its own whenever there is a concrete behaviour to build and no full spec in play. When you are unsure which skill fits your situation, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.

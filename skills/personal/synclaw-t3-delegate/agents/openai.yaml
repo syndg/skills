@@ -1,3 +1,0 @@
-interface:
-  display_name: "Delegate to Synclaw T3"
-  short_description: "Checkpoint and hand off work to T3-managed Codex on synclaw"

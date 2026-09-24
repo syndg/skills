@@ -19,15 +19,22 @@ The route most work travels. You have an idea and want it built.
    - **`/handoff`** out, then open a fresh session against that file,
    - **`/prototype`** to answer the question with throwaway code,
    - **`/handoff`** back what you learned, and reference it from the original idea thread.
-3. **Branch — is this a multi-session build?**
-   - **Yes** → **`/to-spec`** (turn the thread into a spec), then **`/to-tickets`** to split it into tracer-bullet tickets, each declaring its **blocking edges**. On a local tracker that's one file per ticket under `.scratch/<feature>/issues/`, worked blockers-first by hand; on a real tracker the edges become native blocking links, so any ticket whose blockers are done can be grabbed — kick off **`/implement`** per ticket, **clearing context between each one**.
-   - **No** → **`/implement`** right here, in the same context window.
+3. **`/to-spec`** turns the settled conversation into one approved spec issue in the configured issue tracker. Its body carries the current requirements, decisions and rationale, a detailed ordered implementation plan grounded in verified paths and symbols at a recorded revision, and acceptance and verification criteria. Requirements stay separate from proposed implementation details.
+4. Start a **fresh implementation session** with the issue URL and **`/implement`**. The issue is the handoff; remote tracker work needs no duplicate local plan or Markdown handoff. For a configured local tracker, pass the issue file instead. Progress, deviations, and reviews go in comments; approved requirement changes fold back into the body.
 
-   Either way, **`/implement`** builds each issue by driving **`/tdd`** internally, one red-green slice at a time, then closes out with **`/mp-code-review`** before committing. Its independent Standards and Spec reviews include a required simplicity and test-value check, with generated-plan assumptions distinguished from requirements. Reach for **`/tdd`** on its own to build a concrete behaviour test-first without a full spec, and **`/mp-code-review`** on its own to review changes against a fixed point, including unnecessary architecture or tests.
+   Choose the planning and implementation models in your environment. Invoking a skill does not switch models. Tell the implementation session which model should review the work.
+
+   **`/implement`** drives **`/tdd`** at the agreed seams, verifies the result, and directly runs **`/mp-code-review`** on its uncommitted work before any final commit. That skill dispatches independent, read-only Standards and Spec reviews with the designated review model, without an intermediary coordinator. It owns capability checks and portable briefs for separate review sessions when routing is unavailable; a missing required review blocks completion rather than becoming self-review or using another model. The implementation session owns repairs and relevant reruns and re-review. Scope, contract, or design disputes return to the user; commits wait for the gates and permission from the user or repository workflow.
+
+   Two optional branches remain:
+   - For concrete work already settled in the current conversation, invoke **`/implement`** there without publishing a spec.
+   - Only when the human explicitly requests separate build issues, use **`/to-tickets`** after `/to-spec`. It creates tracer-bullet issues with blocking edges, worked blockers-first with `/implement` in fresh sessions. Size or session count alone does not trigger decomposition.
+
+   Reach for **`/tdd`** alone to build a concrete behaviour test-first, or **`/mp-code-review`** alone to review changes against a fixed point. Its Standards and Spec reviews include simplicity and test-value checks and distinguish requirements from generated-plan assumptions.
 
 ### Phase boundaries
 
-Keep steps 1–3 in one session whenever the next phase needs the current conversation as a primary source. At every genuine phase boundary, use the ordered decision tree in [PHASE-BOUNDARIES.md](./PHASE-BOUNDARIES.md): continue when the reasoning still matters and there is room; `/clear` when it does not; `/handoff` only when the context must travel; use a subagent for scoped AFK work; otherwise `/compact` with an instruction for the next phase. Do not compact mid-phase.
+Keep grilling and `/to-spec` together while the conversation is the source. Once the approved issue captures the plan and its rationale, it supports the fresh implementation session above. For other phase boundaries, use the ordered decision tree in [PHASE-BOUNDARIES.md](./PHASE-BOUNDARIES.md): continue when the reasoning still matters and there is room; `/clear` when it does not; `/handoff` only when context must travel and no existing artifact carries it; use a subagent for scoped AFK work; otherwise `/compact` with an instruction for the next phase. Do not compact mid-phase.
 
 ## On-ramps
 
@@ -41,7 +48,7 @@ A starting situation that generates work, then merges onto the main flow.
 
 - **A huge, foggy effort — a greenfield project or a huge feature build, too big for one session** → **`/wayfinder`**, the most cognitively demanding flow here. When the way from here to the destination isn't visible yet, it charts a **shared map** of **decision tickets** on the issue tracker and resolves them one at a time — producing **decisions, not deliverables** — until the fog is pushed back and the way is clear. Where **`/grill-with-docs`** sharpens an idea you can hold in one session, wayfinder is for the idea you can't — and it's slower and denser, so save it for exactly that, never a well-scoped feature.
 
-  When the map clears, **it hands off, it doesn't build**: merge onto the main flow at **`/to-spec`**, which collapses the map's linked decisions into a buildable plan, then `/to-tickets` and `/implement` as usual. Looping the map straight into `/implement` skips that collapse and throws the linked detail away — go straight to `/implement` only when the effort turned out genuinely small.
+  When the map clears, **it hands off, it doesn't build**: merge onto the main flow at **`/to-spec`**, which collapses the map's linked decisions into one approved spec and detailed plan, then start a fresh `/implement` session from that issue. `/to-tickets` is optional only on explicit human request. Looping the map straight into `/implement` skips that collapse and throws the linked detail away; go straight to `/implement` only when the effort turned out genuinely small.
 
 ## Codebase health
 
@@ -63,8 +70,7 @@ Three model-invoked layers run *beneath* the other skills. They retrieve or main
 
 ## Crossing sessions
 
-- **`/handoff`** — create a portable Markdown context when the work must move to a new harness, directory, repository, colleague, or a side task found mid-phase. Portability is the reason to use it; a merely full context window normally lands on `/compact`.
-- **`/synclaw-t3-delegate`** checkpoints and pushes current task work, prepares an isolated Synclaw worktree, and starts a T3-managed Codex thread with a concrete handoff. Defaults to `gpt-5.6-sol` at high reasoning effort and full access; use `/handoff` instead when only a portable context document is needed.
+- **`/handoff`** creates portable Markdown context when work must move to a new harness, directory, repository, colleague, or a side task found mid-phase and no existing artifact carries the needed context. An approved spec issue already supports the planned-work handoff; pass its URL rather than creating a duplicate file. A merely full context window normally lands on `/compact`.
 - **`/compact`** (built-in) — stay in the same conversation while replacing earlier turns with a lossy summary. Use it at an intentional phase boundary only after Continue, `/clear`, `/handoff`, and a scoped subagent have been ruled out.
 
 ## Standalone

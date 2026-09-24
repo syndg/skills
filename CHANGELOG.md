@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Remove the remote T3 delegation skill and its router, catalog, and installation entries. Keep direct server access through `synclaw-server`.
+- Make `to-spec` publish one approved, revision-grounded spec and implementation plan for a fresh implementation session. Keep issue decomposition an explicit user choice.
+- Make `implement` own verification and repairs around direct, independent Standards and Spec reviews. Keep model selection environment-owned, provide portable handoffs when required reviewers are unavailable, and review scoped uncommitted and untracked work before authorized commits.
 - Remove the entire Impeccable skill bundle, its vendor listing, fork-validator requirements, and teaching-reference dependency.
 - Add a required simplicity and test-value check to `mp-code-review`. Review architectural burden and unconfirmed plan assumptions with evidence, concrete alternatives, preserved guarantees, and targeted verification; keep the existing two-axis, read-only workflow.
 - Add an explicit OpenAI Codex CLI Astra profile and a branch-persistent `/fleet on|off|toggle|status` control for the Synp fleet extension. The Codex profile uses the OpenAI provider, bare Astra/Sol/Luna model IDs, four profile-scoped native worker roles, native history-free dispatch, and the `cxa` launch/resume shortcut. Hook trust remains an explicit approval step, and plain `codex` defaults stay unchanged.

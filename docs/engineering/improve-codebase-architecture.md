@@ -56,7 +56,7 @@ The report ends with a **Top recommendation** — the one it would tackle first 
 
 ## What happens after you pick one
 
-Picking a candidate starts a [grilling](https://aihero.dev/skills-grilling) session over it: constraints, what sits behind the seam, which tests survive, what the deepened interface should look like. The output of that session is a decision, not a diff. From there the normal flow applies — take the decision into [to-spec](https://aihero.dev/skills-to-spec), then [to-tickets](https://aihero.dev/skills-to-tickets), then [implement](https://aihero.dev/skills-implement).
+Picking a candidate starts a [grilling](https://aihero.dev/skills-grilling) session over it: constraints, what sits behind the seam, which tests survive, what the deepened interface should look like. The output of that session is a decision, not a diff. Take the decision into [to-spec](https://aihero.dev/skills-to-spec), then start a fresh [implement](https://aihero.dev/skills-implement) session to build the whole spec. [to-tickets](https://aihero.dev/skills-to-tickets) is optional, used only when you explicitly request scoped implementation issues.
 
 ## Common questions
 
@@ -70,7 +70,7 @@ The report loads Tailwind and Mermaid from CDNs, so it needs network access when
 
 **It gave me twelve candidates. Do I work through them in the same session or start a new one?**
 
-One candidate per session. Working through several in one conversation fills the [context window](https://www.aihero.dev/ai-coding-dictionary/context-window) with the report, the grilling, the domain-model edits and the code changes all at once. The report only lives in a temp file, so carry the candidate itself rather than the file: pick one, grill it, take the decision into `/to-spec`, and turn the rest into [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) you can pick up independently later. Put the chosen improvement into a spec rather than going straight to implementation. This is a recurring question with no documented workflow in the skill itself.
+One candidate per session. Working through several in one conversation fills the [context window](https://www.aihero.dev/ai-coding-dictionary/context-window) with the report, the grilling, the domain-model edits and the code changes all at once. The report only lives in a temp file, so carry the candidate itself rather than the file: pick one, grill it, and take the decision into `/to-spec`. You can ask to save the remaining candidates as [issues](https://www.aihero.dev/ai-coding-dictionary/ticket) to explore later. Put the chosen improvement into a spec, then implement that whole spec in a fresh session.
 
 **How should I prompt it?**
 

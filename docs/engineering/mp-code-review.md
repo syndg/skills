@@ -1,12 +1,8 @@
 ## What it does
 
-`mp-code-review` reviews the diff between `HEAD` and a fixed point you name (a commit, a branch, a tag, `main`, `HEAD~5`) along two axes. **Standards** checks repository conventions, architectural burden, and test value. **Spec** checks the originating issue or [spec](https://www.aihero.dev/ai-coding-dictionary/spec), distinguishing requirements from unconfirmed plan assumptions. Each axis runs in its own [subagent](https://www.aihero.dev/ai-coding-dictionary/subagent) so neither sees the other's reasoning.
+`mp-code-review` reviews a captured change along two independent axes. **Standards** checks repository conventions, architectural burden, and test value. **Spec** checks the originating issue or [spec](https://www.aihero.dev/ai-coding-dictionary/spec), separating approved requirements from unconfirmed implementation assumptions. Each axis receives the same code and requirements snapshot in a fresh [subagent](https://www.aihero.dev/ai-coding-dictionary/subagent) context. Neither sees the other's reasoning.
 
-The two axes are never merged and never re-ranked. The report ends with a worst issue *per axis* and refuses to name a single winner across them, because a change can pass one axis and fail the other: code that follows every convention while implementing the wrong thing passes Standards and fails Spec; code that does exactly what the [ticket](https://www.aihero.dev/ai-coding-dictionary/ticket) asked while breaking the repo's conventions does the reverse. A blended verdict lets the passing axis hide the failing one.
-
-The review confirms the fixed point and identifies the actual review paths first. Configured repositories follow [dox](https://aihero.dev/skills-dox)'s retrieval and reuse policy, including context passed to the independent reviewers. Path limits stay intact rather than pulling in incidental branch changes. Without DOX, reviewers load the changed paths' root-to-nearest `AGENTS.md` chains and indexed co-located `DECISIONS.md` entries before the full diff and commit log.
-
-The simplicity check is part of every Standards review, not a separate command. It asks whether the same required behavior can be maintained with fewer concepts and less machinery. The review recommends changes; it does not authorize edits or test deletion.
+The reports stay separate. Code can follow every convention and still implement the wrong thing; it can satisfy the issue and still break the project's conventions. A blended verdict hides that distinction. The review recommends changes but does not edit code, delete tests, or authorize a commit.
 
 ## When to reach for it
 
@@ -14,92 +10,98 @@ Type `/mp-code-review`, or the agent reaches for it automatically when you ask t
 
 | Your situation | Reach for |
 | --- | --- |
-| A diff exists and you want to know if it is built right *and* is the right thing | `mp-code-review` |
-| You want bugs hunted in the diff: null paths, races, off-by-one errors | A general bug-finding review, not this two-axis review |
+| You want a change checked against both standards and requirements | `mp-code-review` |
+| You want a general hunt for null paths, races, or off-by-one errors | A general bug-finding review rather than this two-axis review |
 | Nothing is written yet and you want it written test-first | [tdd](https://aihero.dev/skills-tdd) |
-| A whole spec needs building, review included | [implement](https://aihero.dev/skills-implement), which calls this skill itself |
-| The whole codebase has drifted, not one diff | [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) |
+| A whole spec needs building, review included | [implement](https://aihero.dev/skills-implement), which runs this skill directly |
+| The whole codebase has drifted, not one change | [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) |
 | Something is broken and you do not know why | [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs) |
 
-You must supply the fixed point. If you do not, the skill asks rather than guessing. It verifies the ref and confirms the diff is non-empty before spawning either review, so a mistyped branch fails in front of you instead of inside two subagents.
+Supply a fixed point and any scope limits. An invoking workflow can supply them for you. The skill asks when the baseline is missing rather than guessing which changes you meant.
 
 ## Prerequisites
 
-The Standards axis needs a non-empty diff and project context resolved through the selected storage branch. It reads targeted standards sources such as `CODING_STANDARDS.md` and `CONTRIBUTING.md`; in repositories without DOX, applicable `AGENTS.md` files may also supply standards. The built-in smell baseline and simplicity check still run when the repository documents nothing. The check uses the installed `ponytail` skill's smallest-complete-solution principles.
+Standards needs a non-empty scoped code snapshot. Configured repositories follow [dox](https://aihero.dev/skills-dox)'s retrieval, reuse, and delegated-context policy. Without DOX, the changed paths' root-to-nearest `AGENTS.md` chains and indexed co-located `DECISIONS.md` entries provide the fallback. The built-in smell baseline and [ponytail](https://aihero.dev/skills-ponytail) simplicity principles still apply when the repository documents no standards.
 
-The Spec axis needs a spec to exist and be findable. It looks in this order:
+Spec needs an authoritative source. The lookup order is:
 
-1. Issue references in the commit messages (`#123`, `Closes #45`, a GitLab `!67`), fetched through the configured issue-tracker workflow.
-2. A path you pass in as an argument.
-3. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch or feature name.
+1. The issue URL or number, spec path, or approved snapshot you or the invoking workflow supplied.
+2. An originating issue inferred from commit references through the configured issue-tracker workflow.
+3. A matching spec under `docs/`, `specs/`, or `.scratch/`.
 4. Asking you.
 
-[setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) provides that issue-tracker workflow. Without it the axis still works if you hand it a path. With no spec at all, the Spec review is skipped and the report says "no spec available" rather than inventing requirements.
+An issue review uses its full body and relevant comments, not its title or a preview. [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) supplies the issue-tracker workflow when the project has none. A supplied spec can also be reviewed directly.
+
+| Missing prerequisite | Result |
+| --- | --- |
+| You confirm there is no spec | Spec is skipped, with "no spec available" in the report |
+| A required spec cannot be retrieved | Spec is blocked, not replaced by inferred requirements |
+| Independent execution or verifiable routing to your designated model is unavailable | Portable per-axis briefs for separate sessions; review remains pending |
+| No review model was designated | Independent reviewers use the environment's normal default |
+
+## One snapshot, two review modes
+
+| Mode | What reviewers see |
+| --- | --- |
+| Committed | The requested branch changes from the merge-base to captured `HEAD`, excluding all uncommitted work |
+| Working-tree | The scoped committed changes plus staged, unstaged, and untracked contents at capture time; use `HEAD` as the fixed point for uncommitted work only |
+
+The merge-base keeps unrelated changes on the base branch out of the review. Path and hunk limits still apply. Untracked-only work counts as a real change, and new files are read without staging or committing them. Starting user edits are excluded through the implementation's ownership record, even inside shared files. An inseparable overlapping hunk needs a scope decision; it is not permission to absorb or revert the user's work.
+
+Both axes receive a reusable snapshot with the resolved revisions, scope, exclusions, commit list, patch, extra file contents, requirements, and verification evidence. Edits pause during review. A changed requirement or code snapshot makes the old report stale for the new state, so repairs need relevant verification and re-review. A remote issue remains canonical; the captured review evidence is not a second local plan.
 
 ## The two axes
 
 | | Standards | Spec |
 | --- | --- | --- |
 | Question | Is it built right? | Is it the right thing? |
-| Reads | Resolved contracts, standards documents, smell baseline, simplicity check, and explicit preservation constraints | The originating issue or spec, its provenance, and resolved binding constraints |
-| Reports | Documented breaches, possible smells, and justified simplifications with targeted verification | Missing or partial requirements, scope creep, incorrect implementations, and separately labelled unconfirmed assumptions |
-| Every finding cites | The rule or named concern and the file/hunk; simplifications also explain cost, alternative, and preserved behavior | The authoritative source; unconfirmed assumptions are not compliance failures |
+| Reads | Resolved contracts, standards documents, smell baseline, simplicity check, and preservation constraints | The originating issue or spec, approval provenance, and resolved binding constraints |
+| Reports | Documented breaches, possible smells, and justified simplifications | Missing or partial requirements, scope creep, incorrect implementations, and separately labelled unconfirmed assumptions |
+| Every finding cites | The rule or named concern and file/hunk; simplifications explain cost, alternative, preserved behavior, and verification | The authoritative requirement; an unconfirmed assumption is not a compliance failure |
 
-A generic review skill that does not know your standards flags what is deliberate in your codebase and misses the invariants it depends on. The resolved project contract and targeted repository documentation are the [primary sources](https://www.aihero.dev/ai-coding-dictionary/primary-source) on the Standards axis, and **the repo always overrides**. The Spec axis receives the same compact contract context only to understand terms and binding constraints; it cannot turn those items into requirements the spec never stated.
+The resolved project contract and repository documentation are the [primary sources](https://www.aihero.dev/ai-coding-dictionary/primary-source) for Standards. Repository standards override the smell baseline. Spec uses the same contract context to understand terms and constraints, not to invent requirements absent from the spec.
 
-The **smell baseline** is the floor underneath it: twelve Fowler code smells from _Refactoring_ ch.3 — Mysterious Name, Duplicated Code, Feature Envy, Data Clumps, Primitive Obsession, Repeated Switches, Shotgun Surgery, Divergent Change, Speculative Generality, Message Chains, Middle Man, Refused Bequest. Each is a labelled heuristic ("possible Feature Envy"), never a hard violation, and each is stated as *what it is* → *how to fix*, so a finding arrives with a move attached rather than a complaint. Anything your linter already enforces is skipped by both axes.
+The **smell baseline** covers twelve Fowler code smells from *Refactoring*, chapter 3: Mysterious Name, Duplicated Code, Feature Envy, Data Clumps, Primitive Obsession, Repeated Switches, Shotgun Surgery, Divergent Change, Speculative Generality, Message Chains, Middle Man, and Refused Bequest. They are investigation prompts, not automatic violations or instructions to add abstractions. Tooling-enforced style findings are skipped.
 
-## Simplicity and test value
+Standards always includes a `Simplicity and test value` subsection. It examines duplicate owners, forwarding layers, speculative frameworks, unnecessary persistence or recovery work, unreliable defensive heuristics, and tests that protect no observable behavior. Fewer files or tests is not the goal. Multiple required providers and meaningful authorization, concurrency, failure, and recovery coverage stay intact. Exact wording or bytes can also be legitimate protocol requirements.
 
-Expect a `Simplicity and test value` subsection under Standards. It examines duplicate owners, forwarding layers, speculative frameworks, unnecessary persistence or recovery work, unreliable defensive heuristics, and low-value tests. A recommendation must explain what burden it removes, what remains protected, and how to verify the change.
-
-The check preserves required capabilities and meaningful safety guarantees. Multiple required providers are not speculative generality. Durable writes may need fencing that pure reads do not. A test that catches an authorization or recovery failure earns its place; a test that only repeats a mock response usually does not. Exact wording or bytes can still be legitimate protocol requirements.
-
-A generated plan is reviewed as well as followed. Its implementation prescriptions do not automatically become user requirements, but a settled contract cannot be discarded merely because an agent wrote it. The report identifies any contract decision or documentation correction a proposed simplification needs.
-
-The reviewed behavior may depend on owning code or linked changes outside one PR. The reviewer follows those dependencies as needed while respecting your explicit scope limits. This is not an invitation to clean up the whole repository.
+The issue body holds current approved requirements and settled decisions alongside a detailed plan. Comments record progress, deviations, and reviews; approved requirement changes belong back in the body. Proposed implementation details do not become requirements merely by appearing in a plan. A simplification that changes a settled contract needs your decision, not a quiet scope reduction.
 
 ## Common questions
 
-**Its subagents keep invoking `/mp-code-review` again and spawn more agents.**
+**Can the implementation session run the reviews, or do I need a review coordinator?**
 
-Known open bug in some harnesses. The Standards and Spec prompts do not forbid delegation, so a subagent can rediscover the skill and fan out again. The guard is direct: tell both reviewers not to invoke `/mp-code-review` or spawn additional agents, and to perform the assigned review themselves. If you run this unattended, watch the agent count.
+The implementation [session](https://www.aihero.dev/ai-coding-dictionary/session) runs this skill and dispatches both reviewers directly. There is no extra coordinator. Independence comes from separate fresh reviewer contexts with captured evidence, not from making the implementing agent pretend to be a reviewer. Each reviewer performs its own assigned axis without invoking this skill again or spawning more agents. You can still start a fresh standalone review session.
 
-**Should I run it in the same [session](https://www.aihero.dev/ai-coding-dictionary/session) that wrote the code?**
+**Does naming a review model make the reviewers use it?**
 
-Prefer a fresh one. The reviewing agent in the authoring session holds every assumption that shaped the code, which is exactly the context an independent reviewer would not have. This is also why people ask for [implement](https://aihero.dev/skills-implement) without its built-in review step: it runs the review inside the session that just wrote the diff. Invoking `/mp-code-review` yourself from a clean session is the honest version.
-
-**After every ticket, or once at the end?**
-
-Both work, and the skill does not decide for you. Per-ticket keeps each diff small enough that the Spec axis has one clear spec to check against, which is the mode `implement` uses. Batching to the end of a branch catches interactions between tickets that the per-ticket passes each miss. If you are unsure, review per ticket and run one final pass against the branch point.
-
-**Can I trust the findings?**
-
-Not without checking. Sub-agent output is a hypothesis, not evidence — one team reported a dozen breaking changes that prose-based reviews had waved through. The skill aggregates the two reports verbatim or lightly cleaned rather than re-verifying each claim against the files, so a finding can cite the wrong location or overstate an impact. Read the citation on each finding before acting on it. That every finding is required to carry one — a standards rule, a smell plus its hunk, or a spec line — is what makes this checkable at all.
-
-**Why does it find new problems every single time I run it?**
-
-Because fixes create new surface, and because the judgement-call half of the Standards axis is not deterministic between runs. There is no convergence guarantee. Treat a pass as a list of leads, act on the ones with a cited rule behind them, and stop. Do not run it in a loop until it comes back clean, because it may not.
+No. Model selection is an environment capability. The skill resolves your designation, or the project's designation, through the available routing controls and checks configuration or execution metadata for each reviewer. A model claiming its own identity is not proof. If routing is unavailable or unverifiable, you receive self-contained briefs for separate user-run sessions on that model. Neither self-review nor a quiet switch to another model counts as completion. With no designation, the default remains usable.
 
 **Does it review my uncommitted work?**
 
-No. It diffs `<fixed-point>...HEAD`, three-dot, which is measured from the merge-base and excludes staged and working-tree changes. If `implement` has not made an interim commit, the work about to be committed is invisible to the review. Commit first, then review, then amend or add a fixup.
+Yes, in working-tree mode. This includes actual untracked file contents, not just staged and unstaged diffs. You do not need an interim commit. Committed mode deliberately excludes uncommitted work, and the report names the mode and scope it covered.
+
+**After each issue, or once at the end?**
+
+Both work. Per-issue review keeps requirements and scope focused; an end-of-branch pass can catch interactions between changes. One spec issue is enough for the planning-to-implementation handoff. Splitting it into sub-issues is a separate user choice, not a review prerequisite.
+
+**Can I trust the findings?**
+
+Check the citations before acting. Reports keep evidence-backed defects, design suggestions, and unresolved questions distinct, but a cited claim can still be wrong. The implementation session owns verification and authorized repairs. Scope, contract, and design disputes go back to you. Relevant re-review checks repairs; there is no promise that repeated judgement calls converge to an empty report.
 
 ## It's working if
 
-- It refuses to start on a bad ref or an empty diff, before any sub-agent is spawned.
-- The report arrives as two separate blocks under `## Standards` and `## Spec`, not one merged list.
-- Standards findings cite rules, named smells, or evidenced simplicity concerns. Simplicity findings include an alternative, preserved behavior, and a verification scenario; Spec failures quote an authoritative requirement.
-- The closing summary gives a worst issue per axis and declines to pick an overall winner.
-- With no spec available, the Spec block says so instead of listing requirements it inferred from the code.
-- The simplicity subsection can say no justified simplification was found. It preserves required complexity instead of manufacturing deletions.
+- Both reports name the same code and requirements snapshot, with the intended mode and scope.
+- New untracked files appear in working-tree review without staging or an interim commit.
+- Each axis is marked completed, blocked/pending, or skipped. A blocked model route is visible rather than reported as a pass.
+- Standards findings cite rules, named smells, or evidenced simplicity concerns. Spec failures quote approved requirements rather than plan assumptions.
+- The simplicity check can say no justified simplification was found and explain why required complexity stays.
+- The closing summary gives a status and worst issue per axis, never one blended verdict.
 
 ## Where it fits
 
-`mp-code-review` is the review step at the tail of the build chain: `grill-with-docs → to-spec → to-tickets → implement → mp-code-review`. It also stands alone on any branch or PR you point it at.
+`mp-code-review` is a build-chain step and a standalone review tool. In the two-session workflow, planning produces one approved spec issue; a fresh [implement](https://aihero.dev/skills-implement) session builds it, runs this skill directly, verifies findings, and repairs in-scope defects before a permitted final commit.
 
-- [implement](https://aihero.dev/skills-implement) is the closest neighbour: it drives the build and calls this skill as its own closing review before committing.
-- [to-spec](https://aihero.dev/skills-to-spec) and [to-tickets](https://aihero.dev/skills-to-tickets) produce the document the Spec axis checks against; a vague spec makes that axis vague.
-- [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) is the whole-codebase counterpart. This skill remains anchored to the requested changes while tracing the dependencies needed to judge them.
+[to-spec](https://aihero.dev/skills-to-spec) produces the canonical spec the review checks. [to-tickets](https://aihero.dev/skills-to-tickets) splits work only when you request sub-issues. [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) handles whole-codebase architecture rather than this skill's bounded change review.
 
-[ask-matt](https://aihero.dev/skills-ask-matt) routes across the whole set when you are unsure which skill the situation wants.
+[ask-matt](https://aihero.dev/skills-ask-matt) routes across the skill set when you are unsure which one fits.

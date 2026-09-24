@@ -1,81 +1,73 @@
 ## What it does
 
-`to-spec` turns the conversation you have just had into a **[spec](https://www.aihero.dev/ai-coding-dictionary/spec)**, and publishes it to your issue tracker as a single issue.
+`to-spec` turns settled discussion into one **[spec](https://www.aihero.dev/ai-coding-dictionary/spec)** issue with the approved requirements, decision rationale, and a detailed implementation plan grounded in the code.
 
-It does not interview you. By the time you reach for it the deciding is already done, so it synthesises what is known from the thread, the codebase, and one project-contract route. Configured repositories follow [dox](https://aihero.dev/skills-dox)'s retrieval and reuse policy; otherwise `to-spec` uses the applicable root-to-nearest `AGENTS.md` chain and indexed decisions when needed. The spec records decisions already made; it is not where new ones are made.
+It synthesises what you already decided without restarting the interview. The issue is the handoff to a fresh implementation [session](https://www.aihero.dev/ai-coding-dictionary/session), whether the change is small or large. It does not implement the plan or split it into sub-issues.
 
 ## When to reach for it
 
-You invoke this by typing `/to-spec` — the [agent](https://www.aihero.dev/ai-coding-dictionary/agent) won't reach for it on its own.
-
-Reach for it when the build is too big for one agent [session](https://www.aihero.dev/ai-coding-dictionary/session) and has to survive being split across several. That is the whole trigger:
+You invoke this by typing `/to-spec`. The [agent](https://www.aihero.dev/ai-coding-dictionary/agent) won't reach for it on its own.
 
 | Where you are | What to run |
 | --- | --- |
-| You haven't decided anything yet | [grill-with-docs](https://aihero.dev/skills-grill-with-docs) first |
-| Decided, and the work fits one [context window](https://www.aihero.dev/ai-coding-dictionary/context-window) | [implement](https://aihero.dev/skills-implement) — skip the spec |
-| Decided, and the work spans several sessions | `/to-spec`, then [to-tickets](https://aihero.dev/skills-to-tickets) |
-| A [wayfinder](https://aihero.dev/skills-wayfinder) map has cleared | `/to-spec #<map_issue>` |
+| You want to preserve settled discussion for a fresh implementation session | `/to-spec`, then [implement](https://aihero.dev/skills-implement) with the issue reference |
+| You already have the spec issue | `/to-spec <issue-reference>` updates it rather than creating a duplicate |
+| You haven't settled the consequential decisions | [grill-with-docs](https://aihero.dev/skills-grill-with-docs) first |
+| A [wayfinder](https://aihero.dev/skills-wayfinder) map has cleared | `/to-spec #<map_issue>` reads its linked decisions and preserves the map and decision history. It creates one linked spec, or updates an already identified spec |
+| You want a source issue itself to become the spec | Explicitly request conversion; supplying a map or decision issue alone does not authorize it |
+| You explicitly want separately tracked slices | [to-tickets](https://aihero.dev/skills-to-tickets) proposes a breakdown for your approval before publishing |
 
 ## Prerequisites
 
-`to-spec` publishes the spec as an issue, so [setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) must have configured a tracker and the triage-label vocabulary for this repo first. Either kind works: a real tracker like GitHub, or local markdown files under `.scratch/`, which is supported out of the box.
+[setup-matt-pocock-skills](https://aihero.dev/skills-setup-matt-pocock-skills) must have configured the issue tracker and triage-label vocabulary for this repo. Remote trackers such as GitHub or GitLab hold the issue without a local plan mirror. A configured local tracker uses its existing file convention.
 
-## The spec is a decision record
+Configured repositories follow [dox](https://aihero.dev/skills-dox)'s retrieval and reuse policy for project meaning. Without DOX, the skill uses the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries.
 
-The spec exists because context windows end. Everything you settled while [grilling](https://www.aihero.dev/ai-coding-dictionary/grilling) — the shape of the solution, the choices you argued through, what you deliberately refused — is in one conversation that is about to be cleared. The spec is what survives that.
+## One issue, two kinds of detail
 
-So it does not validate anything, and it does not decide anything. It captures what was decided, in your project's own vocabulary, so that a fresh session can pick the work up without you re-explaining it. Anything the spec asserts that you never actually said is a defect.
+The issue body is the current feature contract. It captures the requirements you approved, acceptance criteria, decisions from [grilling](https://www.aihero.dev/ai-coding-dictionary/grilling), their rationale and sources, and what you ruled out. A fresh session should not need the planning conversation to recover any of that.
 
-## Seams before prose
+The ordered implementation plan is separate. It names the paths, symbols, callers, and verification points the planning session inspected, along with the repository revision. Proposed implementation details are not silently promoted into requirements. The implementer checks those references against the current checkout before editing.
 
-Before it writes a word, `to-spec` sketches the **seams** the feature will be tested at, and checks them with you. It prefers seams that already exist to new ones, and takes the highest seam it can — the ideal number across a change is one.
+Comments hold progress, deviations, approvals, and review history. When you approve a requirement change, the body changes too. An agent's suggestion in a comment is not permission to change scope. Durable domain and architectural meaning still belongs in the selected project-contract store rather than a competing issue-based ledger.
 
-Those agreed seams then travel. [tdd](https://aihero.dev/skills-tdd) works only at pre-agreed seams, and [mp-code-review](https://aihero.dev/skills-mp-code-review) reviews the diff against the spec, so an unagreed seam becomes a review finding. The binding is indirect through this document, which is why the seam conversation belongs here rather than during implementation.
+## Seams and readiness
+
+`to-spec` reuses agreed **seams** for testing. Where a choice remains, it prefers an existing seam at the highest useful level and asks only about the unresolved choice. It does not ask you to approve the same seam twice.
+
+Readiness depends on approval, not on whether an issue was published:
+
+- Explicit approval of the current requirements and consequential decisions, a complete plan and verification approach, and no consequential open questions allow the configured `ready-for-agent` label.
+- Missing approval or unresolved consequential choices leave the issue in an appropriate configured non-ready state, with the blockers written down.
+
+Approval from the existing discussion counts. Typing `/to-spec` does not count as approval of decisions the agent adds while writing.
 
 ## Common questions
 
+**Can I plan in one session and implement in a fresh one from a single GitHub issue?**
+Yes. The issue contains the approved spec and the ordered, code-grounded plan. Start the new session with `/implement <issue-url>` once the issue is ready. You do not need a local plan file or an intermediate decomposition step.
+
+**Does a large spec have to become sub-issues?**
+No. Size does not change the default of one issue. Use `/to-tickets` only when you want separate tracked slices and their blocking edges.
+
+**Will it restart grilling or ask me to approve everything again?**
+No. It carries settled decisions and existing approvals forward. It asks only about remaining test seams or consequential approval, and keeps unresolved choices visible rather than guessing.
+
+**What if the code changes after planning?**
+The plan records the inspected revision and verified paths and symbols. The implementation session rechecks them. A stale path may need a different implementation step; it does not authorize changing the approved behavior.
+
 **Where did `/to-prd` go?**
-It is this skill, renamed in v1.1. "Spec" is now the single through-line term, and the old `to-prd` slug is gone. The pair that replaced the old vocabulary is *spec* and *tickets*: the spec is the destination and the decisions that fix it; the [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) are the execution steps that get there. If you pivot, delete unfinished tickets and keep the spec.
-
-**Why does the spec get the `ready-for-agent` label? I don't want an agent implementing off it.**
-The label means "no further triage needed" — the document is complete enough for an agent to work from. It is an input designation, not a work order. But if you run [AFK](https://www.aihero.dev/ai-coding-dictionary/afk) agents that poll for `ready-for-agent`, that distinction isn't visible to them, and they will happily try to build the whole spec in one run instead of picking up the ticket slices. This is the most-reported rough edge on the skill. Until it changes, exclude the parent spec explicitly in your AFK agent's prompt, or strip the label once `/to-tickets` has run.
-
-**Why not go straight from grilling to `/to-tickets` and skip the spec?**
-Often you should — the spec earns its step only on multi-session work. Where it pays is that the tickets are disposable and the spec isn't: each ticket is sized for one fresh context window and gets deleted or closed, while the spec stays as the one place the reasoning behind them lives. On a single-session change that buys you nothing, and you have paid an extra synthesis step where the [model](https://www.aihero.dev/ai-coding-dictionary/model) can drift. Go grilling → `/implement`.
-
-**I just finished a wayfinder map. What do I feed it?**
-The main map issue — `/to-spec #<map_issue>`, not the individual decision tickets. [wayfinder](https://aihero.dev/skills-wayfinder) produces decisions rather than deliverables, scattered across a map; `to-spec` is the step that collapses them into one buildable document. Looping the map straight into `/implement` throws that collapse away.
-
-**Is the spec for me to review, or is it just for the agent?**
-Mostly for the agent, and it reads that way — complete, dense, reference-heavy. The parts worth your eyes are the seams and the out-of-scope section, because those are the two places a wrong decision is cheapest to catch and most expensive to discover later. Reading the whole thing end to end is a real complaint people have, and there is no summary mode: the honest answer is that if the spec surprises you, the grilling was too shallow, not the spec too long.
-
-**Do I keep the spec frozen once tickets start, or let the agent rewrite it?**
-Nothing keeps it in sync, so it is a snapshot of what you knew when it was written and goes stale when implementation teaches you something. Treat it as disposable once the work ships. Knowledge meant to outlive it belongs in the configured DOX record through `domain-modeling`, or, without DOX, in the nearest owning `AGENTS.md`: domain terms under **Ubiquitous Language**, and durable decisions under **Architectural Decisions**, graduating to a co-located `DECISIONS.md` when that section grows.
-
-**My work is a refactor or a module boundary, not a feature. Does the template fit?**
-Less well, and this is a known limitation. The template leans hard on user stories, which is the wrong shape for architectural work. Lean on the implementation-decisions and testing-decisions sections instead, and let durable architectural calls land through [domain-modeling](https://aihero.dev/skills-domain-modeling) rather than making the spec a parallel decision store.
-
-**Will it check the tracker for related work, or cite the inherited architectural decisions it respects?**
-No to both. It respects the applicable context delivered under the DOX skill's policy, or the root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries without DOX, but does not cite every governing decision. It also does not search the tracker for overlapping issues before drafting, so a spec can quietly duplicate existing work. Search the tracker first when the area is busy.
-
-**`/to-tickets` couldn't read my spec — it kept truncating.**
-Very large specs can outgrow what a tracker issue will serve back cleanly, and there is no local copy to fall back on. The fix is context hygiene: don't [clear](https://www.aihero.dev/ai-coding-dictionary/clearing) or [compact](https://www.aihero.dev/ai-coding-dictionary/compaction) between `/to-spec` and `/to-tickets`. Run them in the same window and the spec never has to be re-fetched at all.
+It was renamed to `/to-spec` in v1.1. The spec now provides the direct handoff to implementation; a separate breakdown remains optional.
 
 ## It's working if
 
-- It starts writing rather than asking you a fresh round of questions.
-- It puts the seams to you before it writes, and proposes as few as it can get away with.
-- It comes back in your project's nouns, not generic product-management boilerplate.
-- Every decision in it is one you can remember making. Nothing was invented to fill a section.
-- The out-of-scope section has real things in it — the things you refused are usually the most useful lines on the page.
+- You get one issue reference and a fresh-session handoff, with no surprise sub-issues.
+- The issue distinguishes approved requirements from proposed implementation choices.
+- Its ordered plan points to inspected code and names the revision used.
+- Settled decisions keep their rationale; unresolved ones remain visible and prevent false readiness.
+- An existing spec issue is updated, and approved requirement changes appear in its body rather than only in comments.
+- Source maps and decision issues retain their history, with links from the spec, unless you explicitly requested conversion.
 
 ## Where it fits
 
-`to-spec` is a step in the main build chain, and only on the multi-session branch of it:
-
-```txt
-grill-with-docs → to-spec → to-tickets → implement → mp-code-review
-```
-
-Its neighbours upstream are [grill-with-docs](https://aihero.dev/skills-grill-with-docs), which does the deciding this skill only records, and [wayfinder](https://aihero.dev/skills-wayfinder), whose finished map merges onto the chain right here. Downstream, [to-tickets](https://aihero.dev/skills-to-tickets) cuts the spec into tracer-bullet tickets for [implement](https://aihero.dev/skills-implement) to build. When you're unsure which skill or flow fits, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.
+`to-spec` is the handoff step between planning with [grill-with-docs](https://aihero.dev/skills-grill-with-docs) and a fresh [implement](https://aihero.dev/skills-implement) session. That implementation session owns verification and repairs and directly runs [mp-code-review](https://aihero.dev/skills-mp-code-review). [to-tickets](https://aihero.dev/skills-to-tickets) is an explicit alternative when you want decomposition, not a required step. [ask-matt](https://aihero.dev/skills-ask-matt) routes you when you're unsure which flow fits.

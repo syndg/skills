@@ -10,9 +10,9 @@ You invoke this by typing `/ask-matt` — the agent won't reach for it on its ow
 
 | Your situation | What the router gives back |
 | --- | --- |
-| An idea, and no idea where to start | The head of the main flow, and whether the build is small enough to skip the spec |
+| An idea, and no idea where to start | The head of the main flow, or direct implementation when concrete work is already settled |
 | Bugs and requests arriving from other people | The [triage](https://aihero.dev/skills-triage) on-ramp, and why [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) you generated yourself do not belong on it |
-| Two skills that look interchangeable | The concrete boundary between them, such as one session versus many or conversation versus runnable evidence |
+| Two skills that look interchangeable | The concrete boundary between them, such as one spec issue versus explicitly requested build issues, or conversation versus runnable evidence |
 | A long session and a decision about the [context](https://www.aihero.dev/ai-coding-dictionary/context) | The ordered tree over the five options at a phase boundary |
 | A skill you have already picked | Nothing useful. Invoke that skill directly. |
 
@@ -29,15 +29,23 @@ The leading idea is **flow**: a path through the skills rather than one tool cho
 The main idea-to-ship flow is:
 
 ```txt
-grill-with-docs → to-spec → to-tickets → implement → mp-code-review
+Planning session: grill-with-docs → to-spec
+Fresh implementation session: implement → mp-code-review → permitted commit
 ```
 
 At the head of that flow, `grill-with-docs` writes settled project context to one canonical store. The trigger is `dox.config.json`: when present, it uses configured DOX records; when absent, it uses the root-to-nearest `AGENTS.md` and `DECISIONS.md` fallback.
 
-Two branches matter inside it:
+`to-spec` publishes one approved issue with the current requirements, decisions and rationale, a detailed ordered implementation plan grounded in the repository, and acceptance and verification criteria. Start the implementation session with that issue's URL, or its file path for a configured local tracker. The issue is the handoff; a remote tracker needs no duplicate local plan or Markdown handoff.
+
+Optional branches:
 
 - If a design question needs runnable evidence, bridge into [prototype](https://aihero.dev/skills-prototype) with [handoff](https://aihero.dev/skills-handoff). The prototype stays as a primary source on a `prototype/<name>` branch outside main, and the implementation issue points to it.
-- If the build fits one session, skip `to-spec` and `to-tickets`; invoke `implement` in the conversation that settled the work. For a multi-session build, keep grilling, spec, and ticketing in one unbroken context, then start each ticket in a fresh session.
+- If concrete work is already settled in the current conversation, invoke `implement` there without publishing a spec.
+- If you explicitly want separate build issues, use [to-tickets](https://aihero.dev/skills-to-tickets). A large or multi-session build does not require decomposition.
+
+You choose the planning and implementation models in your environment. Invoking a skill does not switch models. The implementation session directly runs [mp-code-review](https://aihero.dev/skills-mp-code-review), which dispatches independent, read-only Standards and Spec reviews with your designated review model. There is no intermediary coordinator. If the environment cannot route those reviews, the skill provides portable briefs for separate sessions and marks review blocked, not complete.
+
+The implementation session owns verification and repairs. It fixes evidenced in-scope defects, repeats the relevant checks and reviews, and asks you to settle scope, contract, or design disputes. Reviews cover uncommitted work; the final commit waits for the gates and your or the repository's permission.
 
 Three on-ramps join that flow:
 
@@ -61,17 +69,17 @@ Three model-invoked layers run beneath the flows:
 
 A **phase boundary** is the gap between chunks of work inside a session. It is the only place to decide what happens to the context. Mid-phase, continue or split tightly scoped work into [subagents](https://www.aihero.dev/ai-coding-dictionary/subagent); compacting mid-phase makes the agent lose the thread.
 
-Work down this table in order. The first option whose condition is true wins.
+The approved-spec handoff above is a deliberate fresh-session boundary. For other boundaries, work down this table in order. The first option whose condition is true wins.
 
 | Option | Take it when |
 | --- | --- |
 | **Continue** | The next phase needs this one as a [primary source](https://www.aihero.dev/ai-coding-dictionary/primary-source), or there is enough [smart zone](https://www.aihero.dev/ai-coding-dictionary/smart-zone) left. This move loses nothing, so rule it out first |
 | **`/clear`** | Everything behind you is disposable. It is cheap and the old session remains resumable, but clearing relevant context loses the why |
-| **[handoff](https://aihero.dev/skills-handoff)** | Something must travel to a new harness, directory, colleague, or side task |
+| **[handoff](https://aihero.dev/skills-handoff)** | Context must travel to a new harness, directory, colleague, or side task and no existing artifact, such as the approved issue, carries it |
 | **Subagent** | The task is scoped tightly enough to run with you [away from the keyboard](https://www.aihero.dev/ai-coding-dictionary/afk) |
 | **`/compact`** | Relevant context remains, the harness and directory stay the same, and you need to remain in the loop |
 
-`/compact` is the default, not the first reach. Every move except Continue replaces the session as it happened with a lossy [secondary source](https://www.aihero.dev/ai-coding-dictionary/secondary-source), so the order protects information before it optimises room.
+`/compact` is the default, not the first reach. Summarising conversation creates a lossy [secondary source](https://www.aihero.dev/ai-coding-dictionary/secondary-source), so the order protects information before it optimises room. An approved spec issue already records the canonical requirements and rationale needed for the planned-work handoff.
 
 ## Standalones and fork routes
 
@@ -97,7 +105,15 @@ This personalized fork adds routes that do not belong to the promoted product-de
 
 **Isn't there just a list of the skills in the right order?**
 
-The chain above is the common route, but a static list misses the decisions that matter: whether there is a codebase, whether the effort spans sessions, and whether a question can be settled by talking. Ask for the compressed sequence when that is all you need; use the router when the branch is the question.
+The chain above is the common route, but a static list misses the decisions that matter: whether there is a codebase, whether you want separate build issues, and whether a question can be settled by talking. Ask for the compressed sequence when that is all you need; use the router when the branch is the question.
+
+**Can I plan with one model, then implement with another from one GitHub issue?**
+
+Yes. Keep grilling and `to-spec` in the planning session, approve the issue, then open a fresh implementation session with its URL and `/implement`. Choose each model in your environment. The same route works with the configured GitLab or local tracker; only the issue reference changes.
+
+**Does review need another coordinator session?**
+
+No. The implementation session runs `/mp-code-review` directly and supplies your designated review model. That skill owns both independent review contexts. If the environment cannot select the required model, its portable briefs let you run separate review sessions manually; the review gate stays blocked until both reports return.
 
 **It described a skill's behaviour, and the skill does not do that.**
 
@@ -116,6 +132,7 @@ Check the changelog before assuming a skill disappeared. `writing-great-skills` 
 - It ends by naming what to type and stops there instead of starting the work itself.
 - The route mentions where to continue, clear, hand off, delegate, or compact, not just a list of names.
 - Where two skills are close, it says which one fits and why the other does not.
+- Planned work crosses into a fresh implementation session through one approved issue, without forced sub-issues or a duplicate handoff file.
 - A claim about another skill's behaviour is grounded in that skill's `SKILL.md` when the choice depends on it.
 - The route names `dox.config.json` when contract storage affects the flow, and never combines DOX with the AGENTS fallback.
 

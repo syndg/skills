@@ -64,7 +64,7 @@ Into the conversation only. The domain language is not a spec, and most answers 
 Yes. Invoke it with "help me document this repository". It reads the code and asks about what it finds; you decide which existing words are canonical. Check `dox.config.json` first. If present, use the configured record layout and create no parallel AGENTS-based decision store. If absent, start with a root-only `AGENTS.md` unless a durable ownership boundary justifies a child, then link the first child from the parent's **Child DOX Index**.
 
 **What should I do when the session ends?**
-In the main flow, run [to-spec](https://aihero.dev/skills-to-spec) in the same conversation. If the change is small enough to build in one session, go directly to [implement](https://aihero.dev/skills-implement).
+Run [to-spec](https://aihero.dev/skills-to-spec) in the same conversation, then start a fresh [implement](https://aihero.dev/skills-implement) session against the whole spec. Use [to-tickets](https://aihero.dev/skills-to-tickets) only when you explicitly want scoped implementation issues, not because of the change's size or session count.
 
 **Why is it called that?**
 The name is imperfect. `grill-domain-model` would describe the behavior more literally, but no rename has landed.
@@ -84,7 +84,7 @@ The name is imperfect. `grill-domain-model` would describe the behavior more lit
 `grill-with-docs` is the head of the main build chain:
 
 ```txt
-grill-with-docs → to-spec → to-tickets → implement → mp-code-review
+grill-with-docs → to-spec → implement → mp-code-review
 ```
 
 It comes before a spec: it produces the shared understanding and settled vocabulary that [to-spec](https://aihero.dev/skills-to-spec) synthesises without interviewing you again. Its close neighbours are [grill-me](https://aihero.dev/skills-grill-me), the same interview with no repository state, and [domain-modeling](https://aihero.dev/skills-domain-modeling), the semantic discipline for canonical DOX records or the unconfigured `AGENTS.md` fallback. Both sit on the [grilling](https://aihero.dev/skills-grilling) primitive. [Wayfinder](https://aihero.dev/skills-wayfinder) charts efforts too large for one session and can hand parts of the map back down to it. When you are unsure which skill or flow fits, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.

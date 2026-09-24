@@ -1,75 +1,90 @@
 ---
 name: to-spec
-description: "Turn the current conversation into a spec and publish it to the project issue tracker: no interview, just synthesis of what you've already discussed."
+description: "Synthesize settled discussion into one issue with the approved spec and a code-grounded implementation plan for a fresh session."
 disable-model-invocation: true
 ---
 
-This skill takes the current conversation context and codebase understanding and produces a spec. Do NOT interview the user — just synthesize what you already know.
+Create or update one spec issue from the current conversation, whether the change is small or large. Synthesize settled discussion without restarting grilling. Stop at the issue and handoff; implementation belongs in a fresh session. Decomposition through `/to-tickets` is a separate, explicit user choice, never a consequence of size.
 
 The issue tracker and triage label vocabulary should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
 
 ## Process
 
-1. When `dox.config.json` exists, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries when contract context is needed; use its Ubiquitous Language and respect its inherited Architectural Decisions.
+### 1. Recover settled context
 
-2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
+When `dox.config.json` exists, follow the installed `/dox` skill for retrieval eligibility, context reuse, and maintenance. Without DOX, read the applicable root-to-nearest `AGENTS.md` chain and relevant indexed co-located `DECISIONS.md` entries when contract context is needed; use its Ubiquitous Language and respect its inherited Architectural Decisions.
 
-Check with the user that these seams match their expectations.
+Read the current discussion for requirements, settled grilling decisions, rejected alternatives, rationale, and explicit approvals. Read the full body and comments of supplied issue references. For a wayfinder map, also read the linked decisions needed to synthesize the spec. Resolve truncated reads before treating the source as complete.
 
-3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
+Choose the publication target separately from the source context:
+
+- Update an existing spec issue identified by the user or source references rather than creating a duplicate.
+- Treat wayfinder maps and decision issues as source context. Preserve them and their history; when no existing spec is identified, create one spec issue linking back to those sources.
+- Convert a source issue into the spec only when the user explicitly requests that conversion.
+
+Distinguish user-approved requirements and binding design decisions from proposed implementation details. Record where each consequential decision came from: the discussion, an issue or comment, a prototype, or a governing project record. Cite available references; identify conversation decisions without inventing links or approval.
+
+### 2. Ground the implementation plan
+
+Inspect the relevant code, callers, interfaces, and existing verification paths. Reuse current patterns. Record the repository revision used for this inspection and any relevant uncommitted changes so a fresh session can check freshness.
+
+Build an ordered implementation plan. For each step, identify the intended change, verified existing paths and symbols, dependencies on earlier steps, and the observable verification. Include affected callers and required contract migrations, not just the central module. Mark proposed new paths or symbols as new rather than claiming they exist.
+
+Prefer existing test seams at the highest useful level, with as few seams as the behavior needs. Carry forward seams already settled in the discussion. Ask only about a remaining seam choice or consequential approval that the discussion has not resolved; do not repeat settled questions or start a new interview. Keep unresolved choices visible rather than guessing.
+
+### 3. Publish one current spec
+
+Write the issue body using the template below. Cover the full feature without padding the user stories or forcing feature language onto a refactor. Paths and symbols are revision-grounded planning evidence, not timeless requirements; tell the implementation session to recheck them before editing.
+
+- For a remote tracker such as GitHub or GitLab, publish or update one issue. Do not create a local plan mirror or sub-issues.
+- For a configured local tracker, create or update one spec issue using its existing file convention.
+
+The body is the canonical current feature contract. Comments record progress, deviations, approval history, and reviews. Fold approved requirement changes back into the body and record their rationale in the history; proposals in comments do not silently change scope. Durable project meaning stays in the selected project-contract store.
+
+Apply the configured label for `ready-for-agent` only when the user has explicitly approved the current requirements and consequential decisions, the implementation plan and verification approach are complete, and no consequential open questions remain. Approval already present in the discussion counts; publishing a draft or invoking `/to-spec` does not. Otherwise use the configured non-ready triage role that matches the remaining work, remove any conflicting ready label, and state what blocks readiness. Do not invent label strings.
+
+### 4. Hand off and stop
+
+Return the issue URL, or the configured local issue reference, and its readiness state. For a ready spec, give a fresh-session handoff such as `/implement <issue-reference>`. The new session must read the current body and relevant comments, recheck repository grounding, and own implementation, verification, and repairs. Carry forward any user-designated review model in the issue's review requirements; actual model selection depends on the implementation environment, not this skill's prose.
+
+For a draft, list the unresolved approvals or questions before the future handoff. Do not start implementation or automatically invoke decomposition.
 
 <spec-template>
 
-## Problem Statement
+## Problem and intended outcome
 
-The problem that the user is facing, from the user's perspective.
+The problem and the result the user needs.
 
-## Solution
+## Approved requirements
 
-The solution to the problem, from the user's perspective.
+Observable behavior, constraints, and relevant user stories. Separate approved requirements from anything still proposed. Use enough detail to implement the whole feature, without relying on the planning conversation.
 
-## User Stories
+## Acceptance criteria
 
-A LONG, numbered list of user stories. Each user story should be in the format of:
+Checkable outcomes covering the approved scope, including relevant boundaries and failure behavior.
 
-1. As an <actor>, I want a <feature>, so that <benefit>
+## Settled decisions and rationale
 
-<user-story-example>
-1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
-</user-story-example>
+Each consequential decision, why it was chosen, important rejected alternatives, its source, and approval status. Distinguish binding decisions from implementation suggestions. Include decision-rich prototype snippets only when they are more precise than prose, with their provenance.
 
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+## Repository grounding
 
-## Implementation Decisions
+Repository and inspected revision, relevant uncommitted changes, and verified paths, symbols, interfaces, and prior art. Identify proposed new locations separately. Recheck this grounding against the implementation checkout before editing.
 
-A list of implementation decisions that were made. This can include:
+## Ordered implementation plan
 
-- The modules that will be built/modified
-- The interfaces of those modules that will be modified
-- Technical clarifications from the developer
-- Architectural decisions
-- Schema changes
-- API contracts
-- Specific interactions
+Numbered steps with concrete changes, affected paths and symbols, dependencies, caller or contract migrations, and per-step verification. Label proposed implementation details separately from binding requirements.
 
-Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
+## Verification
 
-Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it within the relevant decision and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
+Agreed test seams, relevant existing tests or smoke checks, and how to exercise the acceptance criteria. Test external behavior rather than implementation details. Include the applicable repository gates and any user-stated review requirements. These are planned checks, not claims that implementation has passed them.
 
-## Testing Decisions
+## Out of scope
 
-A list of testing decisions that were made. Include:
+Explicit exclusions and rejected scope.
 
-- A description of what makes a good test (only test external behavior, not implementation details)
-- Which modules will be tested
-- Prior art for the tests (i.e. similar types of tests in the codebase)
+## Open questions and readiness
 
-## Out of Scope
-
-A description of the things that are out of scope for this spec.
-
-## Further Notes
-
-Any further notes about the feature.
+Unresolved questions, proposed choices awaiting approval, and their effect on readiness, or "None" when settled. Record the approval source for the current requirements and consequential decisions; otherwise mark the issue as a draft.
 
 </spec-template>

@@ -136,7 +136,7 @@ For debugging, I've also built a **[`/diagnosing-bugs`](./skills/engineering/dia
 
 This is built in to every layer of these skills:
 
-- [`/to-spec`](./skills/engineering/to-spec/SKILL.md) quizzes you about which modules you're touching before creating a spec
+- [`/to-spec`](./skills/engineering/to-spec/SKILL.md) turns the settled conversation into one approved spec issue with a detailed implementation plan, separating requirements from proposed implementation details.
 
 And crucially, [`/improve-codebase-architecture`](./skills/engineering/improve-codebase-architecture/SKILL.md) helps you rescue a codebase that has become a ball of mud. I recommend running it on your codebase once every few days.
 
@@ -159,9 +159,9 @@ Skills I use daily for code work.
 - **[triage](./skills/engineering/triage/SKILL.md)** — Move issues through a state machine of triage roles.
 - **[improve-codebase-architecture](./skills/engineering/improve-codebase-architecture/SKILL.md)** — Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.
 - **[setup-matt-pocock-skills](./skills/engineering/setup-matt-pocock-skills/SKILL.md)** — Configure the issue tracker, triage labels, and contract lookup. Preserves configured DOX records; scaffolds the AGENTS fallback only when unconfigured.
-- **[to-spec](./skills/engineering/to-spec/SKILL.md)** — Turn the current conversation into a spec and publish it to the issue tracker. No interview — just synthesizes what you've already discussed.
-- **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break any plan, spec, or conversation into a set of tracer-bullet tickets, each declaring its blocking edges — written as text in a local file, or as native blocking links on a real tracker.
-- **[implement](./skills/engineering/implement/SKILL.md)** — Build the work described by a spec or set of tickets, driving `/tdd` at pre-agreed seams and closing out with `/mp-code-review` before committing.
+- **[to-spec](./skills/engineering/to-spec/SKILL.md)** turns the settled conversation into one approved spec issue with a detailed implementation plan for a fresh session. No new interview.
+- **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** splits a plan into tracer-bullet issues with blocking edges only on explicit human request. Size or session count does not require it.
+- **[implement](./skills/engineering/implement/SKILL.md)** builds from a spec, explicit build issues, or settled conversation, drives `/tdd` at agreed seams, and directly runs independent `/mp-code-review` reviews before a gated, permitted commit.
 - **[wayfinder](./skills/engineering/wayfinder/SKILL.md)** — Plan a huge chunk of work, more than one agent session can hold, as a shared map of investigation tickets on the issue tracker — resolve them one at a time until the way to the destination is clear.
 
 **Model-invoked**
@@ -174,7 +174,7 @@ Skills I use daily for code work.
 - **[domain-modeling](./skills/engineering/domain-modeling/SKILL.md)** — Actively build and sharpen a project's domain model — challenge terms against the inherited language, stress-test with edge-case scenarios, and adjudicate durable terminology and decisions in the project contract.
 - **[dox](./skills/engineering/dox/SKILL.md)** — Curated repository meaning, applicable binding obligations, and canonical contract maintenance.
 - **[codebase-design](./skills/engineering/codebase-design/SKILL.md)** — Shared discipline and vocabulary for designing deep modules: a lot of behaviour behind a small interface, placed at a clean seam, testable through that interface.
-- **[mp-code-review](./skills/engineering/mp-code-review/SKILL.md)** reviews changes since a fixed point through independent **Standards** and **Spec** reviews. Standards always checks architectural burden and test value; Spec distinguishes requirements from unconfirmed plan assumptions.
+- **[mp-code-review](./skills/engineering/mp-code-review/SKILL.md)** reviews changes since a fixed point through independent **Standards** and **Spec** reviews, using the designated review model when supplied. It owns routing checks and portable separate-session briefs when routing is unavailable. Standards checks architectural burden and test value; Spec distinguishes requirements from unconfirmed plan assumptions.
 - **[resolving-merge-conflicts](./skills/engineering/resolving-merge-conflicts/SKILL.md)** — Work through an in-progress git merge or rebase conflict hunk by hunk, resolving by intent traced to each side's primary source, then finish the operation — never `--abort`.
 
 ### Productivity

@@ -3,51 +3,71 @@ name: mp-code-review
 description: Review changes since a fixed point for Standards and Spec compliance, including a required simplicity and test-value check. Identify unnecessary architecture, weak tests, and unsupported implementation assumptions without cutting required behavior. Run the two reviews independently and report them separately. Use for branch, PR, or work-in-progress reviews, "review since X", and requests to check a change for overengineering.
 ---
 
-Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
+Review a stable code snapshot along two independent axes:
 
 - **Standards**: does the code follow repository conventions, with justified architecture and useful tests?
 - **Spec**: does the code implement the requested behavior, and which plan assumptions remain unconfirmed?
 
-Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
+The session running this skill directly dispatches one reviewer per axis into separate fresh contexts. It may be the implementation session; it does not delegate to another review coordinator. Reviewers receive the same captured inputs, not the author's conversation or each other's reasoning.
 
-This is a review, not authorization to edit, delete tests, commit, or push. Report justified simplifications; apply them only when the user requests changes.
+This is a read-only review, not authorization to edit, delete tests, stage, commit, or push. The implementation session owns verification and repairs. Evidence-backed in-scope defects can inform repairs; scope, contract, and design disputes need a user decision.
 
-The issue-tracker workflow should have been provided through project context. If it is unavailable when resolving an issue reference, tell the user to run `/setup-matt-pocock-skills`.
+The issue-tracker workflow should have been provided through project context. If it is unavailable when resolving an issue reference, tell the user to run `/setup-matt-pocock-skills`. Keep remote issues canonical; a review snapshot is evidence for this run, not a local plan mirror.
 
 ## Process
 
-### 1. Select the fixed point
+### 1. Resolve scope and execution capabilities
 
-Whatever the user named is the fixed point: a commit SHA, branch name, tag, `main`, `HEAD~5`, and so on. If they did not specify one, ask.
+Resolve these inputs from the user or invoking workflow before dispatch:
 
-### 2. Identify the review scope and contract context
+- **Mode:** committed or working-tree. Use committed mode for a committed branch/PR review, and working-tree mode when reviewing work before its final commit. Ask if the intended mode is unclear.
+- **Fixed point and scope:** accept the supplied review baseline, commit SHA, branch, tag, or relative ref, plus owned paths/hunks and exclusions. If no baseline was supplied, ask. Do not silently include all branch work when the caller supplied a narrower implementation scope.
+- **Review model:** use the user's designation, otherwise an applicable project designation. When neither exists, independent reviewers may use the environment's normal default. A designation applies to both axes.
 
-Confirm the fixed point with `git rev-parse <fixed-point>` and capture changed paths with `git diff --name-only <fixed-point>...HEAD`. Respect any path limits the user supplied. A bad ref or an empty changed-path set fails before either review begins.
+Inspect the environment's available execution capabilities and documented model selection. Resolve a designation to an available model through those capabilities, not a guessed identifier or a sentence in the review prompt. For a designated model, confirm effective routing for each reviewer from authoritative configuration or execution metadata. A worker's claim about its identity is not evidence. Record the designation, resolved routing, and evidence; do not claim billing guarantees.
 
-Select one contract route:
+Dispatch directly into two independent contexts, in parallel where possible. Sequential execution is acceptable only with separate fresh contexts. Reviewers perform their assigned axis themselves; they must not invoke this skill again, delegate, or create a coordinator. If independent execution is absent, or a designated model is unavailable or its routing cannot be verified, prepare the portable briefs in step 5 and mark the affected axes blocked. Do not substitute self-review or another model. Standalone use without a model designation does not require selecting a particular model.
 
-- **Configured DOX:** follow the installed `/dox` skill for retrieval eligibility, context reuse, maintenance, and delegated review context. Use the actual review paths; include the whole branch only when that is the requested review scope.
+### 2. Capture the code snapshot and contract context
+
+Resolve the supplied fixed point to commit `R` and capture `HEAD` as commit `H`. Resolve review base `B` as the merge-base of `R` and `H`, recording all three hashes. This preserves three-dot branch review semantics without treating changes on the base branch as changes in the implementation. An exact implementation baseline that is an ancestor of `H` resolves to itself. An invalid ref, missing or ambiguous merge-base, or an incompatible requested baseline blocks capture until resolved.
+
+Use explicit hashes, not moving refs, in the captured commands:
+
+| Mode | Code included |
+| --- | --- |
+| Committed | The scoped diff `git diff B H` and commit list `git log B..H --oneline`. Staged, unstaged, and untracked work is excluded and reported as such. Read file context at `H`, not from a dirty checkout. |
+| Working-tree | The scoped net tracked diff `git diff B`, with staged and unstaged changes inventoried separately using `git diff --cached H` and `git diff`. Include the scoped commit list `git log B..H --oneline` and every in-scope untracked file's actual contents. For only uncommitted work, use `HEAD` as the supplied fixed point so `B = H`. |
+
+Apply path limits to diffs and commit lists, and record hunk-level limits separately. Enumerate untracked paths, for example with `git ls-files --others --exclude-standard`, then read their contents. Track additions, deletions, renames, file modes, and binary changes; record any unreadable content as a coverage blocker. Never stage files or make interim commits to expose them to review. A working-tree snapshot containing only untracked additions is non-empty. Fail as empty only after checking all in-scope committed, staged, unstaged, and untracked content applicable to the mode.
+
+For working-tree review, use the caller's starting-state inventory and ownership record to exclude pre-existing user edits, including individual hunks within shared files, unless the user explicitly included them in the review. Preserve those edits untouched. Capture their exclusions and the final file context so reviewers can distinguish owned changes from surrounding user content. Without a starting-state record, use explicit user scope; status alone cannot establish authorship. If ownership cannot be separated from an overlapping hunk, ask for a scope decision and mark that portion blocked rather than reviewing or reverting it as implementation work.
+
+Select one contract route using the actual review paths:
+
+- **Configured DOX:** follow the installed `/dox` skill for retrieval eligibility, context reuse, maintenance, and delegated review context. Include the whole branch only when that is the requested review scope.
 - **Unconfigured fallback:** read each changed file's applicable root-to-nearest `AGENTS.md` chain and any indexed co-located `DECISIONS.md` entries before inspecting the full diff or commit log.
 
-After the selected contract route is satisfied, capture each remaining input once, limiting the diff to the requested paths when applicable:
+After resolving contract context, capture the complete scoped patch and file context once. Both reviewers must see the same final contents, including new files and excluded surrounding hunks labelled as context only. Preserve staged/unstaged distinctions in the inventory without double-counting their net change. Include full files or accessible immutable copies when a patch lacks the context needed for review.
 
-- Diff: `git diff <fixed-point>...HEAD`
-- Commits: `git log <fixed-point>..HEAD --oneline`
+Freeze edits during capture and review. Give the snapshot an identifier derived from its commit hashes and captured content digests. Record paths, owned hunks, exclusions, commands, commit list, patch, additional file contents, and verification evidence supplied by the caller. Make this material reusable through ordinary text, attachments, or accessible immutable files; a live diff command or private session link alone is insufficient.
 
-An empty diff also fails before either review begins.
+Follow owning code, callers, and linked changes when needed to judge the reviewed behavior. A PR boundary is not proof that two definitions are independent. Respect explicit scope limits and report out-of-scope dependencies rather than starting a repository-wide cleanup. Capture any additional context against the same code snapshot.
 
-Follow the owning code, callers, and linked changes when needed to judge the reviewed behavior. A PR boundary is not proof that two definitions are independent. Respect explicit scope limits and report out-of-scope dependencies rather than starting a repository-wide cleanup.
+### 3. Capture the spec snapshot
 
-### 3. Identify the spec source
+Resolve the authoritative spec in this order:
 
-Look for the originating spec, in this order:
-
-1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the configured issue-tracker workflow.
-2. A path the user passed as an argument.
+1. An explicit issue URL/number, spec path, or supplied spec snapshot from the user or invoking workflow. This takes priority over commit-message inference.
+2. Issue references in the captured commit messages, resolved through the configured issue-tracker workflow. Distinguish issue references from merge-request references, and follow the latter to their originating issue when needed.
 3. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
-4. If nothing is found, ask the user where the spec is. If there is none, skip the **Spec** review and report "no spec available".
+4. Ask the user where the spec is. If the user confirms there is none, skip Spec and report "no spec available".
 
-Record the source of each requirement and any explicit behavior the user says to preserve. Distinguish user requirements and settled contracts from a plan's implementation prescriptions. A generated plan can contain unnecessary architecture; generation alone is not evidence that a choice is wrong. Review unconfirmed assumptions as proposals, not requirements. If a simplification would change a settled contract, label it as requiring a contract decision rather than silently overriding it.
+For an issue, retrieve the full body and relevant comments, including approvals, progress, deviations, and previous reviews; do not use a title or truncated preview as the spec. Read the full comment history as needed to identify those comments. If a supplied snapshot is the intended historical reference, preserve that version rather than silently replacing it with a later issue body. If an explicitly required source cannot be retrieved, mark Spec blocked, not skipped, and do not replace it with an inferred source.
+
+Capture source identifiers and revision, update time, or content digest. Give both axes the same requirements snapshot and provenance. The issue body holds current approved requirements, settled decisions and rationale, ordered plan, and acceptance/verification criteria. Comments record history and proposed changes; approved requirement changes belong back in the body. Flag an approved comment/body mismatch for reconciliation rather than silently changing scope. Reviewers remain read-only.
+
+Distinguish approved requirements and settled contracts from proposed implementation details, even when both appear in the issue body. Record explicit preservation constraints and unresolved decisions. A generated plan can contain unnecessary architecture; generation alone is not evidence that a choice is wrong. Review unconfirmed assumptions as proposals, not requirements. A simplification that changes a settled contract requires a contract decision.
 
 ### 4. Identify the standards sources
 
@@ -90,33 +110,41 @@ Keep explicitly required capabilities, including multiple real providers. Preser
 
 For every simplicity finding, cite the file/hunk and give the current cost, the missing justification, the smallest concrete alternative, the behavior or guarantee it preserves, and a targeted way to verify it. Group related evidence and verification in compact findings. Distinguish evidence-backed defects from design suggestions and unresolved questions. Report no justified simplification when the evidence supports keeping the design; do not manufacture a deletion quota.
 
-### 5. Run both reviews independently
+### 5. Dispatch the two axis reviews
 
-Delegate both reviews in parallel when independent execution is available. Otherwise, run them in sequence with separate contexts.
+Create a self-contained brief per axis. Each includes:
 
-**Standards review input** — include:
+- The same snapshot identifier, resolved base/HEAD hashes, mode, scope and exclusions, commit list, full scoped patch, and extra file contents from step 2. Include the captured file context or transferable immutable access to it.
+- The same requirements snapshot, source identifiers, approval provenance, preservation constraints, and unresolved decisions from step 3.
+- Applicable standing meaning and complete binding obligations under the selected contract route, following the installed `/dox` skill's delegation policy when configured.
+- The designated review model and routing evidence, or an explicit statement that the environment default is in use without a designation.
+- Supplied verification evidence and its limits. Reviewers inspect and report; they do not edit files, run repair loops, stage, commit, or push.
+- The output contract from step 6 and the instruction to perform only the assigned axis, without delegating, invoking this skill again, or reading the other axis's report.
 
-- The full diff command, commit list, and changed paths.
-- Applicable standing meaning and complete binding obligations for standards review, under the installed `/dox` skill's delegation policy when configured.
-- The list of standards-source files, **plus the smell baseline and required simplicity check from step 4** in full. Supply the `/ponytail` principles and the requirement-provenance and preservation notes from step 3; do not assume child agents inherit them.
-- The brief: "Perform the Standards review, including the required simplicity and test-value check. Cite documented breaches by file and rule. Label smells and simplification suggestions as judgement calls unless there is an evidenced defect or binding violation; a documented repository standard overrides a baseline smell. Give simplicity findings the evidence, alternative, preserved behavior, and verification described in step 4. Keep this axis independent from spec compliance. Skip tooling-enforced style findings. Be concise without dropping material findings or their evidence."
+For **Standards**, also include the standards sources, the smell baseline and required simplicity/test-value check from step 4 in full, and the installed `/ponytail` principles. Do not assume a reviewer inherits this skill or can resolve its local paths.
 
-**Spec review input** — include:
+Standards brief: "Perform the Standards review, including the required simplicity and test-value check. Cite documented breaches by file and rule. Label smells and simplification suggestions as judgement calls unless there is an evidenced defect or binding violation; a documented repository standard overrides a baseline smell. Give simplicity findings the evidence, alternative, preserved behavior, and verification required by the supplied check. Keep this axis independent from spec compliance. Skip tooling-enforced style findings. Be concise without dropping material findings or their evidence."
 
-- The diff command, commit list, and changed paths.
-- The path or fetched contents of the spec, with requirement provenance and explicit preservation notes from step 3.
-- Applicable standing meaning and complete binding obligations for the changed paths, under the installed `/dox` skill's delegation policy when configured. Use them to understand project terms and constraints, not to invent requirements absent from the spec.
-- The brief: "Report missing or partial requirements, unrequested behavior, and incorrectly implemented requirements. Quote the authoritative source for each finding. Separately flag unconfirmed plan assumptions; do not treat generated implementation prescriptions as user requirements or discard settled contracts as slop. Keep this axis independent from standards compliance. Be concise without dropping material findings or their evidence."
+Spec brief: "Report missing or partial requirements, unrequested behavior, and incorrectly implemented requirements. Quote the authoritative source for each finding. Use project contracts to understand terms and binding constraints, not to invent requirements absent from the spec. Separately flag unconfirmed plan assumptions; do not treat generated implementation prescriptions as user requirements or discard settled contracts as slop. Keep this axis independent from standards compliance. Be concise without dropping material findings or their evidence."
 
-If the spec is missing, skip the Spec review and note this in the final report.
+The parent sends each brief directly to its axis reviewer using the routing resolved in step 1. If a capability or input blocks execution, return the complete briefs as portable handoffs for separate user-run sessions on the designated model, or the default when none was designated. Include any missing-source instructions and mark unresolved inputs explicitly. Reuse the same snapshot for both sessions; require independent reports and, when a model was designated, environment routing evidence before accepting their results. A prepared brief is pending work, not a completed review.
 
-### 6. Aggregate
+If the user confirmed no spec exists, Standards still runs its baseline and simplicity check; mark Spec skipped. Otherwise, a failed, incomplete, wrong-model, or unverifiably routed designated-model review is blocked even if it produced findings. Keep any usable evidence, but do not count it as completion.
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
+### 6. Report without blending the axes
 
-Within `## Standards`, include `### Simplicity and test value` with the corresponding findings, or explicitly state that no justified simplification was found. Keep unconfirmed plan assumptions within `## Spec`, separate from compliance failures. Name any required complexity retained when it was a plausible removal candidate. Leave the review read-only unless edits were requested.
+Present separate `## Standards` and `## Spec` reports, verbatim or lightly cleaned. Do not merge or rerank findings. For each axis state:
 
-End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
+- **Completed**, **blocked/pending**, or **skipped**, with the reason for any non-completion.
+- Snapshot identifier and actual reviewed scope, including coverage gaps.
+- Designated model and verified routing evidence, or the undesignated default and any available execution metadata.
+- Findings with citations, separating evidenced defects, design suggestions, and unresolved questions.
+
+Within Standards, include `### Simplicity and test value` with findings or, only after a completed check, an explicit "no justified simplification found". Name required complexity retained when it was a plausible removal candidate. Keep unconfirmed plan assumptions within Spec, separate from compliance failures.
+
+Before accepting the reports, compare the captured input identities with the current intended review inputs. Code, scope, contract, or requirement changes make the reports stale for the new state. Preserve them as historical findings, capture the changed inputs, and re-review affected axes; both axes must cover the final shared snapshot before claiming a completed two-axis review. The implementation session verifies findings, makes authorized repairs, and runs relevant verification. It requests re-review after repairs rather than editing underneath active reviewers.
+
+End with one line giving status, finding count, and worst issue within each axis. A blocked or skipped axis is not a pass and has no zero-findings claim. Do not pick a single winner across axes.
 
 ## Why two axes
 

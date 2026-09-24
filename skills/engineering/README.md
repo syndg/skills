@@ -11,9 +11,9 @@ Reachable only when you type them (Claude Code: `disable-model-invocation: true`
 - **[triage](./triage/SKILL.md)** — Move issues through a state machine of triage roles.
 - **[improve-codebase-architecture](./improve-codebase-architecture/SKILL.md)** — Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.
 - **[setup-matt-pocock-skills](./setup-matt-pocock-skills/SKILL.md)** — Configure the issue tracker, triage labels, and contract lookup. Preserves configured DOX records; scaffolds the AGENTS fallback only when unconfigured.
-- **[to-spec](./to-spec/SKILL.md)** — Turn the current conversation into a spec and publish it to the issue tracker.
-- **[to-tickets](./to-tickets/SKILL.md)** — Break any plan, spec, or conversation into a set of tracer-bullet tickets, each declaring its blocking edges — text in a local file, or native blocking links on a real tracker.
-- **[implement](./implement/SKILL.md)** — Build the work described by a spec or set of tickets, driving `/tdd` at pre-agreed seams and closing out with `/mp-code-review` before committing.
+- **[to-spec](./to-spec/SKILL.md)** turns the settled conversation into one approved spec issue with a detailed implementation plan for a fresh session.
+- **[to-tickets](./to-tickets/SKILL.md)** splits a plan into tracer-bullet issues with blocking edges only on explicit human request. Size or session count does not require it.
+- **[implement](./implement/SKILL.md)** builds from a spec, explicit build issues, or settled conversation, drives `/tdd` at agreed seams, and directly runs independent `/mp-code-review` reviews before a gated, permitted commit.
 - **[wayfinder](./wayfinder/SKILL.md)** — Plan a huge chunk of work — more than one agent session can hold — as a shared map of decision tickets on the issue tracker, resolved one at a time until the way to the destination is clear.
 
 ## Model-invoked
@@ -28,5 +28,5 @@ Model- or user-reachable (rich trigger phrasing so the model can reach for them)
 - **[domain-modeling](./domain-modeling/SKILL.md)** — Actively build and sharpen a project's domain model — challenge terms, stress-test with scenarios, and adjudicate durable terminology and decisions in the project contract.
 - **[dox](./dox/SKILL.md)** — Curated repository meaning, applicable binding obligations, and canonical contract maintenance.
 - **[codebase-design](./codebase-design/SKILL.md)** — Shared discipline and vocabulary for designing deep modules: small interfaces, clean seams, testable through the interface.
-- **[mp-code-review](./mp-code-review/SKILL.md)** reviews changes since a fixed point for Standards and Spec compliance, including required simplicity and test-value checks.
+- **[mp-code-review](./mp-code-review/SKILL.md)** runs independent Standards and Spec reviews with simplicity and test-value checks, designated-model routing when supplied, and portable briefs when required routing is unavailable.
 - **[resolving-merge-conflicts](./resolving-merge-conflicts/SKILL.md)** — Work through an in-progress git merge or rebase conflict hunk by hunk, resolving by intent traced to each side's primary source, then finish the operation — never `--abort`.
