@@ -22,6 +22,7 @@ Third-party skills vendored from elsewhere (Anthropic, Vercel, etc.). Not promot
 - [ponytail](./ponytail/SKILL.md) — find the smallest complete implementation within settled scope, preserving required product experience (Dietrich Gebert, adapted).
 - [react-doctor](./react-doctor/SKILL.md) — scan and triage React diagnostics (lint, a11y, bundle, architecture).
 - [skill-creator](./skill-creator/SKILL.md) — create, improve, and evaluate skills (Anthropic).
+- [typesafe-ai](./typesafe-ai/SKILL.md) — build with TypeSafe System One models as typed AI judgments (typesafe-ai).
 - [vercel-composition-patterns](./vercel-composition-patterns/SKILL.md) — React composition patterns that scale (Vercel).
 - [vercel-react-best-practices](./vercel-react-best-practices/SKILL.md) — React/Next.js performance guidelines (Vercel).
 - [video-interaction-mapper](./video-interaction-mapper/SKILL.md) — map UI screen recordings into annotated Figma storyboards (Figma).
