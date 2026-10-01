@@ -26,5 +26,4 @@ Third-party skills vendored from elsewhere (Anthropic, Vercel, etc.). Not promot
 - [vercel-composition-patterns](./vercel-composition-patterns/SKILL.md) — React composition patterns that scale (Vercel).
 - [vercel-react-best-practices](./vercel-react-best-practices/SKILL.md) — React/Next.js performance guidelines (Vercel).
 - [video-interaction-mapper](./video-interaction-mapper/SKILL.md) — map UI screen recordings into annotated Figma storyboards (Figma).
-- [web-animation-design](./web-animation-design/SKILL.md) — natural, purposeful web animations.
 - [xlsx](./xlsx/SKILL.md) — read, create, and edit spreadsheets (Anthropic).

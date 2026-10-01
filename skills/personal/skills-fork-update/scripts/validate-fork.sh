@@ -224,13 +224,13 @@ for path in \
   vercel-composition-patterns \
   vercel-react-best-practices \
   video-interaction-mapper \
-  web-animation-design \
   xlsx
 do
   require_path "skills/vendor/$path/SKILL.md"
   require_text "skills/vendor/README.md" "[$path](./$path/SKILL.md)"
 done
 require_absent "skills/vendor/brainstorming/SKILL.md"
+require_absent "skills/vendor/web-animation-design"
 
 # Teaching fork and lesson-kit assets.
 for path in \

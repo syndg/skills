@@ -57,7 +57,7 @@ Treat the downstream commits and current downstream diff as intent, not noise. P
    - Preserve the user's personal wiki, Readwise, YouTube history, Synclaw, cmux, and Syn Pi maintenance skills.
    - Preserve the vendor bucket and its third-party skills.
    - Keep upstream's `edit-article` and `obsidian-vault` personal skills excluded unless the user explicitly asks to adopt them. For an intentional adoption, run validation with `ALLOW_EDIT_ARTICLE=1` and/or `ALLOW_OBSIDIAN_VAULT=1` and report the exception.
-   - Keep the removed brainstorming skill excluded.
+   - Keep the removed brainstorming and `web-animation-design` skills excluded.
 
 4. **Other downstream work**
    - Preserve the customized `teach` skill and lesson kit.
