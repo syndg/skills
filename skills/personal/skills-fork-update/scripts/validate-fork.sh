@@ -62,7 +62,7 @@ require_absent ".agents/adr"
 [ ! -L "$repo/CLAUDE.md" ] || fail "CLAUDE.md must remain a harness-only file, not a contract symlink"
 require_text ".agents/writing-docs.md" 'dox.config.json'
 require_text "skills/productivity/handoff/SKILL.md" "A receipt is a local manifest, not loaded contract prose"
-require_text "skills/in-progress/implement-spec/SKILL.md" "every implementer runs resolution from inside its assigned worktree"
+require_text "skills/engineering/implement-spec/SKILL.md" "every implementer runs resolution from inside its assigned worktree"
 require_text "skills/engineering/mp-code-review/SKILL.md" "first repository operation"
 for path in \
   diagnosing-bugs \

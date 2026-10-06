@@ -18,7 +18,8 @@ REPO="$(cd "$(dirname "$0")/.." && pwd)"
 DESTS=("$HOME/.claude/skills" "$HOME/.agents/skills" "$HOME/.codex/skills")
 BUCKETS=(engineering productivity personal vendor)
 # Experimental skills are opt-in so the whole in-progress bucket stays hidden.
-ALLOWLIST=(in-progress/pr in-progress/retro)
+# pr and retro graduated to engineering upstream, so nothing is allowlisted now.
+ALLOWLIST=()
 # Collect skills from the linked buckets.
 names=()
 srcs=()
@@ -31,7 +32,7 @@ for bucket in "${BUCKETS[@]}"; do
   done < <(find "$REPO/skills/$bucket" -mindepth 2 -maxdepth 2 -name SKILL.md -print0)
 done
 
-for relative_skill in "${ALLOWLIST[@]}"; do
+for relative_skill in "${ALLOWLIST[@]+"${ALLOWLIST[@]}"}"; do
   src="$REPO/skills/$relative_skill"
   if [ ! -f "$src/SKILL.md" ]; then
     echo "allowlisted skill is missing SKILL.md: $relative_skill" >&2

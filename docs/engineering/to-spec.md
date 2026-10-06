@@ -2,7 +2,7 @@
 
 `to-spec` turns settled discussion into one **[spec](https://www.aihero.dev/ai-coding-dictionary/spec)** issue with the approved requirements, decision rationale, and a detailed implementation plan grounded in the code.
 
-It synthesises what you already decided without restarting the interview. The issue is the handoff to a fresh implementation [session](https://www.aihero.dev/ai-coding-dictionary/session), whether the change is small or large. It does not implement the plan or split it into sub-issues.
+It does not interview you. When you reach for it, the deciding is already done, so it synthesises what you already decided without starting a new round of questions. The spec records decisions you already made. It is not a place to make new ones. The issue is the handoff to a fresh implementation [session](https://www.aihero.dev/ai-coding-dictionary/session), whether the change is small or large. It does not implement the plan or split it into sub-issues.
 
 ## When to reach for it
 
@@ -25,7 +25,7 @@ Configured repositories follow [dox](https://aihero.dev/skills-dox)'s retrieval 
 
 ## One issue, two kinds of detail
 
-The issue body is the current feature contract. It captures the requirements you approved, acceptance criteria, decisions from [grilling](https://www.aihero.dev/ai-coding-dictionary/grilling), their rationale and sources, and what you ruled out. A fresh session should not need the planning conversation to recover any of that.
+The spec exists because context windows end. You settled many things while grilling, and all of it sits in one conversation that you are about to clear. The issue body is the current feature contract. It captures the requirements you approved, acceptance criteria, decisions from [grilling](https://www.aihero.dev/ai-coding-dictionary/grilling), their rationale and sources, and what you ruled out. A fresh session should not need the planning conversation to recover any of that.
 
 The ordered implementation plan is separate. It names the paths, symbols, callers, and verification points the planning session inspected, along with the repository revision. Proposed implementation details are not silently promoted into requirements. The implementer checks those references against the current checkout before editing.
 
@@ -33,7 +33,7 @@ Comments hold progress, deviations, approvals, and review history. When you appr
 
 ## Seams and readiness
 
-`to-spec` reuses agreed **seams** for testing. Where a choice remains, it prefers an existing seam at the highest useful level and asks only about the unresolved choice. It does not ask you to approve the same seam twice.
+`to-spec` reuses agreed **seams** for testing. Where a choice remains, it prefers an existing seam at the highest useful level and asks only about the unresolved choice. It does not ask you to approve the same seam twice. Other skills use those agreed seams later: [tdd](https://aihero.dev/skills-tdd) works only at seams you agreed in advance, and [mp-code-review](https://aihero.dev/skills-mp-code-review) reviews the diff against the spec, so a seam nobody agreed to shows up as a review finding. That is why the seam conversation belongs here, not in implementation.
 
 Readiness depends on approval, not on whether an issue was published:
 
@@ -59,6 +59,15 @@ The plan records the inspected revision and verified paths and symbols. The impl
 **Where did `/to-prd` go?**
 It was renamed to `/to-spec` in v1.1. The spec now provides the direct handoff to implementation; a separate breakdown remains optional.
 
+**I just finished a wayfinder map. What do I feed it?**
+Give it the main map issue, `/to-spec #<map_issue>`, not the individual decision tickets. [wayfinder](https://aihero.dev/skills-wayfinder) produces decisions spread across a map, not deliverables. `to-spec` collapses them into one document you can build from. If you loop the map straight into `/implement`, you lose that step.
+
+**Is the spec for me to review, or is it just for the agent?**
+Mostly for the agent, and it reads that way: complete, dense, and full of references. Read the seams and the out-of-scope section. In those two places, a wrong decision is cheapest to catch now and most expensive to find later. If the spec surprises you, the grilling was too shallow; the spec is not too long.
+
+**My work is a refactor or a module boundary, not a feature. Does the template fit?**
+Less well, and this is a known limitation. The template relies heavily on user stories, which do not fit architectural work. Use the implementation-decisions and testing-decisions sections instead. Record the lasting architectural decisions in the project contract through [grill-with-docs](https://aihero.dev/skills-grill-with-docs), not in the spec.
+
 ## It's working if
 
 - You get one issue reference and a fresh-session handoff, with no surprise sub-issues.
@@ -70,4 +79,4 @@ It was renamed to `/to-spec` in v1.1. The spec now provides the direct handoff t
 
 ## Where it fits
 
-`to-spec` is the handoff step between planning with [grill-with-docs](https://aihero.dev/skills-grill-with-docs) and a fresh [implement](https://aihero.dev/skills-implement) session. That implementation session owns verification and repairs and directly runs [mp-code-review](https://aihero.dev/skills-mp-code-review). [to-tickets](https://aihero.dev/skills-to-tickets) is an explicit alternative when you want decomposition, not a required step. [ask-matt](https://aihero.dev/skills-ask-matt) routes you when you're unsure which flow fits.
+`to-spec` is the handoff step between planning with [grill-with-docs](https://aihero.dev/skills-grill-with-docs) and a fresh [implement](https://aihero.dev/skills-implement) session. That implementation session owns verification and repairs and directly runs [mp-code-review](https://aihero.dev/skills-mp-code-review). [to-tickets](https://aihero.dev/skills-to-tickets) is an explicit alternative when you want decomposition, not a required step. Afterwards, [retro](https://aihero.dev/skills-retro) can feed what the build taught back into the agent's environment. [ask-matt](https://aihero.dev/skills-ask-matt) routes you when you're unsure which flow fits.
