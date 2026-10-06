@@ -2,11 +2,11 @@
 
 `grill-with-docs` interviews you about a plan or design until you and the [agent](https://www.aihero.dev/ai-coding-dictionary/agent) share one understanding of it, and writes the vocabulary and hard decisions into your repository while it does. It is the same interview [grill-me](https://aihero.dev/skills-grill-me) runs, a round of questions followed by your answers and then the next round, pointed at a codebase.
 
-It is **[stateful](https://www.aihero.dev/ai-coding-dictionary/stateful)**. Every other grilling skill leaves the [session](https://www.aihero.dev/ai-coding-dictionary/session) in your head; this one leaves a durable paper trail. A term lands in the nearest owning contract the moment it resolves. A decision passes three gates and lands at the scope it governs. The artifacts are real repository state, so ownership and inheritance matter.
+It is **[stateful](https://www.aihero.dev/ai-coding-dictionary/stateful)**. Every other grilling skill leaves the [session](https://www.aihero.dev/ai-coding-dictionary/session) in your head; this one leaves a durable paper trail. When a term resolves, the skill records it in the nearest owning contract at once, not in a batch at the end. When a decision passes three gates, it lands at the scope it governs. That is the whole difference, and it also causes most of the trouble people have with the skill. The artifacts are real repository state, so they can be missing when you expected them, they can drift when more than one person writes them, and ownership and inheritance matter.
 
 ## When to reach for it
 
-You invoke this by typing `/grill-with-docs` — the agent will not reach for it on its own.
+You invoke this by typing `/grill-with-docs`, and the agent won't reach for it on its own.
 
 Reach for it at the start of a repository change, while the plan is fuzzy and the words are not settled. It is the single-session tool. Which grilling skill you want depends on what is in front of you:
 
@@ -22,14 +22,14 @@ The wayfinder split comes down to session count: `/grill-with-docs` for single-s
 
 ## Prerequisites
 
-The skill writes into your repository, so you need to be somewhere it is safe to write. Select one storage branch:
+The skill writes into your repo, so you need to be somewhere it is safe to write. Select one storage branch:
 
 | Trigger | Contract behavior |
 | --- | --- |
 | `dox.config.json` exists | Follow the installed DOX skill's retrieval, reuse, and maintenance policy. `domain-modeling` adjudicates semantic updates in canonical records, without a parallel `AGENTS.md` / `DECISIONS.md` store. |
 | `dox.config.json` is absent | Read from the root `AGENTS.md` down to the nearest owner. Terms and durable decisions land there, inheriting **Ubiquitous Language** and **Architectural Decisions** from every parent. New sections and child files appear lazily; each child enters its parent's **Child DOX Index**, and large decision bodies graduate to co-located `DECISIONS.md`. |
 
-The skill also needs [grilling](https://aihero.dev/skills-grilling) and [domain-modeling](https://aihero.dev/skills-domain-modeling) available because its own `SKILL.md` delegates to them. `grilling` supplies the interview, and `domain-modeling` supplies the contract updates.
+It also needs [grilling](https://aihero.dev/skills-grilling) and [domain-modeling](https://aihero.dev/skills-domain-modeling) available because its own `SKILL.md` delegates to them. `grilling` supplies the interview, and `domain-modeling` supplies the contract updates. Installing `grill-with-docs` alone gets you a skill that does not work.
 
 ## The paper trail
 
@@ -44,30 +44,30 @@ Settled knowledge has different homes depending on what it means.
 
 Ubiquitous Language stays focused on vocabulary. Architectural decisions need all three gates, so many sessions produce none. Other durable meaning can still deserve a canonical record. Keep the remaining task detail in the [context window](https://www.aihero.dev/ai-coding-dictionary/context-window) and hand the same conversation to [to-spec](https://aihero.dev/skills-to-spec) rather than [clearing](https://www.aihero.dev/ai-coding-dictionary/clearing) it.
 
-The domain language is the point: the project's own words, agreed once, so you, the agent, and colleagues stop paying to derive them again. The sharpest counterargument is that a canonical term and its plain-English expansion may perform similarly for the model, so the vocabulary primarily compresses communication between humans. That reading still leaves it useful; it simply locates the value more honestly.
+The domain language is the main output. This skill builds the project's own words, agreed once, so you, the agent and your colleagues do not have to work them out again. Not everyone agrees that this improves agent performance. The strongest objection is that a term and its plain-English expansion get the same result from the [model](https://www.aihero.dev/ai-coding-dictionary/model), and that the vocabulary mainly shortens communication between the humans who share it. On that view the domain language is still valuable, but the value goes to the humans.
 
 ## Common questions
 
 **Should I use this or `/wayfinder`?**
-Scope decides it. Use this for anything you can settle in one session. Use [wayfinder](https://aihero.dev/skills-wayfinder) when the effort is too large to hold in one, and it charts the work as a map of decision [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket). Wayfinder can still drop into a grilling session for one part of its map.
+Scope decides it. Use this for anything you can settle in one session; use [wayfinder](https://aihero.dev/skills-wayfinder) when the effort is too big to hold in one, and it charts the work as a map of decision [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) first. Wayfinder is slower and denser, and reaching for it on a well-scoped feature is the common mistake. It does not replace this skill, and it can start a grilling session for the parts of the map that suit one.
 
 **It ran, but no contract file changed.**
 First ask whether any new durable meaning settled. No new vocabulary or ADR does not rule out a changed boundary or behavioral contract in configured DOX. If meaning did settle but nothing was recorded, check that `domain-modeling` loaded and followed the selected store's maintenance policy. In an unconfigured repository, check the nearest owner as well as the root. Use `/dox` for configured retrieval rather than scanning records.
 
 **It asked everything at once, with no recommendations, and never mentioned the domain contract.**
-That means its dependencies did not load correctly. A proper `grilling` run asks one dependency-safe frontier per round and gives a recommendation for every question. Partial loading is more confusing: the interview can look right while `domain-modeling` is absent and no semantic update lands. Ask directly which skills are active, then invoke the missing one by name.
+That is the skill failing to load its two dependencies. Because `SKILL.md` delegates to them, an agent that does not pick up `grilling` and `domain-modeling` guesses at what grilling means. A proper `grilling` run asks one dependency-safe frontier per round and gives a recommendation for every question. Partial loading is more confusing: the interview can look right while `domain-modeling` is absent and no semantic update lands. Ask directly which skills are active, then invoke the missing one by name.
 
 **Where did all my other decisions go?**
-Into the conversation only. The domain language is not a spec, and most answers do not earn an architectural decision. Precise answers can soften downstream if no artifact carries them. Keep the session and feed it straight to [to-spec](https://aihero.dev/skills-to-spec), then review the spec against your own answers instead of assuming every detail survived.
+Into the conversation only. This is the most serious open complaint about the skill. The domain language is not a spec, most answers do not earn an architectural decision, and no record links each resolved answer to a spec, a ticket and a test. Later steps can soften precise answers (ordering guarantees, negative requirements, numeric defaults) into weaker prose. Keep the session and feed it straight to [to-spec](https://aihero.dev/skills-to-spec), then review the spec against your own answers instead of assuming every detail survived.
 
-**Can I point it at an existing repository that has no domain docs?**
+**Can I point it at an existing repo that has no domain docs?**
 Yes. Invoke it with "help me document this repository". It reads the code and asks about what it finds; you decide which existing words are canonical. Check `dox.config.json` first. If present, use the configured record layout and create no parallel AGENTS-based decision store. If absent, start with a root-only `AGENTS.md` unless a durable ownership boundary justifies a child, then link the first child from the parent's **Child DOX Index**.
 
 **What should I do when the session ends?**
 Run [to-spec](https://aihero.dev/skills-to-spec) in the same conversation, then start a fresh [implement](https://aihero.dev/skills-implement) session against the whole spec. Use [to-tickets](https://aihero.dev/skills-to-tickets) only when you explicitly want scoped implementation issues, not because of the change's size or session count.
 
 **Why is it called that?**
-The name is imperfect. `grill-domain-model` would describe the behavior more literally, but no rename has landed.
+Nobody is happy with the name. There is an open suggestion to rename it `grill-domain-model`, which describes the behaviour more accurately. Nothing has moved on it.
 
 ## It's working if
 
@@ -84,7 +84,7 @@ The name is imperfect. `grill-domain-model` would describe the behavior more lit
 `grill-with-docs` is the head of the main build chain:
 
 ```txt
-grill-with-docs → to-spec → implement → mp-code-review
+grill-with-docs → to-spec → implement → mp-code-review → retro
 ```
 
-It comes before a spec: it produces the shared understanding and settled vocabulary that [to-spec](https://aihero.dev/skills-to-spec) synthesises without interviewing you again. Its close neighbours are [grill-me](https://aihero.dev/skills-grill-me), the same interview with no repository state, and [domain-modeling](https://aihero.dev/skills-domain-modeling), the semantic discipline for canonical DOX records or the unconfigured `AGENTS.md` fallback. Both sit on the [grilling](https://aihero.dev/skills-grilling) primitive. [Wayfinder](https://aihero.dev/skills-wayfinder) charts efforts too large for one session and can hand parts of the map back down to it. When you are unsure which skill or flow fits, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.
+It comes before anything is written down as a spec. It produces the shared understanding and settled vocabulary that [to-spec](https://aihero.dev/skills-to-spec) synthesises without interviewing you again. Its close neighbours are [grill-me](https://aihero.dev/skills-grill-me), the same interview with no repository state, and [domain-modeling](https://aihero.dev/skills-domain-modeling), the semantic discipline for canonical DOX records or the unconfigured `AGENTS.md` fallback. Both sit on the [grilling](https://aihero.dev/skills-grilling) primitive. [Wayfinder](https://aihero.dev/skills-wayfinder) charts efforts too large for one session and can hand parts of the map back down to it. When you are unsure which skill or flow fits, [ask-matt](https://aihero.dev/skills-ask-matt) routes you.

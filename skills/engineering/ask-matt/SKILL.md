@@ -28,7 +28,15 @@ The route most work travels. You have an idea and want it built.
 
    Two optional branches remain:
    - For concrete work already settled in the current conversation, invoke **`/implement`** there without publishing a spec.
-   - Only when the human explicitly requests separate build issues, use **`/to-tickets`** after `/to-spec`. It creates tracer-bullet issues with blocking edges, worked blockers-first with `/implement` in fresh sessions. Size or session count alone does not trigger decomposition.
+   - Only when the human explicitly requests separate build issues, use **`/to-tickets`** after `/to-spec`. It creates tracer-bullet issues with blocking edges. Work them one of two ways:
+     - **`/implement`** per ticket in fresh sessions, blockers-first.
+     - **`/implement-spec`** for the whole spec in one run. It reads the tickets as a **task graph**, runs implementer subagents across the ready **frontier**, and lands everything on one **integration branch**, then runs one `/mp-code-review` over it. Reach for it when you would rather orchestrate the build than drive each ticket yourself.
+
+   Size or session count alone does not trigger decomposition.
+
+   When the work goes up as a pull request, **`/pr`** shapes the body: the smallest visual that shows the change, before/after evidence that it works, and a one-way or two-way door call. It is model-invoked, so the agent reaches for it whenever it writes a PR.
+
+   **`/retro`** closes the loop. After a build, and especially one that went sideways, it looks back over the session and suggests changes to the agent's **environment**, not the code: navigation pointers, automated checks, the coding standards the reviews enforce, steering files, tooling. Run it in the session it is looking back on, before you clear; after clearing, point it at that session's log instead.
 
    Reach for **`/tdd`** alone to build a concrete behaviour test-first, or **`/mp-code-review`** alone to review changes against a fixed point. Its Standards and Spec reviews include simplicity and test-value checks and distinguish requirements from generated-plan assumptions.
 
@@ -44,7 +52,7 @@ A starting situation that generates work, then merges onto the main flow.
 
   Triage is only for issues **you didn't create** — bug reports, incoming feature requests, anything that arrives raw. Tickets that `/to-tickets` produced are already agent-ready, so **don't triage them**.
 
-- **Something's broken** → **`/diagnosing-bugs`**. For the hard ones: the bug that resists a first glance, the intermittent flake, the regression that crept in between two known-good states. It refuses to theorise until it has a **tight feedback loop** — one command that already goes red on *this* bug — then fixes with a regression test. After the fix, recommend **`/improve-codebase-architecture`** when the real finding is that there is no good seam to lock the bug down.
+- **Something's broken** → **`/diagnosing-bugs`**. For the hard ones: the bug that resists a first glance, the intermittent flake, the regression that crept in between two known-good states. It refuses to theorise until it has a **tight feedback loop** (one command that already goes red on *this* bug), then fixes with a regression test. Once the fix is in, run **`/retro`** in the same session to ask what would have prevented the bug; where the real finding is that there is no good seam to lock it down, recommend **`/improve-codebase-architecture`**.
 
 - **A huge, foggy effort — a greenfield project or a huge feature build, too big for one session** → **`/wayfinder`**, the most cognitively demanding flow here. When the way from here to the destination isn't visible yet, it charts a **shared map** of **decision tickets** on the issue tracker and resolves them one at a time — producing **decisions, not deliverables** — until the fog is pushed back and the way is clear. Where **`/grill-with-docs`** sharpens an idea you can hold in one session, wayfinder is for the idea you can't — and it's slower and denser, so save it for exactly that, never a well-scoped feature.
 
@@ -77,16 +85,17 @@ Three model-invoked layers run *beneath* the other skills. They retrieve or main
 
 Off the main flow entirely.
 
-- **`/grill-me`** — the same relentless interview as `/grill-with-docs`, but for when you have **no codebase**. Stateless: it saves nothing locally and builds no durable project contract.
-- **`/prototype`** — throwaway code that answers one design question. Logic/state prototypes are self-contained HTML demos; UI prototypes expose several visual directions. Preserve the prototype on a throwaway branch as a primary source, keep only the validated decision on main, and link the branch from the implementation issue.
-- **`/research`** — delegate reading legwork to a **background agent**: it investigates a question against **primary sources**, then leaves a cited Markdown file in the repo. Keep working while it reads. The file it produces feeds the main flow at `/grill-with-docs`; research does not replace the decision work.
-- **`/wizard`** — generate an interactive shell guide when a setup, migration, or operational transition contains human-only steps such as opening URLs, capturing values, or placing secrets.
-- **`/to-questionnaire`** — turn a decision that needs someone else's input into an asynchronous Markdown questionnaire, after clarifying who will answer and what decision their answers unblock.
-- **`/wait-what`** — re-pitch the last message in plain language and the project's Ubiquitous Language when it did not land.
-- **`/teach`** — learn a concept over multiple sessions, using the current directory as a stateful workspace.
-- **`/writing-for-agents`** — reference for writing and pruning any document an agent consumes, including skills, steering files, plans, and project contracts.
-- **`/unslop`** — clean AI tells from any prose while preserving meaning, evidence, project vocabulary, and the author's intended voice. It is the cleanup layer beneath `/writing-for-agents` and every other flow that emits text.
-- **`/resolving-merge-conflicts`** — resolve an in-progress merge or rebase conflict by tracing both sides to their intent and completing the operation without discarding either side.
+- **`/grill-me`**: the same relentless interview as `/grill-with-docs`, but for when you have **no codebase**. Stateless: it saves nothing locally and builds no durable project contract.
+- **`/grilling`** is the interview primitive itself: rounds, the frontier, facts are the agent's job and decisions are yours. `/grill-me` and `/grill-with-docs` are the two named ways in, and `/triage`, `/wayfinder` and `/improve-codebase-architecture` all run it internally. Reach for it directly only when you want the interview with no wrapper around it.
+- **`/prototype`**: throwaway code that answers one design question. Logic/state prototypes are self-contained HTML demos; UI prototypes expose several visual directions. Preserve the prototype on a throwaway branch as a primary source, keep only the validated decision on main, and link the branch from the implementation issue.
+- **`/research`**: delegate reading legwork to a **background agent**: it investigates a question against **primary sources**, then leaves a cited Markdown file in the repo. Keep working while it reads. The file it produces feeds the main flow at `/grill-with-docs`; research does not replace the decision work.
+- **`/wizard`**: generate an interactive shell guide when a setup, migration, or operational transition contains human-only steps such as opening URLs, capturing values, or placing secrets.
+- **`/to-questionnaire`**: turn a decision that needs someone else's input into an asynchronous Markdown questionnaire, after clarifying who will answer and what decision their answers unblock.
+- **`/wait-what`**: re-pitch the last message in plain language and the project's Ubiquitous Language when it did not land.
+- **`/teach`**: learn a concept over multiple sessions, using the current directory as a stateful workspace.
+- **`/writing-for-agents`**: reference for writing and pruning any document an agent consumes, including skills, steering files, plans, and project contracts.
+- **`/unslop`**: clean AI tells from any prose while preserving meaning, evidence, project vocabulary, and the author's intended voice. It is the cleanup layer beneath `/writing-for-agents` and every other flow that emits text.
+- **`/resolving-merge-conflicts`**: resolve an in-progress merge or rebase conflict by tracing both sides to their intent and completing the operation without discarding either side. Kept in this fork after upstream removed it.
 
 ## Fork maintenance
 

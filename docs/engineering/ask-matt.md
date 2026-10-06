@@ -6,7 +6,7 @@ It recommends and stops. It does not grill, write a [spec](https://www.aihero.de
 
 ## When to reach for it
 
-You invoke this by typing `/ask-matt` — the agent won't reach for it on its own.
+You invoke this by typing `/ask-matt`; the agent won't reach for it on its own.
 
 | Your situation | What the router gives back |
 | --- | --- |
@@ -30,7 +30,7 @@ The main idea-to-ship flow is:
 
 ```txt
 Planning session: grill-with-docs → to-spec
-Fresh implementation session: implement → mp-code-review → permitted commit
+Fresh implementation session: implement → mp-code-review → permitted commit → retro
 ```
 
 At the head of that flow, `grill-with-docs` writes settled project context to one canonical store. The trigger is `dox.config.json`: when present, it uses configured DOX records; when absent, it uses the root-to-nearest `AGENTS.md` and `DECISIONS.md` fallback.
@@ -41,17 +41,21 @@ Optional branches:
 
 - If a design question needs runnable evidence, bridge into [prototype](https://aihero.dev/skills-prototype) with [handoff](https://aihero.dev/skills-handoff). The prototype stays as a primary source on a `prototype/<name>` branch outside main, and the implementation issue points to it.
 - If concrete work is already settled in the current conversation, invoke `implement` there without publishing a spec.
-- If you explicitly want separate build issues, use [to-tickets](https://aihero.dev/skills-to-tickets). A large or multi-session build does not require decomposition.
+- If you explicitly want separate build issues, use [to-tickets](https://aihero.dev/skills-to-tickets). Then build one ticket at a time with `implement`, or run the whole task graph in parallel with [implement-spec](https://aihero.dev/skills-implement-spec). A large or multi-session build does not require decomposition.
 
 You choose the planning and implementation models in your environment. Invoking a skill does not switch models. The implementation session directly runs [mp-code-review](https://aihero.dev/skills-mp-code-review), which dispatches independent, read-only Standards and Spec reviews with your designated review model. There is no intermediary coordinator. If the environment cannot route those reviews, the skill provides portable briefs for separate sessions and marks review blocked, not complete.
 
 The implementation session owns verification and repairs. It fixes evidenced in-scope defects, repeats the relevant checks and reviews, and asks you to settle scope, contract, or design disputes. Reviews cover uncommitted work; the final commit waits for the gates and your or the repository's permission.
+
+[retro](https://aihero.dev/skills-retro) closes the loop after a build, especially one that went sideways. It looks back over the session and suggests changes to the agent's environment, not the code.
 
 Three on-ramps join that flow:
 
 - [triage](https://aihero.dev/skills-triage) turns work that arrived from other people into agent-ready issues.
 - [diagnosing-bugs](https://aihero.dev/skills-diagnosing-bugs) builds a tight red feedback loop before it theorises about a hard bug.
 - [wayfinder](https://aihero.dev/skills-wayfinder) charts a multi-session, foggy effort as decision tickets, then merges back at [to-spec](https://aihero.dev/skills-to-spec) when the map clears.
+
+Codebase health is upkeep rather than feature work. [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture) surveys the code for deepening opportunities, and each one it finds re-enters the main flow as an idea.
 
 ## Implementation discipline
 
@@ -67,7 +71,7 @@ Three model-invoked layers run beneath the flows:
 
 ## The phase boundary
 
-A **phase boundary** is the gap between chunks of work inside a session. It is the only place to decide what happens to the context. Mid-phase, continue or split tightly scoped work into [subagents](https://www.aihero.dev/ai-coding-dictionary/subagent); compacting mid-phase makes the agent lose the thread.
+A **phase boundary** is the gap between chunks of work inside a session. It is the only place to decide what happens to the context. Mid-phase, continue or split tightly scoped work into [subagents](https://www.aihero.dev/ai-coding-dictionary/subagent). Compacting mid-phase makes the agent lose the thread.
 
 The approved-spec handoff above is a deliberate fresh-session boundary. For other boundaries, work down this table in order. The first option whose condition is true wins.
 
@@ -79,7 +83,7 @@ The approved-spec handoff above is a deliberate fresh-session boundary. For othe
 | **Subagent** | The task is scoped tightly enough to run with you [away from the keyboard](https://www.aihero.dev/ai-coding-dictionary/afk) |
 | **`/compact`** | Relevant context remains, the harness and directory stay the same, and you need to remain in the loop |
 
-`/compact` is the default, not the first reach. Summarising conversation creates a lossy [secondary source](https://www.aihero.dev/ai-coding-dictionary/secondary-source), so the order protects information before it optimises room. An approved spec issue already records the canonical requirements and rationale needed for the planned-work handoff.
+`/compact` is the default, not the first reach. Summarising a conversation creates a lossy [secondary source](https://www.aihero.dev/ai-coding-dictionary/secondary-source), so the order protects information before it optimises room. An approved spec issue already records the canonical requirements and rationale needed for the planned-work handoff.
 
 ## Standalones and fork routes
 
@@ -105,7 +109,7 @@ This personalized fork adds routes that do not belong to the promoted product-de
 
 **Isn't there just a list of the skills in the right order?**
 
-The chain above is the common route, but a static list misses the decisions that matter: whether there is a codebase, whether you want separate build issues, and whether a question can be settled by talking. Ask for the compressed sequence when that is all you need; use the router when the branch is the question.
+The chain above is the common route, but a static list misses the decisions that matter: whether there is a codebase, whether you want separate build issues, and whether talking can settle the question. Ask for the compressed sequence when that is all you need. Use the router when the branch is the question. The cost is that the router is maintained by hand, so it lags behind the repo.
 
 **Can I plan with one model, then implement with another from one GitHub issue?**
 
@@ -117,7 +121,7 @@ No. The implementation session runs `/mp-code-review` directly and supplies your
 
 **It described a skill's behaviour, and the skill does not do that.**
 
-The router is a hand-maintained [secondary source](https://www.aihero.dev/ai-coding-dictionary/secondary-source) over each `SKILL.md`. When a claim is load-bearing, ask it to read that skill's source before relying on the summary. The source is right when the two disagree.
+The router is a hand-maintained [secondary source](https://www.aihero.dev/ai-coding-dictionary/secondary-source) over each `SKILL.md`. It answers from its own one-line summary of each skill, so it can describe behaviour the skill does not have. When a claim is load-bearing, ask it to open that skill's source before you rely on the summary. The same applies to questions the map does not cover at all, such as whether to use [plan mode](https://www.aihero.dev/ai-coding-dictionary/agent-mode): that answer is the [model](https://www.aihero.dev/ai-coding-dictionary/model)'s inference, not something written down here. The source is right when the two disagree.
 
 **Can it route over my own unrelated skills?**
 
@@ -125,7 +129,7 @@ No. It maps this repository's promoted set and the explicit fork-local maintenan
 
 **Where did an older name go?**
 
-Check the changelog before assuming a skill disappeared. `writing-great-skills` became [writing-for-agents](https://aihero.dev/skills-writing-for-agents), `to-prd` became [to-spec](https://aihero.dev/skills-to-spec), `pathfinder` became [wayfinder](https://aihero.dev/skills-wayfinder), and this fork uses [mp-code-review](https://aihero.dev/skills-mp-code-review) everywhere.
+Check the changelog for a rename before assuming a skill is gone. `writing-great-skills` became [writing-for-agents](https://aihero.dev/skills-writing-for-agents) with no alias, `to-prd` became [to-spec](https://aihero.dev/skills-to-spec), and `pathfinder` became [wayfinder](https://aihero.dev/skills-wayfinder). Four skills were retired outright into the skills that absorbed them: `ubiquitous-language`, `design-an-interface`, `qa` and `request-refactor-plan`. This fork uses [mp-code-review](https://aihero.dev/skills-mp-code-review) everywhere. If the router misses a skill you have, that is its own lag, described above.
 
 ## It's working if
 
@@ -138,4 +142,4 @@ Check the changelog before assuming a skill disappeared. `writing-great-skills` 
 
 ## Where it fits
 
-`ask-matt` is a **standalone router** over the whole set. It is never a step in a chain; it points into every chain, and it is the node the other docs pages link back to so none of them has to redraw the graph. From here you most often land on [grill-with-docs](https://aihero.dev/skills-grill-with-docs), the head of the main flow, or [triage](https://aihero.dev/skills-triage), the on-ramp for work that arrived rather than work you started.
+`ask-matt` is a **standalone router** over the whole set. It is never a step in a chain. It points into every chain, and the other docs pages link back to it so none of them has to redraw the graph. From here you most often land on [grill-with-docs](https://aihero.dev/skills-grill-with-docs), the head of the main flow, or [triage](https://aihero.dev/skills-triage), the on-ramp for work that arrived rather than work you started.

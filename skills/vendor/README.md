@@ -27,3 +27,7 @@ Third-party skills vendored from elsewhere (Anthropic, Vercel, etc.). Not promot
 - [vercel-react-best-practices](./vercel-react-best-practices/SKILL.md) — React/Next.js performance guidelines (Vercel).
 - [video-interaction-mapper](./video-interaction-mapper/SKILL.md) — map UI screen recordings into annotated Figma storyboards (Figma).
 - [xlsx](./xlsx/SKILL.md) — read, create, and edit spreadsheets (Anthropic).
+- [pstack/create-verification-skill](./pstack/create-verification-skill/SKILL.md) — generate a project-local skill that drives the app like a user and proves behavior (pstack, Lauren Tan).
+- [pstack/maintain-verification-skill](./pstack/maintain-verification-skill/SKILL.md) — periodic pass that keeps a project's verification skill and feature map honest (pstack, Lauren Tan).
+- [pstack/show-me-your-work](./pstack/show-me-your-work/SKILL.md) — keep a reviewable TSV decision trail for long-running or unattended work (pstack, Lauren Tan).
+- [pstack/ship](./pstack/ship/SKILL.md) — babysit PRs to merge-ready, then land only the independently verified run from the root (pstack, Lauren Tan; merged from poteto-mode babysit and shipping playbooks plus `watch-pr/cli.ts`). See [pstack/PROVENANCE.md](./pstack/PROVENANCE.md).

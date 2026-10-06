@@ -21,7 +21,7 @@ Every `SKILL.md` is either user-invoked (`disable-model-invocation: true` plus `
 
 Repository-aware skills must preserve the DOX direct-cutover contract. A configured project (`dox.config.json` present) follows the installed `dox` skill for retrieval eligibility, context reuse, and maintenance, including delegated worktree grounding. Keep that procedure in the skill, not in callers or generated pointers. Only an unconfigured project falls back to its applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries. Reserve `CLAUDE.md` for harness-operational instructions and pointers, not fallback domain-contract storage. Configured projects keep canonical records, not a parallel `AGENTS.md` / `DECISIONS.md` ledger.
 
-To (re)link the selected skills into the local harness skill directories (`~/.claude/skills`, `~/.agents/skills`, `~/.codex/skills`), run `scripts/link-skills-syndg.sh`. The `in-progress/pr` and `in-progress/retro` skills are explicitly allowlisted there. The script preserves existing non-symlink installations; its links point into this repo, so a `git pull` keeps those links current. Re-run it after adding, removing, or renaming a skill.
+To (re)link the selected skills into the local harness skill directories (`~/.claude/skills`, `~/.agents/skills`, `~/.codex/skills`), run `scripts/link-skills-syndg.sh`. The linker's `ALLOWLIST` for opt-in `in-progress/` skills is currently empty, since `pr` and `retro` graduated to `engineering/`. The script preserves existing non-symlink installations; its links point into this repo, so a `git pull` keeps those links current. Re-run it after adding, removing, or renaming a skill.
 
 ## Ubiquitous Language
 
