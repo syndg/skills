@@ -16,7 +16,7 @@ set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 DESTS=("$HOME/.claude/skills" "$HOME/.agents/skills" "$HOME/.codex/skills")
-BUCKETS=(engineering productivity personal vendor)
+BUCKETS=(engineering productivity personal vendor vendor/pstack)
 # Experimental skills are opt-in so the whole in-progress bucket stays hidden.
 # pr and retro graduated to engineering upstream, so nothing is allowlisted now.
 ALLOWLIST=()

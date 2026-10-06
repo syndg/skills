@@ -62,7 +62,10 @@ One skill merged from two poteto-mode playbooks plus the watcher CLI. The new fr
 | `ship/SKILL.md` lines 13-37 | `poteto-mode/playbooks/babysit.md` lines 3-27 |
 | `ship/SKILL.md` line 39 | new heading `## Part 2: Shipping` |
 | `ship/SKILL.md` lines 41-55 | `poteto-mode/playbooks/shipping.md` lines 3-17 |
-| `ship/scripts/watch-pr/cli.ts` | `poteto-mode/scripts/watch-pr/cli.ts` (verbatim, 223 lines) |
+| `ship/scripts/watch-pr/{cli,github,policy,render,types}.ts`, `watch-pr`, `tsconfig.json` | `poteto-mode/scripts/watch-pr/` (verbatim; tests and fakes not vendored) |
+| `ship/scripts/bootstrap.ts`, `package.json`, `bun.lock` | `poteto-mode/scripts/` (verbatim; installs `commander` on first run) |
+| `ship/scripts/.gitignore` | new (`node_modules/`) |
+| `ship/references/bugbot-triage.md` | `poteto-mode/references/bugbot-triage.md` (verbatim) |
 
 Edits inside the copied playbook lines (cross-references only, since the playbook files do not exist here):
 
@@ -72,6 +75,5 @@ Edits inside the copied playbook lines (cross-references only, since the playboo
 
 Known dangling references, left verbatim:
 
-- `ship/scripts/watch-pr/watch-pr` (the bun launcher), plus `cli.ts` sibling imports `./github.ts`, `./policy.ts`, `./render.ts`, `./types.ts` and `../bootstrap.ts`, are not vendored. `cli.ts` cannot run from this tree alone.
-- `../references/bugbot-triage.md` (babysit step 8) and `playbooks/autopilot-full.md` (babysit step 4) are not vendored.
+- `playbooks/autopilot-full.md` (babysit step 4) is not vendored.
 - Cursor-specific wording ("Cursor cloud agent", `cursor-team-kit` control skills, "Cursor's built-in babysit skill", `origin pr ...`) is kept verbatim because it names no model.
