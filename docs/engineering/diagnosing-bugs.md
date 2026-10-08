@@ -42,6 +42,15 @@ Phase 1 gets the most effort because it is the only hard phase. The skill lists 
 
 When the agent cannot build one, the skill tells it to stop and say so, list what it tried, and ask you for [environment](https://www.aihero.dev/ai-coding-dictionary/environment) access, a captured artifact, or permission to add temporary instrumentation. It must not go on to form hypotheses anyway.
 
+## Invyte issues
+
+For a resumatchweb `INV-xx` issue, the skill starts with the repository's `repro`
+command and its private case file. Once the exact symptom is confirmed twice,
+`probe` tests a ranked hypothesis with a reviewed, bounded query. Production
+probes need explicit authorization; golden is the preferred diagnosis target.
+The case file keeps reproduction evidence and diagnosis together. Blocked or
+unconfirmed reproduction stops the diagnosis instead of becoming a guessed cause.
+
 ## The gates between phases
 
 The phases are gates, not a checklist. The agent cannot enter a phase until a specific condition is true.

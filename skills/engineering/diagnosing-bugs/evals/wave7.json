@@ -1,0 +1,24 @@
+{
+  "prompt": "diagnose INV-42",
+  "method": "Fresh worker with no parent context, an AGENTS.md pointer to the candidate skill, and recorded offline command fixtures. No production access.",
+  "commands": [
+    [
+      "repro",
+      "INV-42"
+    ],
+    [
+      "probe",
+      "--list"
+    ],
+    [
+      "probe",
+      "schema-fingerprint",
+      "--param",
+      "table=CandidateProspect",
+      "--db",
+      "golden"
+    ]
+  ],
+  "result": "repro preceded probe; worker read and updated the private case file; probe selected golden without sequence hints",
+  "limitations": "Tool selection only. Recorded fixtures do not establish real issue diagnosis or live database behavior."
+}

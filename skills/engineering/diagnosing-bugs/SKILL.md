@@ -15,6 +15,17 @@ This skill has you show commands, outputs and captured artifacts. **Redact every
 
 If the redacted output is not enough to diagnose the bug, say so and ask the user.
 
+## Invyte issue diagnosis
+
+For `diagnose INV-xx` in resumatchweb, use the repository tools in this order:
+
+1. Select Node 22 with `export PATH="$HOME/.local/node22/bin:$PATH"`, then run `bun run repro INV-xx`. Read `docs/agents/diagnose.md` for supported personas and flows. Repro confirms the exact symptom twice on a disposable shadow branch or validated preview. A blocked or unconfirmed result stops diagnosis; report the missing evidence.
+2. Read the private `.qa/repro/INV-xx.md` case file and its evidence. Keep the `Repro` section and add ranked hypotheses under `Diagnosis` only after confirmation.
+3. Run `bun run probe --list`, then choose a reviewed probe whose result distinguishes a hypothesis. Prefer `--db golden`. Production needs explicit authorization for each probe; during metadata-only work, use catalog probes only. The runner owns the reader role, one-connection lock, indexed predicates, LIMIT and 15-second timeout. It accepts named probes and validated parameters, never arbitrary SQL or scripts.
+4. Add the probe name, scrubbed structural result, prediction and conclusion to the case file. Continue through the phases below and rerun repro after the fix.
+
+Executor approval pauses stop the invocation. Never resume them. Credentials stay in the private E0 store; case files and raw evidence stay local. The old `run-ro-*.sh` launchers and pg preloads are retired. Use repro, probe and the case file for this path.
+
 ## Phase 1 — Build a feedback loop
 
 **This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug — one that goes red on _this_ bug — you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
