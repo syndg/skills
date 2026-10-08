@@ -23,6 +23,10 @@ Reach for it on the hard ones: a bug you can't solve at first look, an intermitt
 | Asking what would have prevented the bug, once it is fixed | [retro](https://aihero.dev/skills-retro), run in the same session |
 | No good seam exists to lock the bug down | [improve-codebase-architecture](https://aihero.dev/skills-improve-codebase-architecture), which you start yourself |
 
+## Project diagnosis tools
+
+Some repositories ship their own diagnosis commands and document them in `docs/agents/diagnose.md`. When that file exists, the skill uses them instead of building its own: for a reported issue, the project's reproduce command is the first thing it runs (it drives the real UI twice and either confirms the symptom or lists what it tried), and questions about production state go through the project's named read-only probes. It never writes SQL against production. Without that file, nothing changes.
+
 ## The tight loop is the skill
 
 Phase 1 gets the most effort because it is the only hard phase. The skill lists ways to build the loop, roughly in order of preference:
@@ -82,6 +86,7 @@ v1.0.0 renamed it to `/diagnosing-bugs`. The old name no longer exists. Anything
 ## It's working if
 
 - It shows you a command and its red output before it offers a single theory. If theory arrives first, the skill is not running.
+- In a repository with `docs/agents/diagnose.md`, the first command it runs for an issue is that project's reproduce command, and production questions go through its named probes.
 - The failure it reproduces is the one you reported, not a nearby one it found on the way.
 - It shrinks the repro before it starts guessing, and can tell you why it needs each remaining piece.
 - It shows you a ranked list of 3–5 hypotheses, each with a prediction you could falsify, before it tests any of them.
