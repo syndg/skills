@@ -15,6 +15,13 @@ This skill has you show commands, outputs and captured artifacts. **Redact every
 
 If the redacted output is not enough to diagnose the bug, say so and ask the user.
 
+## Project diagnosis tools
+
+Before Phase 1, look for `docs/agents/diagnose.md` in the repository. When it exists, it documents the project's own reproduce and production-probe commands. Read it, and use them in place of the hand-built equivalents below:
+
+1. **Reproduce first.** For a reported issue (`diagnose INV-42`), run the documented reproduce command on that issue before reading code (in resumatchweb: `bun run repro INV-42`). It drives the real UI twice. `confirmed: true` with its evidence is your Phase 1 loop and Phase 2 reproduction. `confirmed: false` with its `tried` list is the "cannot build a loop" stop: report it and ask for what is missing.
+2. **Then probe.** For "what does production actually hold?", list and run the named read-only probes (`bun run probe --list`, then `bun run probe <name> --param k=v`). Never write SQL against production or run a script that connects to it. If no probe answers the question, say which one you need.
+
 ## Phase 1 — Build a feedback loop
 
 **This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug — one that goes red on _this_ bug — you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
@@ -22,6 +29,8 @@ If the redacted output is not enough to diagnose the bug, say so and ask the use
 Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give up.**
 
 ### Ways to construct one — try them in roughly this order
+
+When the project documents a reproduce command (see Project diagnosis tools), run it before any of these.
 
 1. **Failing test** at whatever seam reaches the bug — unit, integration, e2e.
 2. **Curl / HTTP script** against a running dev server.
@@ -72,7 +81,7 @@ Run the loop. Watch it go red — the bug appears.
 Confirm:
 
 - [ ] The loop produces the failure mode the **user** described — not a different failure that happens to be nearby. Wrong bug = wrong fix.
-- [ ] The failure is reproducible across multiple runs (or, for non-deterministic bugs, reproducible at a high enough rate to debug against).
+- [ ] The failure is reproducible across multiple runs (or, for non-deterministic bugs, reproducible at a high enough rate to debug against). A project reproduce command that confirms on both of its runs meets this.
 - [ ] You have captured the exact symptom (error message, wrong output, slow timing) so later phases can verify the fix actually addresses it.
 
 ### Minimise
@@ -103,6 +112,7 @@ Each probe must map to a specific prediction from Phase 3. **Change one variable
 
 Tool preference:
 
+0. **Production state** goes through the project's named probes (see Project diagnosis tools), never ad hoc SQL.
 1. **Debugger / REPL inspection** if the env supports it. One breakpoint beats ten logs.
 2. **Targeted logs** at the boundaries that distinguish hypotheses.
 3. Never "log everything and grep".
