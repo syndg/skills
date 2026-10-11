@@ -32,6 +32,10 @@ Use this template for writing the PR body:
 <optional: potential ramifications of merge>
 ```
 
+## Repository additions
+
+Before writing, look for the repository's own PR instructions in `docs/agents/pr.md`, or in a "Pull requests" section of the root `AGENTS.md`. If they exist, add each section they define after Merge Danger, in their order, and follow their rules for those sections. They add sections; they never replace, reorder or drop the three above.
+
 ## Sections
 
 Skip all preambles and keep prose brief. Use the project's domain language. When `dox.config.json` exists, follow the installed `/dox` skill for retrieval eligibility and context reuse. Otherwise use the applicable root-to-nearest `AGENTS.md` chain and indexed co-located `DECISIONS.md` entries.
