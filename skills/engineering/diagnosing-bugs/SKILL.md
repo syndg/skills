@@ -19,8 +19,8 @@ If the redacted output is not enough to diagnose the bug, say so and ask the use
 
 Before Phase 1, look for `docs/agents/diagnose.md` in the repository. When it exists, it documents the project's own reproduce and production-probe commands. Read it, and use them in place of the hand-built equivalents below:
 
-1. **Reproduce first.** For a reported issue (`diagnose INV-42`), run the documented reproduce command on that issue before reading code (in resumatchweb: `bun run repro INV-42`). It drives the real UI twice. `confirmed: true` with its evidence is your Phase 1 loop and Phase 2 reproduction. `confirmed: false` with its `tried` list is the "cannot build a loop" stop: report it and ask for what is missing.
-2. **Then probe.** For "what does production actually hold?", list and run the named read-only probes (`bun run probe --list`, then `bun run probe <name> --param k=v`). Never write SQL against production or run a script that connects to it. If no probe answers the question, say which one you need.
+1. **Reproduce first.** For a reported issue (`diagnose INV-42`), run the documented reproduce command on that issue before reading code (in resumatchweb: `bun run repro INV-42`). It drives the real UI twice. `confirmed: true` with its evidence is your Phase 1 loop and Phase 2 reproduction. `confirmed: false` with its `tried` list is evidence, not a stop: keep diagnosing from code, logs and production reads, and report what the repro tried.
+2. **Read production.** For "what does production actually hold?", use the documented bounded read-only command (in resumatchweb: `bun run probe sql "<one SELECT or WITH>"`, or a named probe from `bun run probe --list`). Reads are allowed and encouraged for diagnosis; they are capped, masked and spaced by the tool, so keep each query narrow and indexed. Never write to production: no INSERT/UPDATE/DELETE, DDL, or scripts that write, through any tool.
 
 ## Phase 1 — Build a feedback loop
 
