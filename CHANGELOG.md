@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Remove the vendored `frontend-design` skill, its vendor listing, and fork-validator requirements. `design-taste-frontend` now covers page design.
 - Make `diagnosing-bugs` use a repository's documented diagnosis tools (`docs/agents/diagnose.md`): its reproduce command first for a reported issue, then its named read-only probes for production state, never ad hoc production SQL.
 - Remove the remote T3 delegation skill and its router, catalog, and installation entries. Keep direct server access through `synclaw-server`.
 - Make `to-spec` publish one approved, revision-grounded spec and implementation plan for a fresh implementation session. Keep issue decomposition an explicit user choice.

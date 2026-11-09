@@ -4,7 +4,6 @@ Third-party skills vendored from elsewhere (Anthropic, Vercel, etc.). Not promot
 
 - [agent-desktop](./agent-desktop/SKILL.md) — operate desktop apps on macOS, Windows, and Linux through the accessibility tree (Vercel, v1.0.2).
 - [docx](./docx/SKILL.md) — create, read, and edit Word documents (Anthropic).
-- [frontend-design](./frontend-design/SKILL.md) — distinctive production-grade frontend interfaces (Anthropic).
 - [figma-code-connect](./figma-code-connect/SKILL.md) — create and maintain Figma Code Connect mappings (Figma).
 - [figma-create-new-file](./figma-create-new-file/SKILL.md) — safely create blank Figma, FigJam, or Slides files (Figma).
 - [figma-design-to-code](./figma-design-to-code/SKILL.md) — implement Figma designs in a target codebase (Figma).

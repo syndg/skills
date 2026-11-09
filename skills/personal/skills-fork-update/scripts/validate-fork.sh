@@ -128,7 +128,6 @@ for path in \
   figma-generate-library \
   figma-implement-motion \
   figma-swiftui \
-  frontend-design \
   react-doctor \
   skill-creator
 do
@@ -214,7 +213,6 @@ for path in \
   figma-use-figjam \
   figma-use-motion \
   figma-use-slides \
-  frontend-design \
   generate-project-plan \
   pdf \
   playwright-cli \
